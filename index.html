@@ -8,12 +8,12 @@
     :root {
         --primary: #e63946;
         --primary-dark: #c1121f;
-        --bg-dark: #0f172a;
-        --card-bg: #1e293b;
-        --card-hover: #334155;
-        --text-main: #f8fafc;
-        --text-sub: #94a3b8;
-        --border-color: #334155;
+        --bg: #f8fafc;
+        --card-bg: #ffffff;
+        --card-hover: #f1f5f9;
+        --text-main: #0f172a;
+        --text-sub: #64748b;
+        --border-color: #e2e8f0;
     }
     * {
         box-sizing: border-box;
@@ -22,7 +22,7 @@
     }
     body {
         font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
-        background-color: var(--bg-dark);
+        background-color: var(--bg);
         color: var(--text-main);
         min-height: 100vh;
         display: flex;
@@ -37,14 +37,19 @@
     header {
         text-align: center;
         margin-bottom: 30px;
+        background: #ffffff;
+        padding: 30px 20px;
+        border-radius: 16px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.04);
     }
     .badge {
         background: linear-gradient(135deg, #e63946 0%, #ba181b 100%);
         color: #fff;
-        padding: 4px 12px;
+        padding: 4px 14px;
         border-radius: 20px;
-        font-size: 12px;
-        font-weight: 700;
+        font-size: 11px;
+        font-weight: 800;
         letter-spacing: 1px;
         display: inline-block;
         margin-bottom: 10px;
@@ -53,7 +58,8 @@
         font-size: 24px;
         font-weight: 800;
         letter-spacing: 0.5px;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
+        color: #0f172a;
     }
     p.subtitle {
         color: var(--text-sub);
@@ -63,7 +69,7 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         gap: 15px;
-        margin-bottom: 30px;
+        margin-bottom: 25px;
     }
     .month-card {
         background-color: var(--card-bg);
@@ -76,13 +82,13 @@
         flex-direction: column;
         justify-content: space-between;
         transition: all 0.2s ease;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
     .month-card:hover {
-        background-color: var(--card-hover);
+        background-color: #ffffff;
         transform: translateY(-3px);
         border-color: var(--primary);
-        box-shadow: 0 8px 20px rgba(230, 57, 70, 0.25);
+        box-shadow: 0 8px 20px rgba(230, 57, 70, 0.15);
     }
     .month-card:active {
         transform: scale(0.98);
@@ -91,7 +97,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
     }
     .year-tag {
         font-size: 12px;
@@ -99,18 +105,19 @@
         font-weight: 600;
     }
     .item-count-badge {
-        background: rgba(255,255,255,0.1);
+        background: #f1f5f9;
         font-size: 11px;
-        padding: 2px 8px;
+        padding: 3px 8px;
         border-radius: 10px;
-        color: #38bdf8;
+        color: #0284c7;
         font-weight: 700;
+        border: 1px solid #e0f2fe;
     }
     .month-title {
         font-size: 26px;
         font-weight: 800;
-        color: #ffffff;
-        margin-bottom: 8px;
+        color: #0f172a;
+        margin-bottom: 6px;
     }
     .card-footer {
         display: flex;
@@ -121,20 +128,21 @@
         font-weight: 700;
         margin-top: 10px;
         padding-top: 10px;
-        border-top: 1px solid rgba(255,255,255,0.06);
+        border-top: 1px solid #f1f5f9;
     }
     .features {
-        background: rgba(30, 41, 59, 0.6);
+        background: #ffffff;
         border-radius: 12px;
-        padding: 16px 20px;
+        padding: 18px 20px;
         border: 1px solid var(--border-color);
-        font-size: 12px;
+        font-size: 12.5px;
         color: var(--text-sub);
         line-height: 1.6;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
     }
     .features h3 {
-        color: #f8fafc;
-        font-size: 13px;
+        color: #0f172a;
+        font-size: 13.5px;
         margin-bottom: 6px;
         display: flex;
         align-items: center;
@@ -216,6 +224,7 @@
         <h3>✨ 便利な機能</h3>
         <p>・<strong>メルカリ直接検索</strong>：各カードの「🔴 メルカリ」を押すと、売り切れ・新着順で即座に相場を確認できます。<br>
         ・<strong>箱無しキーワード追加</strong>：上部のツールバーで「箱無し」「未開封」などの追加テキストを自由に変更可能。<br>
+        ・<strong>スマホ専用3列表示＆列数切替</strong>：スマホでは1画面にたくさん並ぶ3列表示。2列/3列/4列に自由に変更できます。<br>
         ・<strong>画像保存</strong>：右上の「画像で保存」からカレンダー全体をPNG画像としてダウンロードできます。</p>
     </div>
 </div>

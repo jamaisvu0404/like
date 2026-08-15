@@ -399,9 +399,9 @@ def main():
         --primary-dark: #c1121f;
         --mercari: #ff0211;
         --mercari-dark: #d6000e;
-        --bg-dark: #0f172a;
+        --bg-body: #f1f5f9;
         --card-bg: #ffffff;
-        --text-main: #1e293b;
+        --text-main: #0f172a;
         --text-sub: #64748b;
         --border-color: #e2e8f0;
     }}
@@ -412,7 +412,7 @@ def main():
         margin: 0;
         padding: 16px 8px;
         font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
-        background-color: var(--bg-dark);
+        background-color: var(--bg-body);
         display: flex;
         justify-content: center;
         color: var(--text-main);
@@ -420,10 +420,11 @@ def main():
     .container {{
         width: 100%;
         max-width: 1400px;
-        background-color: #f8fafc;
+        background-color: #ffffff;
         border-radius: 12px;
         overflow: hidden;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        border: 1px solid #e2e8f0;
     }}
     .header {{
         background: linear-gradient(135deg, #e63946 0%, #ba181b 100%);
