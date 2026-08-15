@@ -1272,19 +1272,23 @@ def sync_and_push_to_github(src_dir, target_month_str):
     for it in items:
         s = os.path.join(src_dir, it)
         d = os.path.join(dst_dir, it)
-        if os.path.exists(s):
-            shutil.copy2(s, d)
-            
     # 全月フォルダの同期（存在する月フォルダすべて）
     for entry in os.listdir(src_dir):
         if entry.isdigit() and len(entry) == 6:
             s_m = os.path.join(src_dir, entry)
             d_m = os.path.join(dst_dir, entry)
             if os.path.isdir(s_m):
-                if os.path.exists(d_m):
-                    shutil.copy2(os.path.join(s_m, 'calendar.html'), os.path.join(d_m, 'calendar.html'))
-                else:
-                    shutil.copytree(s_m, d_m)
+                s_cal = os.path.join(s_m, 'calendar.html')
+                d_cal = os.path.join(d_m, 'calendar.html')
+                if os.path.exists(s_cal):
+                    os.makedirs(d_m, exist_ok=True)
+                    for _ in range(5):
+                        try:
+                            shutil.copy2(s_cal, d_cal)
+                            break
+                        except Exception:
+                            import time
+                            time.sleep(0.5)
 
     # Git Commit & Push
     try:
