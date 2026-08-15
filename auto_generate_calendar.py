@@ -390,7 +390,7 @@ def main():
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>プライズ景品 入荷情報 フィギュア - {target_month_display}</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
@@ -410,7 +410,7 @@ def main():
     }}
     body {{
         margin: 0;
-        padding: 20px 10px;
+        padding: 16px 8px;
         font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
         background-color: var(--bg-dark);
         display: flex;
@@ -428,59 +428,71 @@ def main():
     .header {{
         background: linear-gradient(135deg, #e63946 0%, #ba181b 100%);
         color: #fff;
-        padding: 16px 22px;
+        padding: 14px 18px;
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 10px;
     }}
     .header-top {{
         display: flex;
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
-        gap: 12px;
+        gap: 8px;
     }}
     .header-left {{
         display: flex;
-        align-items: baseline;
-        gap: 15px;
+        align-items: center;
+        gap: 8px;
         flex-wrap: wrap;
+    }}
+    .nav-back-btn {{
+        color: #fff;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 700;
+        background: rgba(0,0,0,0.25);
+        padding: 4px 10px;
+        border-radius: 15px;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        transition: background 0.2s ease;
+    }}
+    .nav-back-btn:hover {{
+        background: rgba(0,0,0,0.4);
     }}
     .header h1 {{
         margin: 0;
-        font-size: 22px;
+        font-size: 19px;
         font-weight: 800;
         letter-spacing: 0.5px;
     }}
     .header .month {{
-        font-size: 20px;
+        font-size: 17px;
         font-weight: 700;
         background: rgba(255,255,255,0.2);
-        padding: 3px 12px;
+        padding: 2px 10px;
         border-radius: 20px;
     }}
     .download-btn {{
-        padding: 8px 16px;
+        padding: 6px 12px;
         background: #fff;
         color: var(--primary-dark);
         border: none;
         border-radius: 6px;
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 700;
         cursor: pointer;
         transition: all 0.2s ease;
         box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 5px;
     }}
     .download-btn:hover {{
         background: #f1f5f9;
         transform: translateY(-1px);
-        box-shadow: 0 6px 14px rgba(0,0,0,0.2);
-    }}
-    .download-btn:active {{
-        transform: translateY(0);
     }}
 
     /* コントロールツールバー */
@@ -488,26 +500,26 @@ def main():
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background: rgba(0, 0, 0, 0.22);
-        padding: 8px 14px;
+        background: rgba(0, 0, 0, 0.25);
+        padding: 8px 12px;
         border-radius: 8px;
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 8px;
         backdrop-filter: blur(4px);
     }}
     .toolbar-group {{
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
         flex-wrap: wrap;
     }}
     .toolbar-label {{
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 700;
         color: #ffffff;
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: 3px;
     }}
     .mode-btn-group {{
         display: inline-flex;
@@ -517,18 +529,18 @@ def main():
         border: 1px solid rgba(255,255,255,0.2);
     }}
     .mode-btn {{
-        padding: 5px 12px;
+        padding: 4px 10px;
         border: none;
         background: transparent;
-        color: rgba(255,255,255,0.8);
-        font-size: 12px;
+        color: rgba(255,255,255,0.85);
+        font-size: 11.5px;
         font-weight: 700;
         cursor: pointer;
         border-radius: 4px;
-        transition: all 0.2s ease;
+        transition: all 0.15s ease;
         display: flex;
         align-items: center;
-        gap: 5px;
+        gap: 4px;
     }}
     .mode-btn.active {{
         background: #ffffff;
@@ -540,57 +552,71 @@ def main():
         color: #ffffff;
     }}
 
+    /* 列数切替ボタン */
+    .col-btn-group {{
+        display: inline-flex;
+        background: rgba(0,0,0,0.25);
+        padding: 2px;
+        border-radius: 6px;
+        border: 1px solid rgba(255,255,255,0.2);
+    }}
+    .col-btn {{
+        padding: 3px 7px;
+        border: none;
+        background: transparent;
+        color: rgba(255,255,255,0.85);
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.15s ease;
+    }}
+    .col-btn.active {{
+        background: #ffffff;
+        color: #0f172a;
+    }}
+
     .suffix-control-wrap {{
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
         flex-wrap: wrap;
     }}
     .suffix-toggle-label {{
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 4px;
         cursor: pointer;
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 600;
         user-select: none;
     }}
     .suffix-toggle-label input[type="checkbox"] {{
-        width: 17px;
-        height: 17px;
+        width: 15px;
+        height: 15px;
         cursor: pointer;
         accent-color: #ffffff;
     }}
     .suffix-input-box {{
-        padding: 5px 10px;
-        font-size: 13px;
+        padding: 4px 8px;
+        font-size: 12px;
         border-radius: 5px;
         border: 1px solid rgba(255,255,255,0.4);
         background: #ffffff;
         color: #0f172a;
         font-weight: 600;
         outline: none;
-        width: 120px;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }}
-    .suffix-input-box:focus {{
-        border-color: #38bdf8;
-        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.35);
+        width: 90px;
     }}
     .quick-tag-btn {{
         background: rgba(255,255,255,0.2);
         color: #fff;
         border: 1px solid rgba(255,255,255,0.4);
-        padding: 4px 10px;
+        padding: 3px 8px;
         border-radius: 4px;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.15s ease;
-    }}
-    .quick-tag-btn:hover {{
-        background: rgba(255,255,255,0.35);
-        transform: translateY(-1px);
     }}
     .quick-tag-btn.active {{
         background: #ffffff;
@@ -598,23 +624,110 @@ def main():
         border-color: #ffffff;
     }}
 
+    /* グリッドレイアウト（PC・大画面は7列） */
     .grid {{
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        gap: 10px;
-        padding: 14px;
+        gap: 8px;
+        padding: 12px;
         background-color: #f1f5f9;
     }}
-    @media (max-width: 1100px) {{
+    @media (max-width: 1200px) {{
+        .grid {{
+            grid-template-columns: repeat(5, 1fr);
+        }}
+    }}
+    @media (max-width: 900px) {{
         .grid {{
             grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            padding: 8px;
         }}
     }}
-    @media (max-width: 700px) {{
+
+    /* スマホ・小型端末（デフォルト3列表示で一画面に多数表示） */
+    @media (max-width: 650px) {{
+        body {{
+            padding: 4px 2px;
+        }}
+        .container {{
+            border-radius: 6px;
+        }}
+        .header {{
+            padding: 10px 10px;
+            gap: 8px;
+        }}
+        .header h1 {{
+            font-size: 15px;
+        }}
+        .header .month {{
+            font-size: 14px;
+            padding: 1px 8px;
+        }}
+        .header-toolbar {{
+            padding: 6px 8px;
+            gap: 6px;
+        }}
         .grid {{
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            padding: 5px;
+        }}
+        .date-cell {{
+            min-height: 70px !important;
+            padding: 6px 2px !important;
+            border-radius: 6px !important;
+        }}
+        .date-cell .day {{
+            font-size: 22px !important;
+        }}
+        .date-cell .weekday {{
+            font-size: 11px !important;
+            padding: 1px 4px !important;
+            margin-top: 2px !important;
+        }}
+        .info-wrap {{
+            padding: 4px 4px 6px !important;
+            gap: 3px !important;
+        }}
+        .maker-tag {{
+            font-size: 8.5px !important;
+            padding: 1px 4px !important;
+        }}
+        .item-name {{
+            font-size: 9.5px !important;
+            line-height: 1.25 !important;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }}
+        .item-size {{
+            font-size: 8.5px !important;
+            margin-top: 1px !important;
+            padding-top: 2px !important;
+        }}
+        .card-actions {{
+            margin-top: 3px !important;
+            gap: 2px !important;
+        }}
+        .card-mercari-btn {{
+            font-size: 9.5px !important;
+            padding: 4px 2px !important;
+        }}
+        .card-copy-btn {{
+            font-size: 9.5px !important;
+            padding: 4px 5px !important;
         }}
     }}
+
+    /* ユーザーが列数を手動で切り替えた時の上書きクラス */
+    .grid.cols-2 {{ grid-template-columns: repeat(2, 1fr) !important; }}
+    .grid.cols-3 {{ grid-template-columns: repeat(3, 1fr) !important; }}
+    .grid.cols-4 {{ grid-template-columns: repeat(4, 1fr) !important; }}
+    .grid.cols-5 {{ grid-template-columns: repeat(5, 1fr) !important; }}
+    .grid.cols-6 {{ grid-template-columns: repeat(6, 1fr) !important; }}
+    .grid.cols-7 {{ grid-template-columns: repeat(7, 1fr) !important; }}
     
     /* 日付セル */
     .date-cell {{
@@ -625,9 +738,9 @@ def main():
         align-items: center;
         color: #fff;
         font-weight: bold;
-        padding: 15px 10px;
+        padding: 12px 6px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-        min-height: 120px;
+        min-height: 110px;
         text-align: center;
     }}
     .date-color-1 {{ background: linear-gradient(135deg, #d4a373 0%, #bc6c25 100%); }}
@@ -637,35 +750,35 @@ def main():
     .date-color-5 {{ background: linear-gradient(135deg, #457b9d 0%, #1d3557 100%); }}
     
     .date-cell .day {{
-        font-size: 38px;
+        font-size: 32px;
         line-height: 1.1;
         font-weight: 800;
         text-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }}
     .date-cell .weekday {{
-        font-size: 16px;
-        margin-top: 6px;
+        font-size: 14px;
+        margin-top: 4px;
         background: rgba(255,255,255,0.25);
-        padding: 2px 8px;
-        border-radius: 12px;
+        padding: 2px 6px;
+        border-radius: 10px;
     }}
     
     /* アイテムカード */
     .item-card {{
         background: var(--card-bg);
         border: 1px solid var(--border-color);
-        border-radius: 8px;
+        border-radius: 7px;
         overflow: hidden;
         display: flex;
         flex-direction: column;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
         cursor: pointer;
         position: relative;
         transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
     }}
     .item-card:hover {{
-        transform: translateY(-3px);
-        box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(0,0,0,0.1);
         border-color: #cbd5e1;
     }}
     .item-card:active {{
@@ -675,8 +788,8 @@ def main():
         animation: flashHighlight 0.4s ease;
     }}
     @keyframes flashHighlight {{
-        0% {{ box-shadow: 0 0 0 4px #22c55e; border-color: #22c55e; }}
-        100% {{ box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-color: var(--border-color); }}
+        0% {{ box-shadow: 0 0 0 3px #22c55e; border-color: #22c55e; }}
+        100% {{ box-shadow: 0 2px 4px rgba(0,0,0,0.04); border-color: var(--border-color); }}
     }}
     
     /* 画像ラッパー */
@@ -695,48 +808,19 @@ def main():
         width: 100%;
         height: 100%;
         object-fit: contain;
-        padding: 4px;
+        padding: 3px;
         transition: transform 0.2s ease;
     }}
     .item-card:hover .img-wrap img {{
-        transform: scale(1.04);
-    }}
-    .action-overlay {{
-        position: absolute;
-        top: 6px;
-        right: 6px;
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        opacity: 0;
-        transition: opacity 0.2s ease;
-        pointer-events: none;
-    }}
-    .item-card:hover .action-overlay {{
-        opacity: 1;
-    }}
-    .badge-action {{
-        background: rgba(15, 23, 42, 0.85);
-        color: #fff;
-        font-size: 10px;
-        font-weight: 700;
-        padding: 3px 7px;
-        border-radius: 4px;
-        backdrop-filter: blur(4px);
-        display: flex;
-        align-items: center;
-        gap: 3px;
-    }}
-    .badge-action.mercari-badge {{
-        background: var(--mercari);
+        transform: scale(1.03);
     }}
     
     /* 情報ブロック */
     .info-wrap {{
-        padding: 8px 8px 10px;
+        padding: 6px 6px 8px;
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 4px;
         flex-grow: 1;
         justify-content: space-between;
         background: #ffffff;
@@ -744,14 +828,14 @@ def main():
     .info-top {{
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 3px;
     }}
     
     /* メーカータグ */
     .maker-tag {{
-        font-size: 10px;
+        font-size: 9.5px;
         font-weight: 700;
-        padding: 2px 6px;
+        padding: 1px 5px;
         border-radius: 4px;
         display: inline-block;
         width: fit-content;
@@ -767,9 +851,9 @@ def main():
     
     /* タイトル */
     .item-name {{
-        font-size: 11px;
+        font-size: 10.5px;
         font-weight: 700;
-        line-height: 1.4;
+        line-height: 1.35;
         color: #0f172a;
         word-break: break-word;
         margin: 0;
@@ -777,19 +861,19 @@ def main():
     
     /* サイズ・種類 */
     .item-size {{
-        font-size: 10px;
+        font-size: 9.5px;
         color: #64748b;
         font-weight: 500;
-        line-height: 1.3;
+        line-height: 1.25;
         display: flex;
         align-items: flex-start;
-        gap: 3px;
-        margin-top: 2px;
-        padding-top: 4px;
+        gap: 2px;
+        margin-top: 1px;
+        padding-top: 3px;
         border-top: 1px dashed #f1f5f9;
     }}
     .item-size .size-icon {{
-        font-size: 10px;
+        font-size: 9px;
         color: #94a3b8;
         flex-shrink: 0;
     }}
@@ -797,31 +881,30 @@ def main():
     /* カード下部のアクションボタンバー */
     .card-actions {{
         display: flex;
-        gap: 4px;
-        margin-top: 5px;
+        gap: 3px;
+        margin-top: 4px;
     }}
     .card-mercari-btn {{
         flex: 1;
         background: #fff0f0;
         color: var(--mercari-dark);
         border: 1px solid #ffccd0;
-        padding: 5px 6px;
-        border-radius: 5px;
-        font-size: 11px;
+        padding: 4px 4px;
+        border-radius: 4px;
+        font-size: 10.5px;
         font-weight: 800;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 4px;
+        gap: 3px;
         transition: all 0.15s ease;
     }}
     .card-mercari-btn:hover {{
         background: var(--mercari);
         color: #ffffff;
         border-color: var(--mercari);
-        transform: translateY(-1px);
-        box-shadow: 0 3px 8px rgba(255, 2, 17, 0.3);
+        box-shadow: 0 2px 6px rgba(255, 2, 17, 0.3);
     }}
     .card-mercari-btn:active {{
         transform: translateY(0);
@@ -830,15 +913,14 @@ def main():
         background: #f1f5f9;
         color: #475569;
         border: 1px solid #e2e8f0;
-        padding: 5px 8px;
-        border-radius: 5px;
-        font-size: 11px;
+        padding: 4px 6px;
+        border-radius: 4px;
+        font-size: 10.5px;
         font-weight: 700;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.15s ease;
     }}
     .card-copy-btn:hover {{
         background: #e2e8f0;
@@ -848,19 +930,19 @@ def main():
     /* トースト通知 */
     #toast {{
         position: fixed;
-        bottom: 25px;
+        bottom: 20px;
         left: 50%;
         transform: translateX(-50%) translateY(100px);
         background: rgba(15, 23, 42, 0.92);
         color: #ffffff;
-        padding: 10px 20px;
-        border-radius: 30px;
-        font-size: 13px;
+        padding: 8px 16px;
+        border-radius: 25px;
+        font-size: 12px;
         font-weight: 600;
         box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
         backdrop-filter: blur(8px);
         pointer-events: none;
         z-index: 99999;
@@ -875,7 +957,7 @@ def main():
     }}
     #toast .toast-icon {{
         color: #4ade80;
-        font-size: 16px;
+        font-size: 14px;
     }}
 </style>
 </head>
@@ -884,6 +966,9 @@ def main():
     <div class="header">
         <div class="header-top">
             <div class="header-left">
+                <a href="../index.html" class="nav-back-btn" data-html2canvas-ignore="true">
+                    <span>←</span><span>月選択</span>
+                </a>
                 <h1>プライズ景品 入荷情報 フィギュア</h1>
                 <div class="month">{target_month_display}</div>
             </div>
@@ -895,31 +980,39 @@ def main():
         <!-- コントロールツールバー -->
         <div class="header-toolbar" data-html2canvas-ignore="true">
             <div class="toolbar-group">
-                <span class="toolbar-label">カードクリック動作:</span>
+                <span class="toolbar-label">クリック:</span>
                 <div class="mode-btn-group">
                     <button type="button" class="mode-btn active mercari-mode" id="modeBtnMercari" onclick="setClickMode('mercari')">
-                        <span>🔴</span> メルカリ検索 (売り切れ・新着)
+                        <span>🔴</span> メルカリ検索
                     </button>
                     <button type="button" class="mode-btn" id="modeBtnCopy" onclick="setClickMode('copy')">
-                        <span>📋</span> 名前コピー
+                        <span>📋</span> コピー
                     </button>
+                </div>
+            </div>
+
+            <div class="toolbar-group">
+                <span class="toolbar-label">表示列数:</span>
+                <div class="col-btn-group">
+                    <button type="button" class="col-btn" id="colBtn2" onclick="setGridColumns(2)">2列</button>
+                    <button type="button" class="col-btn active" id="colBtn3" onclick="setGridColumns(3)">3列</button>
+                    <button type="button" class="col-btn" id="colBtn4" onclick="setGridColumns(4)">4列</button>
                 </div>
             </div>
             
             <div class="suffix-control-wrap">
                 <label class="suffix-toggle-label">
                     <input type="checkbox" id="suffixCheckbox" checked>
-                    <span>末尾に追加:</span>
+                    <span>追加:</span>
                 </label>
                 <input type="text" id="suffixInput" class="suffix-input-box" value="箱無し" placeholder="追加テキスト">
                 <button type="button" class="quick-tag-btn active" id="tagBtnHakonashi" onclick="setSuffixTag('箱無し')">箱無し</button>
                 <button type="button" class="quick-tag-btn" id="tagBtnMikaifu" onclick="setSuffixTag('未開封')">未開封</button>
-                <button type="button" class="quick-tag-btn" id="tagBtnHakodashi" onclick="setSuffixTag('箱あり')">箱あり</button>
                 <button type="button" class="quick-tag-btn" id="tagBtnClear" onclick="clearSuffixTag()">なし</button>
             </div>
         </div>
     </div>
-    <div class="grid">
+    <div class="grid" id="mainGrid">
 """
 
     def get_maker_class(m_text):
@@ -987,10 +1080,6 @@ def main():
         <div class="item-card" onclick='handleCardClick(this, {mercari_title_json})' title="{title_escaped}">
             <div class="img-wrap">
                 <img src="{img_src_data}" alt="{title_escaped}">
-                <div class="action-overlay" data-html2canvas-ignore="true">
-                    <span class="badge-action mercari-badge">🔴 メルカリ検索</span>
-                    <span class="badge-action">📋 コピー</span>
-                </div>
             </div>
             <div class="info-wrap">
                 <div class="info-top">
@@ -1038,6 +1127,12 @@ def main():
     updateTagButtons();
     updateModeButtons();
 
+    // 列数設定復元
+    const storedCols = localStorage.getItem('prize_calendar_cols');
+    if (storedCols) {{
+        setGridColumns(parseInt(storedCols, 10), false);
+    }}
+
     document.getElementById('suffixInput').addEventListener('input', function() {{
         localStorage.setItem('prize_calendar_suffix', this.value);
         updateTagButtons();
@@ -1047,6 +1142,22 @@ def main():
         localStorage.setItem('prize_calendar_suffix_enabled', this.checked);
         updateTagButtons();
     }});
+
+    function setGridColumns(cols, save = true) {{
+        const grid = document.getElementById('mainGrid');
+        if (!grid) return;
+        grid.classList.remove('cols-2', 'cols-3', 'cols-4', 'cols-5', 'cols-6', 'cols-7');
+        grid.classList.add('cols-' + cols);
+        
+        document.querySelectorAll('.col-btn').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = document.getElementById('colBtn' + cols);
+        if (activeBtn) activeBtn.classList.add('active');
+        
+        if (save) {{
+            localStorage.setItem('prize_calendar_cols', cols);
+            showToast(cols + '列表示に切り替えました');
+        }}
+    }}
 
     function setClickMode(mode) {{
         currentClickMode = mode;
@@ -1099,7 +1210,6 @@ def main():
         }} else {{
             if (inputVal === '箱無し') document.getElementById('tagBtnHakonashi')?.classList.add('active');
             else if (inputVal === '未開封') document.getElementById('tagBtnMikaifu')?.classList.add('active');
-            else if (inputVal === '箱あり') document.getElementById('tagBtnHakodashi')?.classList.add('active');
         }}
     }}
 
@@ -1219,6 +1329,48 @@ def main():
         f.write(html_content)
 
     print(f"成功: {target_month_display} のカレンダーHTMLと画像データを {output_dir} に出力しました。")
+
+    # --- GitHub への自動同期 ＆ プッシュ ---
+    sync_and_push_to_github(base_dir, target_month_str)
+
+def sync_and_push_to_github(src_dir, target_month_str):
+    import shutil
+    import subprocess
+    
+    dst_dir = r"C:\Users\pande\prize-calendar"
+    if not os.path.exists(dst_dir):
+        os.makedirs(dst_dir, exist_ok=True)
+        
+    print(f"\n[GitHub自動同期] {dst_dir} へ最新ファイルを同期中...")
+    
+    # 必要ファイル・フォルダの同期
+    items = ['index.html', 'auto_generate_calendar.py', 'generate_calendar.py', 'instructions_for_ai.md', '.gitignore', '.nojekyll']
+    for it in items:
+        s = os.path.join(src_dir, it)
+        d = os.path.join(dst_dir, it)
+        if os.path.exists(s):
+            shutil.copy2(s, d)
+            
+    # 月フォルダの同期
+    if target_month_str and target_month_str != 'latest':
+        s_m = os.path.join(src_dir, target_month_str)
+        d_m = os.path.join(dst_dir, target_month_str)
+        if os.path.exists(s_m):
+            if os.path.exists(d_m):
+                # calendar.html と 画像を上書き
+                shutil.copy2(os.path.join(s_m, 'calendar.html'), os.path.join(d_m, 'calendar.html'))
+            else:
+                shutil.copytree(s_m, d_m)
+
+    # Git Commit & Push
+    try:
+        subprocess.run(["git", "add", "."], cwd=dst_dir, capture_output=True, check=True)
+        commit_res = subprocess.run(["git", "commit", "-m", f"Auto update calendar for {target_month_str}"], cwd=dst_dir, capture_output=True, text=True)
+        print(f"[GitHub自動同期] コミット完了: {commit_res.stdout.strip() if commit_res.stdout else '変更なし'}")
+        push_res = subprocess.run(["git", "push", "origin", "main"], cwd=dst_dir, capture_output=True, text=True)
+        print(f"[GitHub自動同期] GitHubへプッシュ完了！\n公開URL: https://jamaisvu0404.github.io/like/")
+    except Exception as e:
+        print(f"[GitHub自動同期] プッシュスキップまたはエラー: {e}")
 
 if __name__ == "__main__":
     main()
