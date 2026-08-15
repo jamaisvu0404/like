@@ -341,6 +341,7 @@
     .grid.cols-5 { grid-template-columns: repeat(5, 1fr) !important; }
     .grid.cols-6 { grid-template-columns: repeat(6, 1fr) !important; }
     .grid.cols-7 { grid-template-columns: repeat(7, 1fr) !important; }
+    .grid.cols-8 { grid-template-columns: repeat(8, 1fr) !important; }
     
     /* 日付セル */
     .date-cell {
@@ -610,6 +611,10 @@
                     <button type="button" class="col-btn" id="colBtn2" onclick="setGridColumns(2)">2列</button>
                     <button type="button" class="col-btn active" id="colBtn3" onclick="setGridColumns(3)">3列</button>
                     <button type="button" class="col-btn" id="colBtn4" onclick="setGridColumns(4)">4列</button>
+                    <button type="button" class="col-btn" id="colBtn5" onclick="setGridColumns(5)">5列</button>
+                    <button type="button" class="col-btn" id="colBtn6" onclick="setGridColumns(6)">6列</button>
+                    <button type="button" class="col-btn" id="colBtn7" onclick="setGridColumns(7)">7列</button>
+                    <button type="button" class="col-btn" id="colBtn8" onclick="setGridColumns(8)">8列</button>
                 </div>
             </div>
             
@@ -4131,7 +4136,7 @@
     function setGridColumns(cols, save = true) {
         const grid = document.getElementById('mainGrid');
         if (!grid) return;
-        grid.classList.remove('cols-2', 'cols-3', 'cols-4', 'cols-5', 'cols-6', 'cols-7');
+        grid.classList.remove('cols-2', 'cols-3', 'cols-4', 'cols-5', 'cols-6', 'cols-7', 'cols-8');
         grid.classList.add('cols-' + cols);
         
         document.querySelectorAll('.col-btn').forEach(btn => btn.classList.remove('active'));
