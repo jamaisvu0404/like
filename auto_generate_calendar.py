@@ -385,6 +385,25 @@ def main():
 
     sorted_dates = sorted(data_by_date.keys(), key=parse_date_key)
     
+    # 月選択プルダウンのオプション生成
+    available_months = [
+        ("202601", "2026年 1月"),
+        ("202602", "2026年 2月"),
+        ("202603", "2026年 3月"),
+        ("202604", "2026年 4月"),
+        ("202605", "2026年 5月"),
+        ("202606", "2026年 6月"),
+        ("202607", "2026年 7月"),
+        ("202608", "2026年 8月"),
+        ("202609", "2026年 9月"),
+        ("202610", "2026年 10月"),
+        ("202611", "2026年 11月"),
+    ]
+    month_options_html = ""
+    for m_val, m_lbl in available_months:
+        sel = "selected" if m_val == target_month_str else ""
+        month_options_html += f'<option value="{m_val}" {sel}>{m_lbl}</option>'
+
     calendar_html_path = os.path.join(output_dir, "calendar.html")
     html_content = f"""<!DOCTYPE html>
 <html lang="ja">
@@ -392,7 +411,6 @@ def main():
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>プライズ景品 入荷情報 フィギュア - {target_month_display}</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
     :root {{
         --primary: #e63946;
@@ -419,7 +437,7 @@ def main():
     }}
     .container {{
         width: 100%;
-        max-width: 1400px;
+        max-width: 1680px;
         background-color: #ffffff;
         border-radius: 12px;
         overflow: hidden;
@@ -429,7 +447,7 @@ def main():
     .header {{
         background: linear-gradient(135deg, #e63946 0%, #ba181b 100%);
         color: #fff;
-        padding: 14px 18px;
+        padding: 12px 16px;
         display: flex;
         flex-direction: column;
         gap: 10px;
@@ -447,53 +465,49 @@ def main():
         gap: 8px;
         flex-wrap: wrap;
     }}
-    .nav-back-btn {{
+    .nav-top-btn {{
         color: #fff;
         text-decoration: none;
         font-size: 12px;
         font-weight: 700;
         background: rgba(0,0,0,0.25);
-        padding: 4px 10px;
-        border-radius: 15px;
+        padding: 5px 12px;
+        border-radius: 20px;
         display: inline-flex;
         align-items: center;
-        gap: 3px;
+        gap: 4px;
         transition: background 0.2s ease;
     }}
-    .nav-back-btn:hover {{
+    .nav-top-btn:hover {{
         background: rgba(0,0,0,0.4);
+    }}
+    .month-select-wrap {{
+        display: inline-flex;
+        align-items: center;
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 2px 10px 2px 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        gap: 4px;
+    }}
+    .month-select-wrap .month-icon {{
+        font-size: 13px;
+    }}
+    .month-dropdown {{
+        border: none;
+        background: transparent;
+        color: var(--primary-dark);
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+        outline: none;
+        padding: 3px 0;
     }}
     .header h1 {{
         margin: 0;
-        font-size: 19px;
+        font-size: 18px;
         font-weight: 800;
         letter-spacing: 0.5px;
-    }}
-    .header .month {{
-        font-size: 17px;
-        font-weight: 700;
-        background: rgba(255,255,255,0.2);
-        padding: 2px 10px;
-        border-radius: 20px;
-    }}
-    .download-btn {{
-        padding: 6px 12px;
-        background: #fff;
-        color: var(--primary-dark);
-        border: none;
-        border-radius: 6px;
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }}
-    .download-btn:hover {{
-        background: #f1f5f9;
-        transform: translateY(-1px);
     }}
 
     /* コントロールツールバー */
@@ -501,7 +515,7 @@ def main():
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background: rgba(0, 0, 0, 0.25);
+        background: rgba(0, 0, 0, 0.22);
         padding: 8px 12px;
         border-radius: 8px;
         flex-wrap: wrap;
@@ -631,7 +645,7 @@ def main():
         grid-template-columns: repeat(7, 1fr);
         gap: 8px;
         padding: 12px;
-        background-color: #f1f5f9;
+        background-color: #f8fafc;
     }}
     @media (max-width: 1200px) {{
         .grid {{
@@ -660,10 +674,6 @@ def main():
         }}
         .header h1 {{
             font-size: 15px;
-        }}
-        .header .month {{
-            font-size: 14px;
-            padding: 1px 8px;
         }}
         .header-toolbar {{
             padding: 6px 8px;
@@ -707,18 +717,6 @@ def main():
             font-size: 8.5px !important;
             margin-top: 1px !important;
             padding-top: 2px !important;
-        }}
-        .card-actions {{
-            margin-top: 3px !important;
-            gap: 2px !important;
-        }}
-        .card-mercari-btn {{
-            font-size: 9.5px !important;
-            padding: 4px 2px !important;
-        }}
-        .card-copy-btn {{
-            font-size: 9.5px !important;
-            padding: 4px 5px !important;
         }}
     }}
 
@@ -769,19 +767,19 @@ def main():
     .item-card {{
         background: var(--card-bg);
         border: 1px solid var(--border-color);
-        border-radius: 7px;
+        border-radius: 8px;
         overflow: hidden;
         display: flex;
         flex-direction: column;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.03);
         cursor: pointer;
         position: relative;
         transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
     }}
     .item-card:hover {{
         transform: translateY(-2px);
-        box-shadow: 0 6px 14px rgba(0,0,0,0.1);
-        border-color: #cbd5e1;
+        box-shadow: 0 8px 18px rgba(0,0,0,0.09);
+        border-color: var(--primary);
     }}
     .item-card:active {{
         transform: scale(0.98);
@@ -791,7 +789,7 @@ def main():
     }}
     @keyframes flashHighlight {{
         0% {{ box-shadow: 0 0 0 3px #22c55e; border-color: #22c55e; }}
-        100% {{ box-shadow: 0 2px 4px rgba(0,0,0,0.04); border-color: var(--border-color); }}
+        100% {{ box-shadow: 0 2px 5px rgba(0,0,0,0.03); border-color: var(--border-color); }}
     }}
     
     /* 画像ラッパー */
@@ -880,55 +878,6 @@ def main():
         flex-shrink: 0;
     }}
 
-    /* カード下部のアクションボタンバー */
-    .card-actions {{
-        display: flex;
-        gap: 3px;
-        margin-top: 4px;
-    }}
-    .card-mercari-btn {{
-        flex: 1;
-        background: #fff0f0;
-        color: var(--mercari-dark);
-        border: 1px solid #ffccd0;
-        padding: 4px 4px;
-        border-radius: 4px;
-        font-size: 10.5px;
-        font-weight: 800;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 3px;
-        transition: all 0.15s ease;
-    }}
-    .card-mercari-btn:hover {{
-        background: var(--mercari);
-        color: #ffffff;
-        border-color: var(--mercari);
-        box-shadow: 0 2px 6px rgba(255, 2, 17, 0.3);
-    }}
-    .card-mercari-btn:active {{
-        transform: translateY(0);
-    }}
-    .card-copy-btn {{
-        background: #f1f5f9;
-        color: #475569;
-        border: 1px solid #e2e8f0;
-        padding: 4px 6px;
-        border-radius: 4px;
-        font-size: 10.5px;
-        font-weight: 700;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }}
-    .card-copy-btn:hover {{
-        background: #e2e8f0;
-        color: #0f172a;
-    }}
-
     /* トースト通知 */
     #toast {{
         position: fixed;
@@ -968,19 +917,21 @@ def main():
     <div class="header">
         <div class="header-top">
             <div class="header-left">
-                <a href="../index.html" class="nav-back-btn" data-html2canvas-ignore="true">
-                    <span>←</span><span>月選択</span>
+                <a href="../index.html" class="nav-top-btn">
+                    <span>🏠</span><span>トップへ</span>
                 </a>
+                <div class="month-select-wrap">
+                    <span class="month-icon">📅</span>
+                    <select id="monthSelect" class="month-dropdown" onchange="if(this.value) location.href='../' + this.value + '/calendar.html'">
+                        {month_options_html}
+                    </select>
+                </div>
                 <h1>プライズ景品 入荷情報 フィギュア</h1>
-                <div class="month">{target_month_display}</div>
             </div>
-            <button id="downloadBtn" class="download-btn" data-html2canvas-ignore="true">
-                <span>📷</span> 画像で保存
-            </button>
         </div>
         
         <!-- コントロールツールバー -->
-        <div class="header-toolbar" data-html2canvas-ignore="true">
+        <div class="header-toolbar">
             <div class="toolbar-group">
                 <span class="toolbar-label">クリック:</span>
                 <div class="mode-btn-group">
@@ -1096,14 +1047,6 @@ def main():
                     <span class="size-icon">📏</span>
                     <span>{size_escaped}</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch({mercari_title_json}, event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), {mercari_title_json}, event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             """
@@ -1112,7 +1055,7 @@ def main():
     </div>
 </div>
 
-<div id="toast" data-html2canvas-ignore="true">
+<div id="toast">
     <span class="toast-icon">✓</span>
     <span id="toastMsg">キーワードをコピーしました</span>
 </div>
@@ -1170,9 +1113,9 @@ def main():
         localStorage.setItem('prize_calendar_mode', mode);
         updateModeButtons();
         if (mode === 'mercari') {{
-            showToast('クリック時の動作を【メルカリ直接検索】に設定しました');
+            showToast('カードタップ時の動作を【メルカリ直接検索】に設定しました');
         }} else {{
-            showToast('クリック時の動作を【名前コピー】に設定しました');
+            showToast('カードタップ時の動作を【名前コピー】に設定しました');
         }}
     }}
 
@@ -1301,31 +1244,6 @@ def main():
         }}
         document.body.removeChild(textArea);
     }}
-
-    document.getElementById('downloadBtn').addEventListener('click', function() {{
-        const btn = this;
-        const originalHtml = btn.innerHTML;
-        btn.innerHTML = '<span>⏳</span> 保存中...';
-        btn.disabled = true;
-        
-        html2canvas(document.querySelector('.container'), {{
-            useCORS: true,
-            scale: 2,
-            backgroundColor: '#0f172a'
-        }}).then(canvas => {{
-            let link = document.createElement('a');
-            link.download = 'calendar_{target_month_str}.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-            btn.innerHTML = originalHtml;
-            btn.disabled = false;
-        }}).catch(err => {{
-            console.error(err);
-            alert("画像の保存に失敗しました。");
-            btn.innerHTML = originalHtml;
-            btn.disabled = false;
-        }});
-    }});
 </script>
 </body>
 </html>

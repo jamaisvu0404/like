@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>プライズ景品 入荷情報 フィギュア - 2026年1月</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
     :root {
         --primary: #e63946;
@@ -31,7 +30,7 @@
     }
     .container {
         width: 100%;
-        max-width: 1400px;
+        max-width: 1680px;
         background-color: #ffffff;
         border-radius: 12px;
         overflow: hidden;
@@ -41,7 +40,7 @@
     .header {
         background: linear-gradient(135deg, #e63946 0%, #ba181b 100%);
         color: #fff;
-        padding: 14px 18px;
+        padding: 12px 16px;
         display: flex;
         flex-direction: column;
         gap: 10px;
@@ -59,53 +58,49 @@
         gap: 8px;
         flex-wrap: wrap;
     }
-    .nav-back-btn {
+    .nav-top-btn {
         color: #fff;
         text-decoration: none;
         font-size: 12px;
         font-weight: 700;
         background: rgba(0,0,0,0.25);
-        padding: 4px 10px;
-        border-radius: 15px;
+        padding: 5px 12px;
+        border-radius: 20px;
         display: inline-flex;
         align-items: center;
-        gap: 3px;
+        gap: 4px;
         transition: background 0.2s ease;
     }
-    .nav-back-btn:hover {
+    .nav-top-btn:hover {
         background: rgba(0,0,0,0.4);
+    }
+    .month-select-wrap {
+        display: inline-flex;
+        align-items: center;
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 2px 10px 2px 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        gap: 4px;
+    }
+    .month-select-wrap .month-icon {
+        font-size: 13px;
+    }
+    .month-dropdown {
+        border: none;
+        background: transparent;
+        color: var(--primary-dark);
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+        outline: none;
+        padding: 3px 0;
     }
     .header h1 {
         margin: 0;
-        font-size: 19px;
+        font-size: 18px;
         font-weight: 800;
         letter-spacing: 0.5px;
-    }
-    .header .month {
-        font-size: 17px;
-        font-weight: 700;
-        background: rgba(255,255,255,0.2);
-        padding: 2px 10px;
-        border-radius: 20px;
-    }
-    .download-btn {
-        padding: 6px 12px;
-        background: #fff;
-        color: var(--primary-dark);
-        border: none;
-        border-radius: 6px;
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-    .download-btn:hover {
-        background: #f1f5f9;
-        transform: translateY(-1px);
     }
 
     /* コントロールツールバー */
@@ -113,7 +108,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background: rgba(0, 0, 0, 0.25);
+        background: rgba(0, 0, 0, 0.22);
         padding: 8px 12px;
         border-radius: 8px;
         flex-wrap: wrap;
@@ -243,7 +238,7 @@
         grid-template-columns: repeat(7, 1fr);
         gap: 8px;
         padding: 12px;
-        background-color: #f1f5f9;
+        background-color: #f8fafc;
     }
     @media (max-width: 1200px) {
         .grid {
@@ -272,10 +267,6 @@
         }
         .header h1 {
             font-size: 15px;
-        }
-        .header .month {
-            font-size: 14px;
-            padding: 1px 8px;
         }
         .header-toolbar {
             padding: 6px 8px;
@@ -319,18 +310,6 @@
             font-size: 8.5px !important;
             margin-top: 1px !important;
             padding-top: 2px !important;
-        }
-        .card-actions {
-            margin-top: 3px !important;
-            gap: 2px !important;
-        }
-        .card-mercari-btn {
-            font-size: 9.5px !important;
-            padding: 4px 2px !important;
-        }
-        .card-copy-btn {
-            font-size: 9.5px !important;
-            padding: 4px 5px !important;
         }
     }
 
@@ -381,19 +360,19 @@
     .item-card {
         background: var(--card-bg);
         border: 1px solid var(--border-color);
-        border-radius: 7px;
+        border-radius: 8px;
         overflow: hidden;
         display: flex;
         flex-direction: column;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.03);
         cursor: pointer;
         position: relative;
         transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
     }
     .item-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 14px rgba(0,0,0,0.1);
-        border-color: #cbd5e1;
+        box-shadow: 0 8px 18px rgba(0,0,0,0.09);
+        border-color: var(--primary);
     }
     .item-card:active {
         transform: scale(0.98);
@@ -403,7 +382,7 @@
     }
     @keyframes flashHighlight {
         0% { box-shadow: 0 0 0 3px #22c55e; border-color: #22c55e; }
-        100% { box-shadow: 0 2px 4px rgba(0,0,0,0.04); border-color: var(--border-color); }
+        100% { box-shadow: 0 2px 5px rgba(0,0,0,0.03); border-color: var(--border-color); }
     }
     
     /* 画像ラッパー */
@@ -492,55 +471,6 @@
         flex-shrink: 0;
     }
 
-    /* カード下部のアクションボタンバー */
-    .card-actions {
-        display: flex;
-        gap: 3px;
-        margin-top: 4px;
-    }
-    .card-mercari-btn {
-        flex: 1;
-        background: #fff0f0;
-        color: var(--mercari-dark);
-        border: 1px solid #ffccd0;
-        padding: 4px 4px;
-        border-radius: 4px;
-        font-size: 10.5px;
-        font-weight: 800;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 3px;
-        transition: all 0.15s ease;
-    }
-    .card-mercari-btn:hover {
-        background: var(--mercari);
-        color: #ffffff;
-        border-color: var(--mercari);
-        box-shadow: 0 2px 6px rgba(255, 2, 17, 0.3);
-    }
-    .card-mercari-btn:active {
-        transform: translateY(0);
-    }
-    .card-copy-btn {
-        background: #f1f5f9;
-        color: #475569;
-        border: 1px solid #e2e8f0;
-        padding: 4px 6px;
-        border-radius: 4px;
-        font-size: 10.5px;
-        font-weight: 700;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .card-copy-btn:hover {
-        background: #e2e8f0;
-        color: #0f172a;
-    }
-
     /* トースト通知 */
     #toast {
         position: fixed;
@@ -580,19 +510,21 @@
     <div class="header">
         <div class="header-top">
             <div class="header-left">
-                <a href="../index.html" class="nav-back-btn" data-html2canvas-ignore="true">
-                    <span>←</span><span>月選択</span>
+                <a href="../index.html" class="nav-top-btn">
+                    <span>🏠</span><span>トップへ</span>
                 </a>
+                <div class="month-select-wrap">
+                    <span class="month-icon">📅</span>
+                    <select id="monthSelect" class="month-dropdown" onchange="if(this.value) location.href='../' + this.value + '/calendar.html'">
+                        <option value="202601" selected>2026年 1月</option><option value="202602" >2026年 2月</option><option value="202603" >2026年 3月</option><option value="202604" >2026年 4月</option><option value="202605" >2026年 5月</option><option value="202606" >2026年 6月</option><option value="202607" >2026年 7月</option><option value="202608" >2026年 8月</option><option value="202609" >2026年 9月</option><option value="202610" >2026年 10月</option><option value="202611" >2026年 11月</option>
+                    </select>
+                </div>
                 <h1>プライズ景品 入荷情報 フィギュア</h1>
-                <div class="month">2026年1月</div>
             </div>
-            <button id="downloadBtn" class="download-btn" data-html2canvas-ignore="true">
-                <span>📷</span> 画像で保存
-            </button>
         </div>
         
         <!-- コントロールツールバー -->
-        <div class="header-toolbar" data-html2canvas-ignore="true">
+        <div class="header-toolbar">
             <div class="toolbar-group">
                 <span class="toolbar-label">クリック:</span>
                 <div class="mode-btn-group">
@@ -650,14 +582,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約20cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("Poppin Heart \u30a2\u30a4 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "Poppin Heart \u30a2\u30a4 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -673,14 +597,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全2種、約17cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30c7\u30b9\u30af\u30c8\u30c3\u30d7\u30d5\u30a3\u30ae\u30e5\u30a2 VanilLa", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30c7\u30b9\u30af\u30c8\u30c3\u30d7\u30d5\u30a3\u30ae\u30e5\u30a2 VanilLa", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -698,14 +614,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約9cm(幅14cm)</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30b5\u30f3\u30ea\u30aa SOFVIMATES \u30dd\u30c1\u30e3\u30c3\u30b3 \u30ea\u30e9\u30c3\u30af\u30b9ver \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30b5\u30f3\u30ea\u30aa SOFVIMATES \u30dd\u30c1\u30e3\u30c3\u30b3 \u30ea\u30e9\u30c3\u30af\u30b9ver \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -721,14 +629,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約29cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30d5\u30ea\u30fc\u30ec\u30f3 MAXIMATIC STARK \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30d5\u30ea\u30fc\u30ec\u30f3 MAXIMATIC STARK \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -746,14 +646,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約22cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("To LOVE\u308b \u91d1\u8272\u306e\u95c7 \u30b9\u30c8\u30ea\u30fc\u30c8ver \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "To LOVE\u308b \u91d1\u8272\u306e\u95c7 \u30b9\u30c8\u30ea\u30fc\u30c8ver \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -769,14 +661,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約13cm(横幅16cm)</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30ef\u30f3\u30d4\u30fc\u30b9 BATTLE RECORD COLLECTION \u30e2\u30f3\u30ad\u30fc D \u30eb\u30d5\u30a3 \u30ae\u30a25 SPECIAL ver \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30ef\u30f3\u30d4\u30fc\u30b9 BATTLE RECORD COLLECTION \u30e2\u30f3\u30ad\u30fc D \u30eb\u30d5\u30a3 \u30ae\u30a25 SPECIAL ver \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -794,14 +678,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約11cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30ef\u30f3\u30d4\u30fc\u30b9 SOFVIMATES \u30c1\u30e7\u30d1\u3048\u3082\u3093 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30ef\u30f3\u30d4\u30fc\u30b9 SOFVIMATES \u30c1\u30e7\u30d1\u3048\u3082\u3093 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -817,14 +693,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全2種、約13cm, 25cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30ef\u30f3\u30d4\u30fc\u30b9 \u30e2\u30f3\u30ad\u30fc D \u30eb\u30d5\u30a3 \u30ae\u30a25 vol 1 2 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30ef\u30f3\u30d4\u30fc\u30b9 \u30e2\u30f3\u30ad\u30fc D \u30eb\u30d5\u30a3 \u30ae\u30a25 vol 1 2 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -847,14 +715,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約27cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30aa\u30fc\u30d0\u30fc\u30ed\u30fc\u30c9 BiCute Bunnies \u30d5\u30a3\u30ae\u30e5\u30a2 \u30ca\u30fc\u30d9\u30e9\u30eb", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30aa\u30fc\u30d0\u30fc\u30ed\u30fc\u30c9 BiCute Bunnies \u30d5\u30a3\u30ae\u30e5\u30a2 \u30ca\u30fc\u30d9\u30e9\u30eb", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -876,14 +736,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約18cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30af\u30ec\u30e8\u30f3\u3057\u3093\u3061\u3083\u3093 \u5149\u308bSOFVIMATES\u30e9\u30a4\u30c8 \u91ce\u539f\u3057\u3093\u306e\u3059\u3051 \u304a", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30af\u30ec\u30e8\u30f3\u3057\u3093\u3061\u3083\u3093 \u5149\u308bSOFVIMATES\u30e9\u30a4\u30c8 \u91ce\u539f\u3057\u3093\u306e\u3059\u3051 \u304a", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -899,14 +751,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約16cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30c7\u30a3\u30ba\u30cb\u30fc Zootopia2 \u30b8\u30e5\u30c7\u30a3 \u30db\u30c3\u30d7\u30b9 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30c7\u30a3\u30ba\u30cb\u30fc Zootopia2 \u30b8\u30e5\u30c7\u30a3 \u30db\u30c3\u30d7\u30b9 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -924,14 +768,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約19cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30c7\u30a3\u30ba\u30cb\u30fc Zootopia2 \u30cb\u30c3\u30af \u30ef\u30a4\u30eb\u30c9 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30c7\u30a3\u30ba\u30cb\u30fc Zootopia2 \u30cb\u30c3\u30af \u30ef\u30a4\u30eb\u30c9 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -947,14 +783,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全3種、約4cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30c7\u30a3\u30ba\u30cb\u30fc \u30df\u30cbSOFVIMATES \u30d9\u30a4\u30de\u30c3\u30af\u30b9 \u30b9\u30da\u30b7\u30e3\u30eb\u30b3\u30b9\u30c1\u30e5\u30fc\u30e0 vol 7 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30c7\u30a3\u30ba\u30cb\u30fc \u30df\u30cbSOFVIMATES \u30d9\u30a4\u30de\u30c3\u30af\u30b9 \u30b9\u30da\u30b7\u30e3\u30eb\u30b3\u30b9\u30c1\u30e5\u30fc\u30e0 vol 7 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -972,14 +800,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約13cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30e2\u30b9\u30e9 \u602a\u7363\u5486\u54ee\u6483 \u30b4\u30b8\u30e9 2001 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30e2\u30b9\u30e9 \u602a\u7363\u5486\u54ee\u6483 \u30b4\u30b8\u30e9 2001 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -995,14 +815,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約13cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30c9\u30e9\u30b4\u30f3\u30dc\u30fc\u30eb MATCH MAKERS \u30de\u30a4\u30c6\u30a3\u30de\u30b9\u30af VS\u4eba\u9020\u4eba\u959318\u53f7VS\u30df\u30b9\u30bf\u30fc \u30b5\u30bf\u30f3 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30c9\u30e9\u30b4\u30f3\u30dc\u30fc\u30eb MATCH MAKERS \u30de\u30a4\u30c6\u30a3\u30de\u30b9\u30af VS\u4eba\u9020\u4eba\u959318\u53f7VS\u30df\u30b9\u30bf\u30fc \u30b5\u30bf\u30f3 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -1020,14 +832,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約11cm, 8cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30c9\u30e9\u30b4\u30f3\u30dc\u30fc\u30eb MATCH MAKERS \u4eba\u9020\u4eba\u959318\u53f7VS\u30df\u30b9\u30bf\u30fc \u30b5\u30bf\u30f3 VS\u30de\u30a4\u30c6\u30a3\u30de\u30b9\u30af \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30c9\u30e9\u30b4\u30f3\u30dc\u30fc\u30eb MATCH MAKERS \u4eba\u9020\u4eba\u959318\u53f7VS\u30df\u30b9\u30bf\u30fc \u30b5\u30bf\u30f3 VS\u30de\u30a4\u30c6\u30a3\u30de\u30b9\u30af \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -1043,14 +847,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約18cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("NARUTO KIMIMARO \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "NARUTO KIMIMARO \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -1068,14 +864,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約18cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("HUNTER\u00d7HUNTER \u30cd\u30c6\u30ed \u97f3\u3092\u7f6e\u304d\u53bb\u308a\u306b\u3057\u305f \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "HUNTER\u00d7HUNTER \u30cd\u30c6\u30ed \u97f3\u3092\u7f6e\u304d\u53bb\u308a\u306b\u3057\u305f \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -1091,14 +879,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約19cm(幅41cm)</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30ef\u30f3\u30d4\u30fc\u30b9 Grandista RORONOA ZORO 2 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30ef\u30f3\u30d4\u30fc\u30b9 Grandista RORONOA ZORO 2 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -1116,14 +896,6 @@
                     <span class="size-icon">📏</span>
                     <span>全2種、約17cm, 20cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30ef\u30f3\u30d4\u30fc\u30b9 GRANDLINE JOURNEY SPECIAL \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30ef\u30f3\u30d4\u30fc\u30b9 GRANDLINE JOURNEY SPECIAL \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -1139,14 +911,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約13cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30ef\u30f3\u30d4\u30fc\u30b9 \u30b4\u30e0\u30b4\u30e0\u306e\u5b9f \u30bb\u30f3\u30b5\u30fc\u30e9\u30a4\u30c8", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30ef\u30f3\u30d4\u30fc\u30b9 \u30b4\u30e0\u30b4\u30e0\u306e\u5b9f \u30bb\u30f3\u30b5\u30fc\u30e9\u30a4\u30c8", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -1169,14 +933,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約14cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("Luminasta \u82e5\u6708\u30cb\u30b3 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "Luminasta \u82e5\u6708\u30cb\u30b3 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -1193,14 +949,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約13cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30a6\u30de\u5a18 \u30b3\u30d1\u30ce\u30ea\u30c3\u30ad\u30fc Gaze on Me \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30a6\u30de\u5a18 \u30b3\u30d1\u30ce\u30ea\u30c3\u30ad\u30fc Gaze on Me \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -1216,14 +964,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約14cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30a6\u30de\u5a18 \u30b9\u30de\u30fc\u30c8\u30d5\u30a1\u30eb\u30b3\u30f3 Gaze on Me \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30a6\u30de\u5a18 \u30b9\u30de\u30fc\u30c8\u30d5\u30a1\u30eb\u30b3\u30f3 Gaze on Me \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -1246,14 +986,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約21cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30a6\u30de\u5a18 \u30a2\u30b9\u30c8\u30f3\u30de\u30fc\u30c1\u30e3\u30f3 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30a6\u30de\u5a18 \u30a2\u30b9\u30c8\u30f3\u30de\u30fc\u30c1\u30e3\u30f3 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -1269,14 +1001,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約21cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30a6\u30a3\u30f3\u30bf\u30fc\u30e1\u30e2\u30ea\u30fcver \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30a6\u30a3\u30f3\u30bf\u30fc\u30e1\u30e2\u30ea\u30fcver \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -1294,14 +1018,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約26cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u6dbc\u5bae\u30cf\u30eb\u30d2 BiCute Bunnies \u30d5\u30a3\u30ae\u30e5\u30a2 \u6dbc\u5bae\u30cf\u30eb\u30d2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u6dbc\u5bae\u30cf\u30eb\u30d2 BiCute Bunnies \u30d5\u30a3\u30ae\u30e5\u30a2 \u6dbc\u5bae\u30cf\u30eb\u30d2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -1317,14 +1033,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約14cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u521d\u97f3\u30df\u30af \u306c\u30fc\u3069\u308b\u30b9\u30c8\u30c3\u30d1\u30fc\u30d5\u30a3\u30ae\u30e5\u30a2 \u767d\u8594\u8587", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u521d\u97f3\u30df\u30af \u306c\u30fc\u3069\u308b\u30b9\u30c8\u30c3\u30d1\u30fc\u30d5\u30a3\u30ae\u30e5\u30a2 \u767d\u8594\u8587", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -1347,14 +1055,6 @@
                     <span class="size-icon">📏</span>
                     <span>全2種、約20cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30c9\u30e9\u30af\u30a8 AM \u30d3\u30c3\u30b0\u30d5\u30a3\u30ae\u30e5\u30a2\u3055\u307e\u3088\u3046\u3088\u308d\u3044 \u30ab\u30f3\u30c0\u30bf\u3053\u3076\u3093", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30c9\u30e9\u30af\u30a8 AM \u30d3\u30c3\u30b0\u30d5\u30a3\u30ae\u30e5\u30a2\u3055\u307e\u3088\u3046\u3088\u308d\u3044 \u30ab\u30f3\u30c0\u30bf\u3053\u3076\u3093", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -1370,14 +1070,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全3種、約8cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30df\u30cb\u30c1\u30e5\u30a2 Vol 1 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30df\u30cb\u30c1\u30e5\u30a2 Vol 1 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -1400,14 +1092,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約18cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u9ed2\u5ddd\u3042\u304b\u306d HereDitail\u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u9ed2\u5ddd\u3042\u304b\u306d HereDitail\u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -1429,14 +1113,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約18cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30b1\u30ed\u30ed\u8ecd\u66f9 \u304a\u304a\u304d\u306aSOFVIMATES \u30c9\u30ed\u30ed\u5175\u9577 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30b1\u30ed\u30ed\u8ecd\u66f9 \u304a\u304a\u304d\u306aSOFVIMATES \u30c9\u30ed\u30ed\u5175\u9577 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -1452,14 +1128,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約25cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30c9\u30e9\u30b4\u30f3\u30dc\u30fc\u30eb Grandista \u30b4\u30b8\u30fc\u30bf 2 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30c9\u30e9\u30b4\u30f3\u30dc\u30fc\u30eb Grandista \u30b4\u30b8\u30fc\u30bf 2 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -1477,14 +1145,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約25cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("BLEACH MAXIMATICGRIMMJOW JAEGERJAQUES \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "BLEACH MAXIMATICGRIMMJOW JAEGERJAQUES \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -1500,14 +1160,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約22cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30d2\u30ed\u30a2\u30ab HIMIKO TOGA duffel coat ver \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30d2\u30ed\u30a2\u30ab HIMIKO TOGA duffel coat ver \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -1525,14 +1177,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約12cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30d2\u30ed\u30a2\u30ab \u3061\u3042\u3074\u3053 \u3070\u304f\u3054\u3046\u304b\u3064\u304d \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30d2\u30ed\u30a2\u30ab \u3061\u3042\u3074\u3053 \u3070\u304f\u3054\u3046\u304b\u3064\u304d \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -1548,14 +1192,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約11cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30d2\u30ed\u30a2\u30ab \u3061\u3042\u3074\u3053 \u3068\u3069\u308d\u304d\u3057\u3087\u3046\u3068 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30d2\u30ed\u30a2\u30ab \u3061\u3042\u3074\u3053 \u3068\u3069\u308d\u304d\u3057\u3087\u3046\u3068 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -1573,14 +1209,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約21cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("RANMA \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "RANMA \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -1596,14 +1224,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全5種、約4～6cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30ef\u30f3\u30d4\u30fc\u30b9 \u30ef\u30fc\u30eb\u30c9\u30b3\u30ec\u30af\u30bf\u30d6\u30eb\u30d5\u30a3\u30ae\u30e5\u30a2 \u30b8\u30e5\u30a8\u30ea\u30fc \u30dc\u30cb\u30fc \u30d2\u30b9\u30c8\u30ea\u30fc", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30ef\u30f3\u30d4\u30fc\u30b9 \u30ef\u30fc\u30eb\u30c9\u30b3\u30ec\u30af\u30bf\u30d6\u30eb\u30d5\u30a3\u30ae\u30e5\u30a2 \u30b8\u30e5\u30a8\u30ea\u30fc \u30dc\u30cb\u30fc \u30d2\u30b9\u30c8\u30ea\u30fc", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -1626,14 +1246,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約17cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("BIG\u30b5\u30a4\u30ba\u30bd\u30d5\u30d3 \u30de\u30b9\u30af\u30c7\u30a3\u30b9\u30d7\u30ec\u30a4 \u30ab\u30d6\u30c8", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "BIG\u30b5\u30a4\u30ba\u30bd\u30d5\u30d3 \u30de\u30b9\u30af\u30c7\u30a3\u30b9\u30d7\u30ec\u30a4 \u30ab\u30d6\u30c8", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -1649,14 +1261,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約13cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30ac\u30f3\u30c0\u30e0 N EXTREME\u30ac\u30f3\u30c0\u30e0 \u30a8\u30af\u30b9\u30d7\u30ed\u30fc\u30b8\u30e7\u30f3\u30d8\u30c3\u30c9\u578b\u30b9\u30d4\u30fc\u30ab\u30fc", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30ac\u30f3\u30c0\u30e0 N EXTREME\u30ac\u30f3\u30c0\u30e0 \u30a8\u30af\u30b9\u30d7\u30ed\u30fc\u30b8\u30e7\u30f3\u30d8\u30c3\u30c9\u578b\u30b9\u30d4\u30fc\u30ab\u30fc", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -1674,14 +1278,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約23cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u85ac\u5c4b\u306e\u3072\u3068\u308a\u3054\u3068 \u732b\u732b \u30d5\u30a3\u30ae\u30e5\u30a2 \u5712\u904a\u4f1a", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u85ac\u5c4b\u306e\u3072\u3068\u308a\u3054\u3068 \u732b\u732b \u30d5\u30a3\u30ae\u30e5\u30a2 \u5712\u904a\u4f1a", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -1697,14 +1293,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約15cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30b8\u30e7\u30b8\u30e7 \u30b8\u30e7\u30b8\u30e7\u306e\u5947\u5999\u306a\u5192\u967a\u30b9\u30bf\u30fc\u30c0\u30b9\u30c8\u30af\u30eb\u30bb\u30a4\u30c0\u30fc\u30b9SOFVIMATES \u30a4\u30ae\u30fc vol 4 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30b8\u30e7\u30b8\u30e7 \u30b8\u30e7\u30b8\u30e7\u306e\u5947\u5999\u306a\u5192\u967a\u30b9\u30bf\u30fc\u30c0\u30b9\u30c8\u30af\u30eb\u30bb\u30a4\u30c0\u30fc\u30b9SOFVIMATES \u30a4\u30ae\u30fc vol 4 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -1722,14 +1310,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約13cm(奥行17cm)</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30d5\u30ea\u30fc\u30ec\u30f3 \u30eb\u30fc\u30e0\u30e9\u30a4\u30c8 \u30d5\u30ea\u30fc\u30ec\u30f3", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30d5\u30ea\u30fc\u30ec\u30f3 \u30eb\u30fc\u30e0\u30e9\u30a4\u30c8 \u30d5\u30ea\u30fc\u30ec\u30f3", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -1745,14 +1325,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約14cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30ea\u30e0\u30eb \u30e9\u30f3\u30ac \u30bd\u30d5\u30d3\u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30ea\u30e0\u30eb \u30e9\u30f3\u30ac \u30bd\u30d5\u30d3\u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -1770,14 +1342,6 @@
                     <span class="size-icon">📏</span>
                     <span>全2種、約23cm, 21cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30c9\u30e9\u30b4\u30f3\u30dc\u30fc\u30eb CLEARISE\u5b6b\u609f\u7a7a \u30d9\u30b8\u30fc\u30bf \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30c9\u30e9\u30b4\u30f3\u30dc\u30fc\u30eb CLEARISE\u5b6b\u609f\u7a7a \u30d9\u30b8\u30fc\u30bf \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -1793,14 +1357,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約10cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("NARUTO \u30b5\u30b9\u30b1\u306e\u68fa\u6876 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "NARUTO \u30b5\u30b9\u30b1\u306e\u68fa\u6876 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -1818,14 +1374,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約13cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30ef\u30f3\u30d4\u30fc\u30b9 \u30e1\u30ac\u30ef\u30fc\u30eb\u30c9\u30b3\u30ec\u30af\u30bf\u30d6\u30eb\u30d5\u30a3\u30ae\u30e5\u30a2 \u30d0\u30fc\u30bd\u30ed\u30df\u30e5\u30fc \u304f\u307e", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30ef\u30f3\u30d4\u30fc\u30b9 \u30e1\u30ac\u30ef\u30fc\u30eb\u30c9\u30b3\u30ec\u30af\u30bf\u30d6\u30eb\u30d5\u30a3\u30ae\u30e5\u30a2 \u30d0\u30fc\u30bd\u30ed\u30df\u30e5\u30fc \u304f\u307e", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -1841,14 +1389,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約23cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30ef\u30f3\u30d4\u30fc\u30b9 NICO ROBIN EGGHEAD STYLE \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30ef\u30f3\u30d4\u30fc\u30b9 NICO ROBIN EGGHEAD STYLE \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -1871,14 +1411,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約25cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30ea\u30bc\u30ed BiCute Pure \u30d5\u30a3\u30ae\u30e5\u30a2 \u30ec\u30e0 little wings", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30ea\u30bc\u30ed BiCute Pure \u30d5\u30a3\u30ae\u30e5\u30a2 \u30ec\u30e0 little wings", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -1899,14 +1431,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約15cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u306c\u30fc\u3069\u308b\u30b9\u30c8\u30c3\u30d1\u30fc\u30d5\u30a3\u30ae\u30e5\u30a2 \u30b9\u30eb\u30c8", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u306c\u30fc\u3069\u308b\u30b9\u30c8\u30c3\u30d1\u30fc\u30d5\u30a3\u30ae\u30e5\u30a2 \u30b9\u30eb\u30c8", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -1929,14 +1453,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約14cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u3061\u3087\u3053\u306e\u305b\u30d7\u30ec\u30df\u30a2\u30e0\u30d5\u30a3\u30ae\u30e5\u30a2 \u8d64\u898b\u304b\u308b\u3073", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u3061\u3087\u3053\u306e\u305b\u30d7\u30ec\u30df\u30a2\u30e0\u30d5\u30a3\u30ae\u30e5\u30a2 \u8d64\u898b\u304b\u308b\u3073", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -1952,14 +1468,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約14cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("Luminasta \u5bae\u5c3e\u97f3\u5922 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "Luminasta \u5bae\u5c3e\u97f3\u5922 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -1977,14 +1485,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約15cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u9b3c\u6ec5\u306e\u5203 Xross Link \u30d5\u30a3\u30ae\u30e5\u30a2 \u7149\u7344\u674f\u5bff\u90ce", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u9b3c\u6ec5\u306e\u5203 Xross Link \u30d5\u30a3\u30ae\u30e5\u30a2 \u7149\u7344\u674f\u5bff\u90ce", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -2000,14 +1500,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約13cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u9b3c\u6ec5\u306e\u5203 Xross Link \u30d5\u30a3\u30ae\u30e5\u30a2 \u7317\u7aa9\u5ea7", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u9b3c\u6ec5\u306e\u5203 Xross Link \u30d5\u30a3\u30ae\u30e5\u30a2 \u7317\u7aa9\u5ea7", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -2025,14 +1517,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約13.5cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("Xross Link \u30d5\u30a3\u30ae\u30e5\u30a2 \u6749\u5143\u4f50\u4e00", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "Xross Link \u30d5\u30a3\u30ae\u30e5\u30a2 \u6749\u5143\u4f50\u4e00", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -2048,14 +1532,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約11.5cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("Xross Link \u30d5\u30a3\u30ae\u30e5\u30a2 \u30a2\u30b7 \u30d1", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "Xross Link \u30d5\u30a3\u30ae\u30e5\u30a2 \u30a2\u30b7 \u30d1", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -2073,14 +1549,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約14cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("Xross Link \u30d5\u30a3\u30ae\u30e5\u30a2 \u767d\u77f3\u7531\u7af9", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "Xross Link \u30d5\u30a3\u30ae\u30e5\u30a2 \u767d\u77f3\u7531\u7af9", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -2096,14 +1564,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約20cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("Luminasta \u82f1\u970a\u50ac\u88c5 \u30a2\u30d3\u30b2\u30a4\u30eb \u30a6\u30a3\u30ea\u30a2\u30e0\u30ba \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "Luminasta \u82f1\u970a\u50ac\u88c5 \u30a2\u30d3\u30b2\u30a4\u30eb \u30a6\u30a3\u30ea\u30a2\u30e0\u30ba \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -2121,14 +1581,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約14cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30d2\u30ed\u30a2\u30ab \u50d5\u306e\u30d2\u30fc\u30ed\u30fc\u30a2\u30ab\u30c7\u30df\u30a2 THE MOVIE \u30e6\u30a2\u30cd\u30af\u30b9\u30c8Xross Link \u30d5\u30a3\u30ae\u30e5\u30a2 \u7dd1\u8c37\u51fa\u4e45 Vol 1", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30d2\u30ed\u30a2\u30ab \u50d5\u306e\u30d2\u30fc\u30ed\u30fc\u30a2\u30ab\u30c7\u30df\u30a2 THE MOVIE \u30e6\u30a2\u30cd\u30af\u30b9\u30c8Xross Link \u30d5\u30a3\u30ae\u30e5\u30a2 \u7dd1\u8c37\u51fa\u4e45 Vol 1", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -2144,14 +1596,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約15cm(奥行19cm)</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30ef\u30f3\u30d4\u30fc\u30b9 BATTLE RECORD COLLECTION JEWELRY BONNEY THE MOST FREE FUTURE \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30ef\u30f3\u30d4\u30fc\u30b9 BATTLE RECORD COLLECTION JEWELRY BONNEY THE MOST FREE FUTURE \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -2174,14 +1618,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約25cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("BiCute Dark \u30d5\u30a3\u30ae\u30e5\u30a2 \u4e2d\u91ce\u56db\u8449", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "BiCute Dark \u30d5\u30a3\u30ae\u30e5\u30a2 \u4e2d\u91ce\u56db\u8449", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -2197,14 +1633,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約14cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u306c\u30fc\u3069\u308b\u30b9\u30c8\u30c3\u30d1\u30fc\u30d5\u30a3\u30ae\u30e5\u30a2 \u30a2\u30a4\u30ea", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u306c\u30fc\u3069\u308b\u30b9\u30c8\u30c3\u30d1\u30fc\u30d5\u30a3\u30ae\u30e5\u30a2 \u30a2\u30a4\u30ea", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -2222,14 +1650,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約19cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30d5\u30ea\u30fc\u30ec\u30f3 \u30d2\u30f3\u30e1\u30eb \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30d5\u30ea\u30fc\u30ec\u30f3 \u30d2\u30f3\u30e1\u30eb \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -2245,14 +1665,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約23cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30c7\u30fc\u30c8\u30fb\u30a2\u30fb\u30e9\u30a4\u30d6 BiCute Dark \u30d5\u30a3\u30ae\u30e5\u30a2 \u6642\u5d0e\u72c2\u4e09", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30c7\u30fc\u30c8\u30fb\u30a2\u30fb\u30e9\u30a4\u30d6 BiCute Dark \u30d5\u30a3\u30ae\u30e5\u30a2 \u6642\u5d0e\u72c2\u4e09", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -2275,14 +1687,6 @@
                     <span class="size-icon">📏</span>
                     <span>全2種、約18cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30c9\u30e9\u30af\u30a8 AM \u56de\u8ee2\u3067\u304d\u308b\u30b9\u30e9\u30a4\u30e0\u30bf\u30ef\u30fc\u30b1\u30fc\u30b9\u30b9\u30e9\u30a4\u30e0\u30bf\u30ef\u30fc \u30c1\u30e7\u30b3\u30bf\u30ef\u30fc \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30c9\u30e9\u30af\u30a8 AM \u56de\u8ee2\u3067\u304d\u308b\u30b9\u30e9\u30a4\u30e0\u30bf\u30ef\u30fc\u30b1\u30fc\u30b9\u30b9\u30e9\u30a4\u30e0\u30bf\u30ef\u30fc \u30c1\u30e7\u30b3\u30bf\u30ef\u30fc \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -2304,14 +1708,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約13cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30aa\u30fc\u30d0\u30fc\u30ed\u30fc\u30c9 \u30d5\u30a3\u30ae\u30e5\u30a2 \u30a2\u30eb\u30d9\u30c9 \u725b\u67c4\u6c34\u7740ver Renewal", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30aa\u30fc\u30d0\u30fc\u30ed\u30fc\u30c9 \u30d5\u30a3\u30ae\u30e5\u30a2 \u30a2\u30eb\u30d9\u30c9 \u725b\u67c4\u6c34\u7740ver Renewal", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -2327,14 +1723,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約13cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30aa\u30fc\u30d0\u30fc\u30ed\u30fc\u30c9 \u30d5\u30a3\u30ae\u30e5\u30a2 \u30a2\u30eb\u30d9\u30c9 \u725b\u67c4\u6c34\u7740ver Renewal\u30bf\u30a4\u30af\u30ec\u9650\u5b9a", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30aa\u30fc\u30d0\u30fc\u30ed\u30fc\u30c9 \u30d5\u30a3\u30ae\u30e5\u30a2 \u30a2\u30eb\u30d9\u30c9 \u725b\u67c4\u6c34\u7740ver Renewal\u30bf\u30a4\u30af\u30ec\u9650\u5b9a", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -2352,14 +1740,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約13cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30d5\u30a3\u30ae\u30e5\u30a2 \u4e2d\u91ce\u4e8c\u4e43 \u63cf\u304d\u4e0b\u308d\u3057Cat room wear ver", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30d5\u30a3\u30ae\u30e5\u30a2 \u4e2d\u91ce\u4e8c\u4e43 \u63cf\u304d\u4e0b\u308d\u3057Cat room wear ver", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -2375,14 +1755,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約13cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30d5\u30a3\u30ae\u30e5\u30a2 \u4e2d\u91ce\u4e8c\u4e43 \u63cf\u304d\u4e0b\u308d\u3057Cat room wear ver \u30bf\u30a4\u30af\u30ec\u9650\u5b9a", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30d5\u30a3\u30ae\u30e5\u30a2 \u4e2d\u91ce\u4e8c\u4e43 \u63cf\u304d\u4e0b\u308d\u3057Cat room wear ver \u30bf\u30a4\u30af\u30ec\u9650\u5b9a", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -2400,14 +1772,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約18cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30d5\u30ea\u30fc\u30ec\u30f3 Coreful \u30d5\u30a3\u30ae\u30e5\u30a2 \u65ad\u982d\u53f0\u306e\u30a2\u30a6\u30e9", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30d5\u30ea\u30fc\u30ec\u30f3 Coreful \u30d5\u30a3\u30ae\u30e5\u30a2 \u65ad\u982d\u53f0\u306e\u30a2\u30a6\u30e9", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -2423,14 +1787,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約18cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30d5\u30ea\u30fc\u30ec\u30f3 Coreful \u30d5\u30a3\u30ae\u30e5\u30a2 \u65ad\u982d\u53f0\u306e\u30a2\u30a6\u30e9\u30bf\u30a4\u30af\u30ec\u9650\u5b9a", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30d5\u30ea\u30fc\u30ec\u30f3 Coreful \u30d5\u30a3\u30ae\u30e5\u30a2 \u65ad\u982d\u53f0\u306e\u30a2\u30a6\u30e9\u30bf\u30a4\u30af\u30ec\u9650\u5b9a", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -2448,14 +1804,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約13cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("To LOVE\u308b \u30d5\u30a3\u30ae\u30e5\u30a2 \u30ca\u30ca \u30c1\u30e3\u30a4\u30ca\u30c9\u30ec\u30b9ver", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "To LOVE\u308b \u30d5\u30a3\u30ae\u30e5\u30a2 \u30ca\u30ca \u30c1\u30e3\u30a4\u30ca\u30c9\u30ec\u30b9ver", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -2472,14 +1820,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約18cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u521d\u97f3\u30df\u30af Wonderland \u30d5\u30a3\u30ae\u30e5\u30a2 \u9577\u9774\u3092\u5c65\u3044\u305f\u732b", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u521d\u97f3\u30df\u30af Wonderland \u30d5\u30a3\u30ae\u30e5\u30a2 \u9577\u9774\u3092\u5c65\u3044\u305f\u732b", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -2495,14 +1835,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約18cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u521d\u97f3\u30df\u30af Wonderland \u30d5\u30a3\u30ae\u30e5\u30a2 \u9577\u9774\u3092\u5c65\u3044\u305f\u732b\u30bf\u30a4\u30af\u30ec\u9650\u5b9a", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u521d\u97f3\u30df\u30af Wonderland \u30d5\u30a3\u30ae\u30e5\u30a2 \u9577\u9774\u3092\u5c65\u3044\u305f\u732b\u30bf\u30a4\u30af\u30ec\u9650\u5b9a", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -2525,14 +1857,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約19cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30a8\u30f3\u30b8\u30f3 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30a8\u30f3\u30b8\u30f3 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -2548,14 +1872,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約16cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30ea\u30e8\u30a6 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30ea\u30e8\u30a6 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -2573,14 +1889,6 @@
                     <span class="size-icon">📏</span>
                     <span>全4種、約18cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30c7\u30b9\u30af\u30c8\u30c3\u30d7\u30d5\u30a3\u30ae\u30e5\u30a2 vol 1", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30c7\u30b9\u30af\u30c8\u30c3\u30d7\u30d5\u30a3\u30ae\u30e5\u30a2 vol 1", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -2596,14 +1904,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約28cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u6642 \u30dc\u30bd\u30c3\u3068\u30ed\u30b7\u30a2\u8a9e\u3067\u30c7\u30ec\u308b\u96a3\u306e\u30a2\u30fc\u30ea\u30e3\u3055\u3093 \u30a2\u30fc\u30ea\u30e3 \u30d0\u30cb\u30fcver \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u6642 \u30dc\u30bd\u30c3\u3068\u30ed\u30b7\u30a2\u8a9e\u3067\u30c7\u30ec\u308b\u96a3\u306e\u30a2\u30fc\u30ea\u30e3\u3055\u3093 \u30a2\u30fc\u30ea\u30e3 \u30d0\u30cb\u30fcver \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -2626,14 +1926,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約15cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30af\u30ec\u30e8\u30f3\u3057\u3093\u3061\u3083\u3093 \u30d3\u30c3\u30b0\u30d5\u30a3\u30ae\u30e5\u30a2 \u91ce\u539f\u3057\u3093\u306e\u3059\u3051 \u304a\u304a\u3063", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30af\u30ec\u30e8\u30f3\u3057\u3093\u3061\u3083\u3093 \u30d3\u30c3\u30b0\u30d5\u30a3\u30ae\u30e5\u30a2 \u91ce\u539f\u3057\u3093\u306e\u3059\u3051 \u304a\u304a\u3063", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -2649,14 +1941,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全2種、約9cm, 7cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30b5\u30f3\u30ea\u30aa Fluffy Puffy \u30cf\u30ed\u30fc\u30ad\u30c6\u30a3 \u30b7\u30ca\u30e2\u30ed\u30fc\u30eb \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30b5\u30f3\u30ea\u30aa Fluffy Puffy \u30cf\u30ed\u30fc\u30ad\u30c6\u30a3 \u30b7\u30ca\u30e2\u30ed\u30fc\u30eb \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -2674,14 +1958,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約24cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u546a\u8853\u5efb\u6226 Grandista FUSHIGURO MEGUMI \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u546a\u8853\u5efb\u6226 Grandista FUSHIGURO MEGUMI \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -2697,14 +1973,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約19cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30c1\u30a7\u30f3\u30bd\u30fc\u30de\u30f3 BOMB \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30c1\u30a7\u30f3\u30bd\u30fc\u30de\u30f3 BOMB \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -2722,14 +1990,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約22cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("LEVEL5 Mental Out \u98df\u8702\u64cd\u7948 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "LEVEL5 Mental Out \u98df\u8702\u64cd\u7948 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -2745,14 +2005,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約11cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("NARUTO GAARA 2 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "NARUTO GAARA 2 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -2770,14 +2022,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約14cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u306b\u3083\u3093\u3053\u8ecd\u56e3\u51fa\u9663\u30d5\u30a3\u30ae\u30e5\u30a2 \u30cd\u30b3\u30e0\u30fc\u30c8", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u306b\u3083\u3093\u3053\u8ecd\u56e3\u51fa\u9663\u30d5\u30a3\u30ae\u30e5\u30a2 \u30cd\u30b3\u30e0\u30fc\u30c8", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -2793,14 +2037,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約25cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("HUNTER\u00d7HUNTER Grandista \u30ad\u30eb\u30a2 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "HUNTER\u00d7HUNTER Grandista \u30ad\u30eb\u30a2 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -2818,14 +2054,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約13cm(幅17cm)</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u3072\u304b\u308b \u3077\u3061\u304d\u3085\u3042\u307d\u308b\u3093\u30e9\u30a4\u30c8", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u3072\u304b\u308b \u3077\u3061\u304d\u3085\u3042\u307d\u308b\u3093\u30e9\u30a4\u30c8", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -2842,14 +2070,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約22cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30d2\u30ed\u30a2\u30ab MAXIMATIC\u7dd1\u8c37\u51fa\u4e45 2 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30d2\u30ed\u30a2\u30ab MAXIMATIC\u7dd1\u8c37\u51fa\u4e45 2 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -2865,14 +2085,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約12cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30ef\u30f3\u30d4\u30fc\u30b9 \u30ef\u30fc\u30eb\u30c9\u30b3\u30ec\u30af\u30bf\u30d6\u30eb\u30d5\u30a3\u30ae\u30e5\u30a2 SPECIAL\u30e2\u30f3\u30ad\u30fc D \u30eb\u30d5\u30a3 \u30ae\u30a25 \u30b4\u30e0\u30b4\u30e0\u306e\u767d\u3044\u9283\u4e71\u6253", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30ef\u30f3\u30d4\u30fc\u30b9 \u30ef\u30fc\u30eb\u30c9\u30b3\u30ec\u30af\u30bf\u30d6\u30eb\u30d5\u30a3\u30ae\u30e5\u30a2 SPECIAL\u30e2\u30f3\u30ad\u30fc D \u30eb\u30d5\u30a3 \u30ae\u30a25 \u30b4\u30e0\u30b4\u30e0\u306e\u767d\u3044\u9283\u4e71\u6253", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -2895,14 +2107,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約22cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30eb\u30d1 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30eb\u30d1 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -2918,14 +2122,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約20cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u6d77\u8001\u585a\u667a \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u6d77\u8001\u585a\u667a \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -2943,14 +2139,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約22cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("Luminasta \u30bb\u30d0\u30b9\u30c1\u30e3\u30f3 \u30df\u30ab\u30a8\u30ea\u30b9 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "Luminasta \u30bb\u30d0\u30b9\u30c1\u30e3\u30f3 \u30df\u30ab\u30a8\u30ea\u30b9 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -2966,14 +2154,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約20cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("Luminasta \u30b7\u30a8\u30eb \u30d5\u30a1\u30f3\u30c8\u30e0\u30cf\u30a4\u30f4 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "Luminasta \u30b7\u30a8\u30eb \u30d5\u30a1\u30f3\u30c8\u30e0\u30cf\u30a4\u30f4 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -2991,14 +2171,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約18cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30c1\u30a7\u30f3\u30bd\u30fc\u30de\u30f3 \u30d7\u30ec\u30df\u30a2\u30e0\u30bd\u30d5\u30d3\u8caf\u91d1\u7bb1 \u30dd\u30c1\u30bf", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30c1\u30a7\u30f3\u30bd\u30fc\u30de\u30f3 \u30d7\u30ec\u30df\u30a2\u30e0\u30bd\u30d5\u30d3\u8caf\u91d1\u7bb1 \u30dd\u30c1\u30bf", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -3014,14 +2186,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約15cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30cf\u30a4\u30d7\u30ec\u30df\u30a2\u30e0\u30d5\u30a3\u30ae\u30e5\u30a2 \u65e5\u5411\u7fd4\u967d", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30cf\u30a4\u30d7\u30ec\u30df\u30a2\u30e0\u30d5\u30a3\u30ae\u30e5\u30a2 \u65e5\u5411\u7fd4\u967d", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -3039,14 +2203,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約16cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30cf\u30a4\u30d7\u30ec\u30df\u30a2\u30e0\u30d5\u30a3\u30ae\u30e5\u30a2 \u5f71\u5c71\u98db\u96c4", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30cf\u30a4\u30d7\u30ec\u30df\u30a2\u30e0\u30d5\u30a3\u30ae\u30e5\u30a2 \u5f71\u5c71\u98db\u96c4", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -3062,14 +2218,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約12cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30d6\u30eb\u30a2\u30ab \u30db\u30b7\u30ce \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30d6\u30eb\u30a2\u30ab \u30db\u30b7\u30ce \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -3087,14 +2235,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約12cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30d6\u30eb\u30a2\u30ab \u30bb\u30ea\u30ab \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30d6\u30eb\u30a2\u30ab \u30bb\u30ea\u30ab \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -3110,14 +2250,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約12cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30d2\u30ed\u30a2\u30ab \u50d5\u306e\u30d2\u30fc\u30ed\u30fc\u30a2\u30ab\u30c7\u30df\u30a2 THE MOVIE \u30e6\u30a2\u30cd\u30af\u30b9\u30c8Xross Link \u30d5\u30a3\u30ae\u30e5\u30a2 \u30b8\u30e5\u30ea\u30aa \u30ac\u30f3\u30c7\u30a3\u30fc\u30cb", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30d2\u30ed\u30a2\u30ab \u50d5\u306e\u30d2\u30fc\u30ed\u30fc\u30a2\u30ab\u30c7\u30df\u30a2 THE MOVIE \u30e6\u30a2\u30cd\u30af\u30b9\u30c8Xross Link \u30d5\u30a3\u30ae\u30e5\u30a2 \u30b8\u30e5\u30ea\u30aa \u30ac\u30f3\u30c7\u30a3\u30fc\u30cb", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -3135,14 +2267,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約20cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("ACT CUT \u30d7\u30ec\u30df\u30a2\u30e0\u30d5\u30a3\u30ae\u30e5\u30a2 \u30d6\u30e9\u30c3\u30af\u30d1\u30f3\u30b5\u30fc", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "ACT CUT \u30d7\u30ec\u30df\u30a2\u30e0\u30d5\u30a3\u30ae\u30e5\u30a2 \u30d6\u30e9\u30c3\u30af\u30d1\u30f3\u30b5\u30fc", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -3159,14 +2283,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約10cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u3061\u3087\u3053\u306e\u305b\u30d7\u30ec\u30df\u30a2\u30e0\u30d5\u30a3\u30ae\u30e5\u30a2 \u30eb\u30ea", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u3061\u3087\u3053\u306e\u305b\u30d7\u30ec\u30df\u30a2\u30e0\u30d5\u30a3\u30ae\u30e5\u30a2 \u30eb\u30ea", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -3182,14 +2298,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約15.5cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u3061\u3087\u3053\u306e\u305b\u30d7\u30ec\u30df\u30a2\u30e0\u30d5\u30a3\u30ae\u30e5\u30a2 \u30ca\u30ae", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u3061\u3087\u3053\u306e\u305b\u30d7\u30ec\u30df\u30a2\u30e0\u30d5\u30a3\u30ae\u30e5\u30a2 \u30ca\u30ae", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -3212,14 +2320,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約10cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30ab\u30e0\u30ab\u30e0\u30ad\u30e3\u30c3\u30c8\u30bd\u30fc\u30e9\u30fc\u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30ab\u30e0\u30ab\u30e0\u30ad\u30e3\u30c3\u30c8\u30bd\u30fc\u30e9\u30fc\u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -3241,14 +2341,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約19cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("Vivit \u30d5\u30a3\u30ae\u30e5\u30a2 \u30de\u30b8\u30a2\u30d9\u30fc\u30bcVer 1 5", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "Vivit \u30d5\u30a3\u30ae\u30e5\u30a2 \u30de\u30b8\u30a2\u30d9\u30fc\u30bcVer 1 5", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -3264,14 +2356,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約18cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("Vivit \u30d5\u30a3\u30ae\u30e5\u30a2 \u30ec\u30aa\u30d1\u30eb\u30c8", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "Vivit \u30d5\u30a3\u30ae\u30e5\u30a2 \u30ec\u30aa\u30d1\u30eb\u30c8", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -3294,14 +2378,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約18cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("Coreful \u30d5\u30a3\u30ae\u30e5\u30a2 \u4e95\u82b9\u4ec1\u83dc \u4e0d\u767b\u6821T\u30b7\u30e3\u30c4ver", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "Coreful \u30d5\u30a3\u30ae\u30e5\u30a2 \u4e95\u82b9\u4ec1\u83dc \u4e0d\u767b\u6821T\u30b7\u30e3\u30c4ver", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -3318,14 +2394,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約18cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("Coreful \u30d5\u30a3\u30ae\u30e5\u30a2 \u4e95\u82b9\u4ec1\u83dc \u4e0d\u767b\u6821T\u30b7\u30e3\u30c4ver \u30bf\u30a4\u30af\u30ec\u9650\u5b9a", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "Coreful \u30d5\u30a3\u30ae\u30e5\u30a2 \u4e95\u82b9\u4ec1\u83dc \u4e0d\u767b\u6821T\u30b7\u30e3\u30c4ver \u30bf\u30a4\u30af\u30ec\u9650\u5b9a", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -3341,14 +2409,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全2種、約11cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30c9\u30e9\u30af\u30a8 AM \u30b9\u30e9\u30a4\u30e0\u30ca\u30a4\u30c8\u30e1\u30b8\u30e3\u30fc \u30e1\u30bf\u30eb\u30e9\u30a4\u30c0\u30fc\u30e1\u30b8\u30e3\u30fc \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30c9\u30e9\u30af\u30a8 AM \u30b9\u30e9\u30a4\u30e0\u30ca\u30a4\u30c8\u30e1\u30b8\u30e3\u30fc \u30e1\u30bf\u30eb\u30e9\u30a4\u30c0\u30fc\u30e1\u30b8\u30e3\u30fc \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -3371,14 +2431,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約17cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u306c\u30fc\u3069\u308b\u30b9\u30c8\u30c3\u30d1\u30fc\u30d5\u30a3\u30ae\u30e5\u30a2 \u7d2b\u96f2\u5bfa\u3053\u3068\u306e", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u306c\u30fc\u3069\u308b\u30b9\u30c8\u30c3\u30d1\u30fc\u30d5\u30a3\u30ae\u30e5\u30a2 \u7d2b\u96f2\u5bfa\u3053\u3068\u306e", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -3394,14 +2446,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約10cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30c0\u30f3\u30c0\u30c0\u30f3 \u306c\u30fc\u3069\u308b\u30b9\u30c8\u30c3\u30d1\u30fc\u30d5\u30a3\u30ae\u30e5\u30a2 \u30bf\u30fc\u30dc\u30d0\u30d0\u30a2 \u62db\u304d\u732b", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30c0\u30f3\u30c0\u30c0\u30f3 \u306c\u30fc\u3069\u308b\u30b9\u30c8\u30c3\u30d1\u30fc\u30d5\u30a3\u30ae\u30e5\u30a2 \u30bf\u30fc\u30dc\u30d0\u30d0\u30a2 \u62db\u304d\u732b", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -3424,14 +2468,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約15cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30b8\u30a7\u30c3\u30c8 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30b8\u30a7\u30c3\u30c8 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -3447,14 +2483,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約16cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30bb\u30fc\u30b8 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30bb\u30fc\u30b8 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -3472,14 +2500,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約11cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u304a\u3059\u308f\u308a\u30d5\u30a3\u30ae\u30e5\u30a2 \u30aa\u30e2\u30ea", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u304a\u3059\u308f\u308a\u30d5\u30a3\u30ae\u30e5\u30a2 \u30aa\u30e2\u30ea", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -3495,14 +2515,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約11cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u304a\u3059\u308f\u308a\u30d5\u30a3\u30ae\u30e5\u30a2 \u30d0\u30b8\u30eb", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u304a\u3059\u308f\u308a\u30d5\u30a3\u30ae\u30e5\u30a2 \u30d0\u30b8\u30eb", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -3520,14 +2532,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約24cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u9b3c\u6ec5\u306e\u5203 Grandista TOMIOKA GIYU \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u9b3c\u6ec5\u306e\u5203 Grandista TOMIOKA GIYU \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -3543,14 +2547,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約26cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("Grandista \u9a30 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "Grandista \u9a30 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -3568,14 +2564,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約24cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u5742\u7530\u9280\u6642 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u5742\u7530\u9280\u6642 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -3591,14 +2579,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約12cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30ad\u30f3\u8089\u30de\u30f3 \u30b5\u30a6\u30ca\u30d5\u30a3\u30ae\u30e5\u30a2 \u30ad\u30f3\u8089\u30de\u30f3", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30ad\u30f3\u8089\u30de\u30f3 \u30b5\u30a6\u30ca\u30d5\u30a3\u30ae\u30e5\u30a2 \u30ad\u30f3\u8089\u30de\u30f3", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -3616,14 +2596,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約12cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30ad\u30f3\u8089\u30de\u30f3 \u30b5\u30a6\u30ca\u30d5\u30a3\u30ae\u30e5\u30a2 \u30c6\u30ea\u30fc\u30de\u30f3", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30ad\u30f3\u8089\u30de\u30f3 \u30b5\u30a6\u30ca\u30d5\u30a3\u30ae\u30e5\u30a2 \u30c6\u30ea\u30fc\u30de\u30f3", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -3639,14 +2611,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約20cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u546a\u8853\u5efb\u6226 MAXIMATIC \u864e\u6756\u60a0\u4ec1 \u6b7b\u6ec5\u56de\u6e38 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u546a\u8853\u5efb\u6226 MAXIMATIC \u864e\u6756\u60a0\u4ec1 \u6b7b\u6ec5\u56de\u6e38 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -3664,14 +2628,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約21cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u546a\u8853\u5efb\u6226 MAXIMATIC NAOYA ZEN IN \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u546a\u8853\u5efb\u6226 MAXIMATIC NAOYA ZEN IN \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -3687,14 +2643,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約23cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30b8\u30e7\u30b8\u30e7 \u6771\u65b9\u4ed7\u52a9 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30b8\u30e7\u30b8\u30e7 \u6771\u65b9\u4ed7\u52a9 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -3712,14 +2660,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約22cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30b8\u30e7\u30b8\u30e7 \u5409\u826f\u5409\u5f71 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30b8\u30e7\u30b8\u30e7 \u5409\u826f\u5409\u5f71 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -3735,14 +2675,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約20cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30d5\u30ea\u30fc\u30ec\u30f3 MAXIMATIC FRIEREN \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30d5\u30ea\u30fc\u30ec\u30f3 MAXIMATIC FRIEREN \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -3760,14 +2692,6 @@
                     <span class="size-icon">📏</span>
                     <span>全3種、約5～8cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30c9\u30e9\u30b4\u30f3\u30dc\u30fc\u30eb \u30d5\u30a3\u30ae\u30e5\u30a2\u30ad\u30fc\u30db\u30eb\u30c0\u30fcvol 1", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30c9\u30e9\u30b4\u30f3\u30dc\u30fc\u30eb \u30d5\u30a3\u30ae\u30e5\u30a2\u30ad\u30fc\u30db\u30eb\u30c0\u30fcvol 1", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -3783,14 +2707,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全3種、約5～6cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30c9\u30e9\u30b4\u30f3\u30dc\u30fc\u30eb \u30d5\u30a3\u30ae\u30e5\u30a2\u30ad\u30fc\u30db\u30eb\u30c0\u30fcvol 2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30c9\u30e9\u30b4\u30f3\u30dc\u30fc\u30eb \u30d5\u30a3\u30ae\u30e5\u30a2\u30ad\u30fc\u30db\u30eb\u30c0\u30fcvol 2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -3813,14 +2729,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約21cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("Sweet moment \u59eb\u5d0e\u8389\u6ce2 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "Sweet moment \u59eb\u5d0e\u8389\u6ce2 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -3836,14 +2744,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約22cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u9b3c\u6ec5\u306e\u5203 KANAO TSUYURI \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u9b3c\u6ec5\u306e\u5203 KANAO TSUYURI \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -3861,14 +2761,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約28cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30c0\u30f3\u30c0\u30c0\u30f3 Grandista OKARUN TRANSFORMED \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30c0\u30f3\u30c0\u30c0\u30f3 Grandista OKARUN TRANSFORMED \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -3884,14 +2776,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全2種、約15cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("NARUTO UCHIHA SASUKE \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "NARUTO UCHIHA SASUKE \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -3914,14 +2798,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約16cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u7345\u5802\u5149 HereDitail\u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u7345\u5802\u5149 HereDitail\u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -3943,14 +2819,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約14cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u3061\u3087\u3053\u306e\u305b\u30d7\u30ec\u30df\u30a2\u30e0\u30d5\u30a3\u30ae\u30e5\u30a2 \u6e1a\u30ab\u30f2\u30eb", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u3061\u3087\u3053\u306e\u305b\u30d7\u30ec\u30df\u30a2\u30e0\u30d5\u30a3\u30ae\u30e5\u30a2 \u6e1a\u30ab\u30f2\u30eb", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -3966,14 +2834,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約22cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u546a\u8853\u5efb\u6226 \u4e59\u9aa8\u6182\u592a \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u546a\u8853\u5efb\u6226 \u4e59\u9aa8\u6182\u592a \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -3991,14 +2851,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約14cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30d5\u30ea\u30fc\u30ec\u30f3 \u30d5\u30ea\u30fc\u30ec\u30f3 \u96ea\u904a\u3073 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30d5\u30ea\u30fc\u30ec\u30f3 \u30d5\u30ea\u30fc\u30ec\u30f3 \u96ea\u904a\u3073 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -4014,14 +2866,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約19cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30d5\u30ea\u30fc\u30ec\u30f3 \u30d5\u30a7\u30eb\u30f3 \u96ea\u904a\u3073 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30d5\u30ea\u30fc\u30ec\u30f3 \u30d5\u30a7\u30eb\u30f3 \u96ea\u904a\u3073 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -4039,14 +2883,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約18.5cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30d5\u30ea\u30fc\u30ec\u30f3 \u30b7\u30e5\u30bf\u30eb\u30af \u96ea\u904a\u3073 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30d5\u30ea\u30fc\u30ec\u30f3 \u30b7\u30e5\u30bf\u30eb\u30af \u96ea\u904a\u3073 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -4062,14 +2898,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約18cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30c1\u30a7\u30f3\u30bd\u30fc\u30de\u30f3 \u30cf\u30a4\u30d7\u30ec\u30df\u30a2\u30e0\u30d5\u30a3\u30ae\u30e5\u30a2 \u30ec\u30bc", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30c1\u30a7\u30f3\u30bd\u30fc\u30de\u30f3 \u30cf\u30a4\u30d7\u30ec\u30df\u30a2\u30e0\u30d5\u30a3\u30ae\u30e5\u30a2 \u30ec\u30bc", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -4087,14 +2915,6 @@
                     <span class="size-icon">📏</span>
                     <span>全6種、約12cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30d1\u30ef\u30d7\u30ed\u304f\u3093 \u30d7\u30e9\u30a4\u30ba\u30a2\u30af\u30b7\u30e7\u30f3\u30d5\u30a3\u30ae\u30e5\u30a2\u30bb\u30f3\u30c8\u30e9\u30eb \u30ea\u30fc\u30b0", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30d1\u30ef\u30d7\u30ed\u304f\u3093 \u30d7\u30e9\u30a4\u30ba\u30a2\u30af\u30b7\u30e7\u30f3\u30d5\u30a3\u30ae\u30e5\u30a2\u30bb\u30f3\u30c8\u30e9\u30eb \u30ea\u30fc\u30b0", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -4110,14 +2930,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全6種、約12cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30d1\u30ef\u30d7\u30ed\u304f\u3093 \u30d7\u30e9\u30a4\u30ba\u30a2\u30af\u30b7\u30e7\u30f3\u30d5\u30a3\u30ae\u30e5\u30a2\u30d1\u30b7\u30d5\u30a3\u30c3\u30af \u30ea\u30fc\u30b0", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30d1\u30ef\u30d7\u30ed\u304f\u3093 \u30d7\u30e9\u30a4\u30ba\u30a2\u30af\u30b7\u30e7\u30f3\u30d5\u30a3\u30ae\u30e5\u30a2\u30d1\u30b7\u30d5\u30a3\u30c3\u30af \u30ea\u30fc\u30b0", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -4140,14 +2952,6 @@
                     <span class="size-icon">📏</span>
                     <span>全3種、約12cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30db\u30ed\u30e9\u30a4\u30d6 \u3072\u3063\u304b\u3051\u30d5\u30a3\u30ae\u30e5\u30a2Vol 9", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30db\u30ed\u30e9\u30a4\u30d6 \u3072\u3063\u304b\u3051\u30d5\u30a3\u30ae\u30e5\u30a2Vol 9", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -4169,14 +2973,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約27cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30c1\u30a7\u30f3\u30bd\u30fc\u30de\u30f3 BiCute Bunnies \u30d5\u30a3\u30ae\u30e5\u30a2 \u30ec\u30bc", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30c1\u30a7\u30f3\u30bd\u30fc\u30de\u30f3 BiCute Bunnies \u30d5\u30a3\u30ae\u30e5\u30a2 \u30ec\u30bc", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -4192,14 +2988,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約19cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("To LOVE\u308b \u91d1\u8272\u306e\u95c7 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "To LOVE\u308b \u91d1\u8272\u306e\u95c7 \u30d5\u30a3\u30ae\u30e5\u30a2", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -4222,14 +3010,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約13cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30d5\u30a3\u30ae\u30e5\u30a2 \u5fa1\u5742\u7f8e\u7434 \u30c1\u30e3\u30a4\u30ca\u30c9\u30ec\u30b9ver", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30d5\u30a3\u30ae\u30e5\u30a2 \u5fa1\u5742\u7f8e\u7434 \u30c1\u30e3\u30a4\u30ca\u30c9\u30ec\u30b9ver", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -4245,14 +3025,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約13cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30d5\u30a3\u30ae\u30e5\u30a2 \u5fa1\u5742\u7f8e\u7434 \u30c1\u30e3\u30a4\u30ca\u30c9\u30ec\u30b9ver \u30bf\u30a4\u30af\u30ec\u9650\u5b9a", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30d5\u30a3\u30ae\u30e5\u30a2 \u5fa1\u5742\u7f8e\u7434 \u30c1\u30e3\u30a4\u30ca\u30c9\u30ec\u30b9ver \u30bf\u30a4\u30af\u30ec\u9650\u5b9a", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -4270,14 +3042,6 @@
                     <span class="size-icon">📏</span>
                     <span>全2種、約6cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u30c9\u30e9\u30af\u30a8 AM \u30d3\u30c3\u30b0\u30af\u30ea\u30a2\u30d5\u30a3\u30ae\u30e5\u30a2\u30b9\u30e9\u30a4\u30e0\u30b3\u30ed\u30cd \u30b3\u30ed\u30cd\u30db\u30ef\u30a4\u30c8", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u30c9\u30e9\u30af\u30a8 AM \u30d3\u30c3\u30b0\u30af\u30ea\u30a2\u30d5\u30a3\u30ae\u30e5\u30a2\u30b9\u30e9\u30a4\u30e0\u30b3\u30ed\u30cd \u30b3\u30ed\u30cd\u30db\u30ef\u30a4\u30c8", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -4293,14 +3057,6 @@
                 <div class="item-size">
                     <span class="size-icon">📏</span>
                     <span>全1種、約10cm</span>
-                </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("To LOVE\u308b \u30d5\u30a3\u30ae\u30e5\u30a2 \u7d50\u57ce\u7f8e\u67d1", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "To LOVE\u308b \u30d5\u30a3\u30ae\u30e5\u30a2 \u7d50\u57ce\u7f8e\u67d1", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -4323,14 +3079,6 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約18cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u521d\u97f3\u30df\u30af Fashion \u30d5\u30a3\u30ae\u30e5\u30a2 Outdoor", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u521d\u97f3\u30df\u30af Fashion \u30d5\u30a3\u30ae\u30e5\u30a2 Outdoor", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
@@ -4347,21 +3095,13 @@
                     <span class="size-icon">📏</span>
                     <span>全1種、約18cm</span>
                 </div>
-                <div class="card-actions" data-html2canvas-ignore="true">
-                    <button type="button" class="card-mercari-btn" onclick='openMercariSearch("\u521d\u97f3\u30df\u30af Fashion \u30d5\u30a3\u30ae\u30e5\u30a2 Outdoor\u30bf\u30a4\u30af\u30ec\u9650\u5b9a", event)' title="メルカリで売り切れ・新着順を検索">
-                        <span>🔴</span> メルカリ
-                    </button>
-                    <button type="button" class="card-copy-btn" onclick='copyItemName(this.closest(".item-card"), "\u521d\u97f3\u30df\u30af Fashion \u30d5\u30a3\u30ae\u30e5\u30a2 Outdoor\u30bf\u30a4\u30af\u30ec\u9650\u5b9a", event)' title="キーワードをコピー">
-                        <span>📋</span>
-                    </button>
-                </div>
             </div>
         </div>
             
     </div>
 </div>
 
-<div id="toast" data-html2canvas-ignore="true">
+<div id="toast">
     <span class="toast-icon">✓</span>
     <span id="toastMsg">キーワードをコピーしました</span>
 </div>
@@ -4419,9 +3159,9 @@
         localStorage.setItem('prize_calendar_mode', mode);
         updateModeButtons();
         if (mode === 'mercari') {
-            showToast('クリック時の動作を【メルカリ直接検索】に設定しました');
+            showToast('カードタップ時の動作を【メルカリ直接検索】に設定しました');
         } else {
-            showToast('クリック時の動作を【名前コピー】に設定しました');
+            showToast('カードタップ時の動作を【名前コピー】に設定しました');
         }
     }
 
@@ -4550,31 +3290,6 @@
         }
         document.body.removeChild(textArea);
     }
-
-    document.getElementById('downloadBtn').addEventListener('click', function() {
-        const btn = this;
-        const originalHtml = btn.innerHTML;
-        btn.innerHTML = '<span>⏳</span> 保存中...';
-        btn.disabled = true;
-        
-        html2canvas(document.querySelector('.container'), {
-            useCORS: true,
-            scale: 2,
-            backgroundColor: '#0f172a'
-        }).then(canvas => {
-            let link = document.createElement('a');
-            link.download = 'calendar_202601.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-            btn.innerHTML = originalHtml;
-            btn.disabled = false;
-        }).catch(err => {
-            console.error(err);
-            alert("画像の保存に失敗しました。");
-            btn.innerHTML = originalHtml;
-            btn.disabled = false;
-        });
-    });
 </script>
 </body>
 </html>
