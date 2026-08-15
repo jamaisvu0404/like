@@ -1357,16 +1357,16 @@ def sync_and_push_to_github(src_dir, target_month_str):
         if os.path.exists(s):
             shutil.copy2(s, d)
             
-    # 月フォルダの同期
-    if target_month_str and target_month_str != 'latest':
-        s_m = os.path.join(src_dir, target_month_str)
-        d_m = os.path.join(dst_dir, target_month_str)
-        if os.path.exists(s_m):
-            if os.path.exists(d_m):
-                # calendar.html と 画像を上書き
-                shutil.copy2(os.path.join(s_m, 'calendar.html'), os.path.join(d_m, 'calendar.html'))
-            else:
-                shutil.copytree(s_m, d_m)
+    # 全月フォルダの同期（存在する月フォルダすべて）
+    for entry in os.listdir(src_dir):
+        if entry.isdigit() and len(entry) == 6:
+            s_m = os.path.join(src_dir, entry)
+            d_m = os.path.join(dst_dir, entry)
+            if os.path.isdir(s_m):
+                if os.path.exists(d_m):
+                    shutil.copy2(os.path.join(s_m, 'calendar.html'), os.path.join(d_m, 'calendar.html'))
+                else:
+                    shutil.copytree(s_m, d_m)
 
     # Git Commit & Push
     try:
