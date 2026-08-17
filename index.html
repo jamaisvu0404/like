@@ -2,13 +2,15 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>プライズフィギュア 入荷カレンダー まとめ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>プライズフィギュア 入荷カレンダー ＆ 全月横断検索</title>
 <style>
     :root {
         --primary: #e63946;
         --primary-dark: #c1121f;
-        --bg: #f8fafc;
+        --mercari: #ff0211;
+        --mercari-dark: #d6000e;
+        --bg-body: #f8fafc;
         --card-bg: #ffffff;
         --card-hover: #f1f5f9;
         --text-main: #0f172a;
@@ -22,49 +24,340 @@
     }
     body {
         font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
-        background-color: var(--bg);
+        background-color: var(--bg-body);
         color: var(--text-main);
         min-height: 100vh;
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 24px 12px;
+        padding: 16px 8px;
     }
     .container {
         width: 100%;
-        max-width: 900px;
+        max-width: 1680px;
     }
+
+    /* ヘッダー */
     header {
-        text-align: center;
-        margin-bottom: 20px;
-        background: #ffffff;
-        padding: 24px 18px;
-        border-radius: 16px;
-        border: 1px solid var(--border-color);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+        background: linear-gradient(135deg, #e63946 0%, #ba181b 100%);
+        color: #ffffff;
+        padding: 20px 18px 16px;
+        border-radius: 14px;
+        box-shadow: 0 4px 20px rgba(230, 57, 70, 0.18);
+        margin-bottom: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+    .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
     }
     .badge {
-        background: linear-gradient(135deg, #e63946 0%, #ba181b 100%);
-        color: #fff;
-        padding: 4px 14px;
+        background: rgba(255,255,255,0.25);
+        color: #ffffff;
+        padding: 3px 12px;
         border-radius: 20px;
         font-size: 11px;
         font-weight: 800;
         letter-spacing: 1px;
         display: inline-block;
-        margin-bottom: 10px;
+        backdrop-filter: blur(4px);
     }
     h1 {
-        font-size: 23px;
+        font-size: 22px;
         font-weight: 800;
         letter-spacing: 0.5px;
-        margin-bottom: 6px;
-        color: #0f172a;
+        color: #ffffff;
+        margin: 0;
     }
     p.subtitle {
-        color: var(--text-sub);
-        font-size: 13px;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 12.5px;
+        font-weight: 500;
     }
+
+    /* 検索ボックスエリア */
+    .search-section {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 10px 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .search-input-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+    .search-icon {
+        position: absolute;
+        left: 14px;
+        font-size: 18px;
+        color: #94a3b8;
+        pointer-events: none;
+    }
+    .search-input {
+        width: 100%;
+        padding: 12px 42px 12px 44px;
+        font-size: 15px;
+        font-weight: 600;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        background: #f8fafc;
+        color: #0f172a;
+        outline: none;
+        transition: all 0.2s ease;
+    }
+    .search-input:focus {
+        background: #ffffff;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.15);
+    }
+    .search-clear-btn {
+        position: absolute;
+        right: 12px;
+        background: #e2e8f0;
+        color: #64748b;
+        border: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: bold;
+        transition: all 0.15s ease;
+    }
+    .search-clear-btn:hover {
+        background: #cbd5e1;
+        color: #0f172a;
+    }
+
+    /* クイックフィルター（メーカー ＆ 月） */
+    .filter-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+    .filter-label {
+        font-size: 11.5px;
+        font-weight: 700;
+        color: #475569;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+    }
+    .filter-btn {
+        padding: 4px 10px;
+        border: 1px solid #e2e8f0;
+        background: #f1f5f9;
+        color: #334155;
+        font-size: 11.5px;
+        font-weight: 700;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    .filter-btn:hover {
+        background: #e2e8f0;
+        border-color: #cbd5e1;
+    }
+    .filter-btn.active {
+        background: var(--primary);
+        color: #ffffff;
+        border-color: var(--primary-dark);
+        box-shadow: 0 2px 6px rgba(230, 57, 70, 0.25);
+    }
+    .month-filter-select {
+        padding: 4px 10px;
+        border: 1px solid #e2e8f0;
+        background: #f1f5f9;
+        color: #0f172a;
+        font-size: 12px;
+        font-weight: 700;
+        border-radius: 6px;
+        cursor: pointer;
+        outline: none;
+    }
+    .month-filter-select:focus {
+        border-color: var(--primary);
+    }
+
+    /* コントロールツールバー */
+    .toolbar-card {
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 8px 12px;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+    .toolbar-group {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+    .toolbar-label {
+        font-size: 11.5px;
+        font-weight: 700;
+        color: #475569;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+    }
+    .mode-btn-group {
+        display: inline-flex;
+        background: #f1f5f9;
+        padding: 2px;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+    }
+    .mode-btn {
+        padding: 4px 10px;
+        border: none;
+        background: transparent;
+        color: #475569;
+        font-size: 11.5px;
+        font-weight: 700;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.15s ease;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .mode-btn.active {
+        background: #ffffff;
+        color: var(--primary-dark);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+    .mode-btn.active.mercari-mode {
+        background: var(--mercari);
+        color: #ffffff;
+    }
+
+    /* 列数切替ボタン */
+    .col-btn-group {
+        display: inline-flex;
+        background: #f1f5f9;
+        padding: 2px;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+    }
+    .col-btn {
+        padding: 3px 8px;
+        border: none;
+        background: transparent;
+        color: #475569;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.15s ease;
+    }
+    .col-btn.active {
+        background: #0f172a;
+        color: #ffffff;
+    }
+
+    .suffix-control-wrap {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+    .suffix-toggle-label {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: #334155;
+        user-select: none;
+    }
+    .suffix-toggle-label input[type="checkbox"] {
+        width: 14px;
+        height: 14px;
+        cursor: pointer;
+        accent-color: var(--primary);
+    }
+    .suffix-input-box {
+        padding: 3px 7px;
+        font-size: 11.5px;
+        border-radius: 5px;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: #0f172a;
+        font-weight: 600;
+        outline: none;
+        width: 85px;
+    }
+    .quick-tag-btn {
+        background: #f1f5f9;
+        color: #475569;
+        border: 1px solid #cbd5e1;
+        padding: 3px 7px;
+        border-radius: 4px;
+        font-size: 10.5px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .quick-tag-btn.active {
+        background: #0f172a;
+        color: #ffffff;
+        border-color: #0f172a;
+    }
+
+    /* 検索ステータスバー */
+    .search-status-bar {
+        display: none;
+        align-items: center;
+        justify-content: space-between;
+        background: #e0f2fe;
+        border: 1px solid #bae6fd;
+        border-radius: 8px;
+        padding: 8px 14px;
+        margin-bottom: 14px;
+        color: #0369a1;
+        font-size: 12.5px;
+        font-weight: 700;
+    }
+    .search-status-bar.show {
+        display: flex;
+    }
+    .search-reset-link {
+        color: var(--primary);
+        text-decoration: underline;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    /* 月一覧グリッド（非検索時） */
     .month-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -130,6 +423,273 @@
         padding-top: 6px;
         border-top: 1px solid #f1f5f9;
     }
+
+    /* 検索結果グリッド */
+    .search-results-grid {
+        display: none;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 8px;
+        padding: 12px;
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        margin-bottom: 24px;
+    }
+    .search-results-grid.show {
+        display: grid;
+    }
+
+    /* グリッド列数クラス */
+    .search-results-grid.cols-2 { grid-template-columns: repeat(2, 1fr) !important; }
+    .search-results-grid.cols-3 { grid-template-columns: repeat(3, 1fr) !important; }
+    .search-results-grid.cols-4 { grid-template-columns: repeat(4, 1fr) !important; }
+    .search-results-grid.cols-5 { grid-template-columns: repeat(5, 1fr) !important; }
+    .search-results-grid.cols-6 { grid-template-columns: repeat(6, 1fr) !important; }
+    .search-results-grid.cols-7 { grid-template-columns: repeat(7, 1fr) !important; }
+    .search-results-grid.cols-8 { grid-template-columns: repeat(8, 1fr) !important; }
+
+    @media (max-width: 1200px) {
+        .search-results-grid {
+            grid-template-columns: repeat(5, 1fr);
+        }
+    }
+    @media (max-width: 900px) {
+        .search-results-grid {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            padding: 8px;
+        }
+    }
+    @media (max-width: 650px) {
+        body {
+            padding: 8px 4px;
+        }
+        header {
+            padding: 14px 12px;
+            border-radius: 10px;
+            gap: 10px;
+        }
+        h1 {
+            font-size: 18px;
+        }
+        .search-input {
+            padding: 10px 38px 10px 38px;
+            font-size: 14px;
+        }
+        .search-icon {
+            left: 12px;
+            font-size: 16px;
+        }
+        .search-results-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            padding: 5px;
+        }
+    }
+
+    /* アイテムカード */
+    .item-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        cursor: pointer;
+        position: relative;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+    .item-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 18px rgba(0,0,0,0.09);
+        border-color: var(--primary);
+    }
+    .item-card:active {
+        transform: scale(0.98);
+    }
+    .item-card.copied-flash {
+        animation: flashHighlight 0.4s ease;
+    }
+    @keyframes flashHighlight {
+        0% { box-shadow: 0 0 0 3px #22c55e; border-color: #22c55e; }
+        100% { box-shadow: 0 2px 5px rgba(0,0,0,0.03); border-color: var(--border-color); }
+    }
+
+    /* 日付バッジ */
+    .item-date-badge {
+        background: #0f172a;
+        color: #ffffff;
+        font-size: 9.5px;
+        font-weight: 800;
+        padding: 3px 6px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        letter-spacing: 0.2px;
+    }
+    .item-date-badge .badge-month {
+        color: #38bdf8;
+    }
+
+    /* 画像ラッパー */
+    .img-wrap {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        background-color: #ffffff;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .img-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 3px;
+        transition: transform 0.2s ease;
+    }
+    .item-card:hover .img-wrap img {
+        transform: scale(1.04);
+    }
+
+    /* 情報ブロック */
+    .info-wrap {
+        padding: 6px 6px 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex-grow: 1;
+        justify-content: space-between;
+        background: #ffffff;
+    }
+    .info-top {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    /* メーカータグ */
+    .maker-tag {
+        font-size: 9px;
+        font-weight: 700;
+        padding: 1px 5px;
+        border-radius: 4px;
+        display: inline-block;
+        width: fit-content;
+        letter-spacing: 0.2px;
+    }
+    .maker-banpresto { background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+    .maker-sega { background-color: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .maker-furyu { background-color: #fce7f3; color: #be185d; border: 1px solid #fbcfe8; }
+    .maker-taito { background-color: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .maker-bushiroad { background-color: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
+    .maker-konami { background-color: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+    .maker-other { background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+
+    /* タイトル */
+    .item-name {
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 1.35;
+        color: #0f172a;
+        word-break: break-word;
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* サイズ・種類 */
+    .item-size {
+        font-size: 9px;
+        color: #64748b;
+        font-weight: 500;
+        line-height: 1.25;
+        display: flex;
+        align-items: flex-start;
+        gap: 2px;
+        margin-top: 1px;
+        padding-top: 3px;
+        border-top: 1px dashed #f1f5f9;
+    }
+    .item-size .size-icon {
+        font-size: 8.5px;
+        color: #94a3b8;
+        flex-shrink: 0;
+    }
+
+    /* カレンダーリンク */
+    .item-cal-link {
+        font-size: 9.5px;
+        color: var(--primary);
+        font-weight: 700;
+        text-align: right;
+        text-decoration: none;
+        display: block;
+        margin-top: 2px;
+        padding-top: 2px;
+    }
+    .item-cal-link:hover {
+        text-decoration: underline;
+    }
+
+    /* 該当なしメッセージ */
+    .no-results {
+        grid-column: 1 / -1;
+        padding: 40px 20px;
+        text-align: center;
+        color: #64748b;
+        background: #ffffff;
+        border-radius: 8px;
+        border: 1px dashed #cbd5e1;
+    }
+    .no-results-icon {
+        font-size: 32px;
+        margin-bottom: 8px;
+    }
+    .no-results p {
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    /* トースト通知 */
+    #toast {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: rgba(15, 23, 42, 0.94);
+        color: #ffffff;
+        padding: 8px 18px;
+        border-radius: 25px;
+        font-size: 12px;
+        font-weight: 700;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        backdrop-filter: blur(8px);
+        pointer-events: none;
+        z-index: 99999;
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+        opacity: 0;
+        max-width: 90%;
+        text-align: center;
+    }
+    #toast.show {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+    #toast .toast-icon {
+        color: #4ade80;
+        font-size: 14px;
+    }
+
+    /* 機能案内ブロック */
     .features {
         background: #ffffff;
         border-radius: 12px;
@@ -153,152 +713,637 @@
 <body>
 <div class="container">
     <header>
-        <div class="badge">PRIZE FIGURE CALENDAR</div>
-        <h1>プライズフィギュア 入荷カレンダー</h1>
-        <p class="subtitle">2026年 1月〜11月の入荷日程とメルカリ相場をチェックできます</p>
+        <div class="header-top">
+            <div>
+                <div class="badge">PRIZE FIGURE CALENDAR & SEARCH</div>
+                <h1>プライズフィギュア 入荷カレンダー ＆ 全月横断検索</h1>
+                <p class="subtitle">2026年 1月〜11月の全フィギュア情報を月をまたいで高速検索できます</p>
+            </div>
+        </div>
+
+        <!-- 検索バー -->
+        <div class="search-section">
+            <div class="search-input-wrap">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" class="search-input" placeholder="作品名・キャラ名・商品名で全月リアルタイム検索 (例: ルフィ, 初音ミク, フリーレン)..." autocomplete="off">
+                <button type="button" id="searchClearBtn" class="search-clear-btn" onclick="clearSearchInput()">✕</button>
+            </div>
+
+            <!-- クイックフィルター -->
+            <div class="filter-row">
+                <div class="filter-group">
+                    <span class="filter-label">🏷️ メーカー:</span>
+                    <button type="button" class="filter-btn active" data-maker="" onclick="setMakerFilter('', this)">すべて</button>
+                    <button type="button" class="filter-btn" data-maker="バンプレスト" onclick="setMakerFilter('バンプレスト', this)">バンプレスト</button>
+                    <button type="button" class="filter-btn" data-maker="セガ" onclick="setMakerFilter('セガ', this)">セガ</button>
+                    <button type="button" class="filter-btn" data-maker="フリュー" onclick="setMakerFilter('フリュー', this)">フリュー</button>
+                    <button type="button" class="filter-btn" data-maker="タイトー" onclick="setMakerFilter('タイトー', this)">タイトー</button>
+                </div>
+
+                <div class="filter-group">
+                    <span class="filter-label">📅 対象月:</span>
+                    <select id="monthFilterSelect" class="month-filter-select" onchange="onMonthFilterChange(this.value)">
+                        <option value="">全期間 (1月〜11月)</option>
+                        <option value="202601">2026年 1月</option>
+                        <option value="202602">2026年 2月</option>
+                        <option value="202603">2026年 3月</option>
+                        <option value="202604">2026年 4月</option>
+                        <option value="202605">2026年 5月</option>
+                        <option value="202606">2026年 6月</option>
+                        <option value="202607">2026年 7月</option>
+                        <option value="202608">2026年 8月</option>
+                        <option value="202609">2026年 9月</option>
+                        <option value="202610">2026年 10月</option>
+                        <option value="202611">2026年 11月</option>
+                    </select>
+                </div>
+            </div>
+        </div>
     </header>
 
-    <div class="month-grid">
-        <a href="202601/calendar.html" class="month-card">
-            <div class="card-top">
-                <span class="year-tag">2026年</span>
-                <span class="item-count-badge">153商品</span>
+    <!-- コントロールツールバー -->
+    <div class="toolbar-card">
+        <div class="toolbar-group">
+            <span class="toolbar-label">タップ動作:</span>
+            <div class="mode-btn-group">
+                <button type="button" class="mode-btn active mercari-mode" id="modeBtnMercari" onclick="setClickMode('mercari')">
+                    <span>🔴</span> メルカリ検索
+                </button>
+                <button type="button" class="mode-btn" id="modeBtnCopy" onclick="setClickMode('copy')">
+                    <span>📋</span> コピー
+                </button>
             </div>
-            <div class="month-title">1月</div>
-            <div class="card-footer">
-                <span>カレンダーを開く</span>
-                <span>➔</span>
-            </div>
-        </a>
+        </div>
 
-        <a href="202602/calendar.html" class="month-card">
-            <div class="card-top">
-                <span class="year-tag">2026年</span>
-                <span class="item-count-badge">139商品</span>
+        <div class="toolbar-group">
+            <span class="toolbar-label">表示列数:</span>
+            <div class="col-btn-group">
+                <button type="button" class="col-btn" id="colBtn2" onclick="setGridColumns(2)">2列</button>
+                <button type="button" class="col-btn active" id="colBtn3" onclick="setGridColumns(3)">3列</button>
+                <button type="button" class="col-btn" id="colBtn4" onclick="setGridColumns(4)">4列</button>
+                <button type="button" class="col-btn" id="colBtn5" onclick="setGridColumns(5)">5列</button>
+                <button type="button" class="col-btn" id="colBtn6" onclick="setGridColumns(6)">6列</button>
+                <button type="button" class="col-btn" id="colBtn7" onclick="setGridColumns(7)">7列</button>
+                <button type="button" class="col-btn" id="colBtn8" onclick="setGridColumns(8)">8列</button>
             </div>
-            <div class="month-title">2月</div>
-            <div class="card-footer">
-                <span>カレンダーを開く</span>
-                <span>➔</span>
-            </div>
-        </a>
+        </div>
 
-        <a href="202603/calendar.html" class="month-card">
-            <div class="card-top">
-                <span class="year-tag">2026年</span>
-                <span class="item-count-badge">181商品</span>
-            </div>
-            <div class="month-title">3月</div>
-            <div class="card-footer">
-                <span>カレンダーを開く</span>
-                <span>➔</span>
-            </div>
-        </a>
-
-        <a href="202604/calendar.html" class="month-card">
-            <div class="card-top">
-                <span class="year-tag">2026年</span>
-                <span class="item-count-badge">201商品</span>
-            </div>
-            <div class="month-title">4月</div>
-            <div class="card-footer">
-                <span>カレンダーを開く</span>
-                <span>➔</span>
-            </div>
-        </a>
-
-        <a href="202605/calendar.html" class="month-card">
-            <div class="card-top">
-                <span class="year-tag">2026年</span>
-                <span class="item-count-badge">194商品</span>
-            </div>
-            <div class="month-title">5月</div>
-            <div class="card-footer">
-                <span>カレンダーを開く</span>
-                <span>➔</span>
-            </div>
-        </a>
-
-        <a href="202606/calendar.html" class="month-card">
-            <div class="card-top">
-                <span class="year-tag">2026年</span>
-                <span class="item-count-badge">153商品</span>
-            </div>
-            <div class="month-title">6月</div>
-            <div class="card-footer">
-                <span>カレンダーを開く</span>
-                <span>➔</span>
-            </div>
-        </a>
-
-        <a href="202607/calendar.html" class="month-card">
-            <div class="card-top">
-                <span class="year-tag">2026年</span>
-                <span class="item-count-badge">169商品</span>
-            </div>
-            <div class="month-title">7月</div>
-            <div class="card-footer">
-                <span>カレンダーを開く</span>
-                <span>➔</span>
-            </div>
-        </a>
-
-        <a href="202608/calendar.html" class="month-card">
-            <div class="card-top">
-                <span class="year-tag">2026年</span>
-                <span class="item-count-badge">166商品</span>
-            </div>
-            <div class="month-title">8月</div>
-            <div class="card-footer">
-                <span>カレンダーを開く</span>
-                <span>➔</span>
-            </div>
-        </a>
-
-        <a href="202609/calendar.html" class="month-card">
-            <div class="card-top">
-                <span class="year-tag">2026年</span>
-                <span class="item-count-badge">133商品</span>
-            </div>
-            <div class="month-title">9月</div>
-            <div class="card-footer">
-                <span>カレンダーを開く</span>
-                <span>➔</span>
-            </div>
-        </a>
-
-        <a href="202610/calendar.html" class="month-card">
-            <div class="card-top">
-                <span class="year-tag">2026年</span>
-                <span class="item-count-badge">95商品</span>
-            </div>
-            <div class="month-title">10月</div>
-            <div class="card-footer">
-                <span>カレンダーを開く</span>
-                <span>➔</span>
-            </div>
-        </a>
-
-        <a href="202611/calendar.html" class="month-card">
-            <div class="card-top">
-                <span class="year-tag">2026年</span>
-                <span class="item-count-badge">83商品</span>
-            </div>
-            <div class="month-title">11月</div>
-            <div class="card-footer">
-                <span>カレンダーを開く</span>
-                <span>➔</span>
-            </div>
-        </a>
+        <div class="suffix-control-wrap">
+            <label class="suffix-toggle-label">
+                <input type="checkbox" id="suffixCheckbox" checked>
+                <span>追加:</span>
+            </label>
+            <input type="text" id="suffixInput" class="suffix-input-box" value="箱無し" placeholder="追加テキスト">
+            <button type="button" class="quick-tag-btn active" id="tagBtnHakonashi" onclick="setSuffixTag('箱無し')">箱無し</button>
+            <button type="button" class="quick-tag-btn" id="tagBtnMikaifu" onclick="setSuffixTag('未開封')">未開封</button>
+            <button type="button" class="quick-tag-btn" id="tagBtnClear" onclick="clearSuffixTag()">なし</button>
+        </div>
     </div>
 
+    <!-- 検索ステータスバー -->
+    <div id="searchStatusBar" class="search-status-bar">
+        <span id="searchStatusText">🔍 検索結果: 0件</span>
+        <span class="search-reset-link" onclick="resetAllFilters()">リセットして月一覧に戻る</span>
+    </div>
+
+    <!-- 検索結果グリッド -->
+    <div id="searchResultsGrid" class="search-results-grid"></div>
+
+    <!-- 月別目次グリッド（非検索時に表示） -->
+    <div id="monthSection">
+        <div style="margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+            <h2 style="font-size: 16px; font-weight: 800; color: #0f172a;">📅 月別カレンダーを選ぶ</h2>
+            <span style="font-size: 12px; color: var(--text-sub); font-weight: 600;">全11ヶ月・約1,600商品収録</span>
+        </div>
+        <div class="month-grid">
+            <a href="202601/calendar.html" class="month-card">
+                <div class="card-top">
+                    <span class="year-tag">2026年</span>
+                    <span class="item-count-badge">149商品</span>
+                </div>
+                <div class="month-title">1月</div>
+                <div class="card-footer">
+                    <span>カレンダーを開く</span>
+                    <span>➔</span>
+                </div>
+            </a>
+
+            <a href="202602/calendar.html" class="month-card">
+                <div class="card-top">
+                    <span class="year-tag">2026年</span>
+                    <span class="item-count-badge">180商品</span>
+                </div>
+                <div class="month-title">2月</div>
+                <div class="card-footer">
+                    <span>カレンダーを開く</span>
+                    <span>➔</span>
+                </div>
+            </a>
+
+            <a href="202603/calendar.html" class="month-card">
+                <div class="card-top">
+                    <span class="year-tag">2026年</span>
+                    <span class="item-count-badge">173商品</span>
+                </div>
+                <div class="month-title">3月</div>
+                <div class="card-footer">
+                    <span>カレンダーを開く</span>
+                    <span>➔</span>
+                </div>
+            </a>
+
+            <a href="202604/calendar.html" class="month-card">
+                <div class="card-top">
+                    <span class="year-tag">2026年</span>
+                    <span class="item-count-badge">154商品</span>
+                </div>
+                <div class="month-title">4月</div>
+                <div class="card-footer">
+                    <span>カレンダーを開く</span>
+                    <span>➔</span>
+                </div>
+            </a>
+
+            <a href="202605/calendar.html" class="month-card">
+                <div class="card-top">
+                    <span class="year-tag">2026年</span>
+                    <span class="item-count-badge">139商品</span>
+                </div>
+                <div class="month-title">5月</div>
+                <div class="card-footer">
+                    <span>カレンダーを開く</span>
+                    <span>➔</span>
+                </div>
+            </a>
+
+            <a href="202606/calendar.html" class="month-card">
+                <div class="card-top">
+                    <span class="year-tag">2026年</span>
+                    <span class="item-count-badge">155商品</span>
+                </div>
+                <div class="month-title">6月</div>
+                <div class="card-footer">
+                    <span>カレンダーを開く</span>
+                    <span>➔</span>
+                </div>
+            </a>
+
+            <a href="202607/calendar.html" class="month-card">
+                <div class="card-top">
+                    <span class="year-tag">2026年</span>
+                    <span class="item-count-badge">169商品</span>
+                </div>
+                <div class="month-title">7月</div>
+                <div class="card-footer">
+                    <span>カレンダーを開く</span>
+                    <span>➔</span>
+                </div>
+            </a>
+
+            <a href="202608/calendar.html" class="month-card">
+                <div class="card-top">
+                    <span class="year-tag">2026年</span>
+                    <span class="item-count-badge">166商品</span>
+                </div>
+                <div class="month-title">8月</div>
+                <div class="card-footer">
+                    <span>カレンダーを開く</span>
+                    <span>➔</span>
+                </div>
+            </a>
+
+            <a href="202609/calendar.html" class="month-card">
+                <div class="card-top">
+                    <span class="year-tag">2026年</span>
+                    <span class="item-count-badge">128商品</span>
+                </div>
+                <div class="month-title">9月</div>
+                <div class="card-footer">
+                    <span>カレンダーを開く</span>
+                    <span>➔</span>
+                </div>
+            </a>
+
+            <a href="202610/calendar.html" class="month-card">
+                <div class="card-top">
+                    <span class="year-tag">2026年</span>
+                    <span class="item-count-badge">98商品</span>
+                </div>
+                <div class="month-title">10月</div>
+                <div class="card-footer">
+                    <span>カレンダーを開く</span>
+                    <span>➔</span>
+                </div>
+            </a>
+
+            <a href="202611/calendar.html" class="month-card">
+                <div class="card-top">
+                    <span class="year-tag">2026年</span>
+                    <span class="item-count-badge">83商品</span>
+                </div>
+                <div class="month-title">11月</div>
+                <div class="card-footer">
+                    <span>カレンダーを開く</span>
+                    <span>➔</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- 機能説明 -->
     <div class="features">
-        <h3>✨ 便利な機能</h3>
-        <p>・<strong>メルカリ直接検索</strong>：各カードの「🔴 メルカリ」を押すと、売り切れ・新着順で即座に相場を確認できます。<br>
-        ・<strong>箱無しキーワード追加</strong>：上部のツールバーで「箱無し」「未開封」などの追加テキストを自由に変更可能。<br>
-        ・<strong>スマホ専用3列表示＆列数切替</strong>：スマホでは1画面にたくさん並ぶ3列表示。2列/3列/4列に自由に変更できます。<br>
-        ・<strong>画像保存</strong>：右上の「画像で保存」からカレンダー全体をPNG画像としてダウンロードできます。</p>
+        <h3>✨ 便利な機能 ＆ 使い方</h3>
+        <p>・<strong>全月横断リアルタイム検索</strong>：上の検索バーに文字を入れるだけで、2026年1月〜11月の全1,594商品から即座に絞り込み検索できます（ひらがな・カタカナ・複数単語対応）。<br>
+        ・<strong>ワンタップ メルカリ直接検索</strong>：カードをタップするだけで、売り切れ・新着順で即座にメルカリ相場を確認できます。<br>
+        ・<strong>「箱無し」「未開封」追加テキスト</strong>：上部のツールバーで追加キーワードを自由に変更・ON/OFFできます。<br>
+        ・<strong>列数切り替え</strong>：お好みに合わせて2列〜8列（スマホは3列標準）にスムーズに切り替えられます。</p>
     </div>
 </div>
+
+<div id="toast">
+    <span class="toast-icon">✓</span>
+    <span id="toastMsg">キーワードをコピーしました</span>
+</div>
+
+<!-- 検索インデックスデータ -->
+<script src="search_data.js"></script>
+
+<script>
+    let toastTimeout = null;
+    let currentClickMode = localStorage.getItem('prize_calendar_mode') || 'mercari';
+    let selectedMaker = '';
+    let selectedMonth = '';
+
+    // ローカルストレージ復元
+    const storedSuffix = localStorage.getItem('prize_calendar_suffix');
+    const storedEnabled = localStorage.getItem('prize_calendar_suffix_enabled');
+    if (storedSuffix !== null) {
+        document.getElementById('suffixInput').value = storedSuffix;
+    }
+    if (storedEnabled !== null) {
+        document.getElementById('suffixCheckbox').checked = (storedEnabled === 'true');
+    }
+    updateTagButtons();
+    updateModeButtons();
+
+    // 列数設定復元
+    const storedCols = localStorage.getItem('prize_calendar_cols');
+    if (storedCols) {
+        setGridColumns(parseInt(storedCols, 10), false);
+    }
+
+    document.getElementById('suffixInput').addEventListener('input', function() {
+        localStorage.setItem('prize_calendar_suffix', this.value);
+        updateTagButtons();
+    });
+
+    document.getElementById('suffixCheckbox').addEventListener('change', function() {
+        localStorage.setItem('prize_calendar_suffix_enabled', this.checked);
+        updateTagButtons();
+    });
+
+    function setGridColumns(cols, save = true) {
+        const grid = document.getElementById('searchResultsGrid');
+        if (grid) {
+            grid.classList.remove('cols-2', 'cols-3', 'cols-4', 'cols-5', 'cols-6', 'cols-7', 'cols-8');
+            grid.classList.add('cols-' + cols);
+        }
+        
+        document.querySelectorAll('.col-btn').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = document.getElementById('colBtn' + cols);
+        if (activeBtn) activeBtn.classList.add('active');
+        
+        if (save) {
+            localStorage.setItem('prize_calendar_cols', cols);
+            showToast(cols + '列表示に切り替えました');
+        }
+    }
+
+    function setClickMode(mode) {
+        currentClickMode = mode;
+        localStorage.setItem('prize_calendar_mode', mode);
+        updateModeButtons();
+        if (mode === 'mercari') {
+            showToast('カードタップ時の動作を【メルカリ直接検索】に設定しました');
+        } else {
+            showToast('カードタップ時の動作を【名前コピー】に設定しました');
+        }
+    }
+
+    function updateModeButtons() {
+        const btnMercari = document.getElementById('modeBtnMercari');
+        const btnCopy = document.getElementById('modeBtnCopy');
+        if (currentClickMode === 'mercari') {
+            btnMercari.className = 'mode-btn active mercari-mode';
+            btnCopy.className = 'mode-btn';
+        } else {
+            btnMercari.className = 'mode-btn';
+            btnCopy.className = 'mode-btn active';
+        }
+    }
+
+    function setSuffixTag(text) {
+        const input = document.getElementById('suffixInput');
+        const checkbox = document.getElementById('suffixCheckbox');
+        input.value = text;
+        checkbox.checked = true;
+        localStorage.setItem('prize_calendar_suffix', text);
+        localStorage.setItem('prize_calendar_suffix_enabled', 'true');
+        updateTagButtons();
+    }
+
+    function clearSuffixTag() {
+        const checkbox = document.getElementById('suffixCheckbox');
+        checkbox.checked = false;
+        localStorage.setItem('prize_calendar_suffix_enabled', 'false');
+        updateTagButtons();
+    }
+
+    function updateTagButtons() {
+        const inputVal = document.getElementById('suffixInput').value.trim();
+        const isChecked = document.getElementById('suffixCheckbox').checked;
+        
+        document.querySelectorAll('.quick-tag-btn').forEach(btn => btn.classList.remove('active'));
+        if (!isChecked) {
+            const clearBtn = document.getElementById('tagBtnClear');
+            if (clearBtn) clearBtn.classList.add('active');
+        } else {
+            if (inputVal === '箱無し') document.getElementById('tagBtnHakonashi')?.classList.add('active');
+            else if (inputVal === '未開封') document.getElementById('tagBtnMikaifu')?.classList.add('active');
+        }
+    }
+
+    function getSuffixText() {
+        const checkbox = document.getElementById('suffixCheckbox');
+        const input = document.getElementById('suffixInput');
+        if (checkbox && checkbox.checked && input) {
+            const val = input.value.trim();
+            if (val.length > 0) {
+                return ' ' + val;
+            }
+        }
+        return '';
+    }
+
+    function showToast(text) {
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMsg');
+        toastMsg.innerText = text;
+        toast.classList.add('show');
+        
+        if (toastTimeout) clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2200);
+    }
+
+    function openMercariSearch(baseName, event) {
+        if (event) event.stopPropagation();
+        const fullText = baseName + getSuffixText();
+        const url = `https://jp.mercari.com/search?keyword=${encodeURIComponent(fullText)}&status=sold_out&sort=created_time&order=desc`;
+        window.open(url, '_blank');
+        showToast('メルカリ検索を開きました: ' + fullText);
+    }
+
+    function copyItemName(cardEl, baseName, event) {
+        if (event) event.stopPropagation();
+        const fullText = baseName + getSuffixText();
+        
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(fullText).then(() => {
+                showToast('コピーしました: ' + fullText);
+            }).catch(() => {
+                fallbackCopy(fullText);
+            });
+        } else {
+            fallbackCopy(fullText);
+        }
+        
+        if (cardEl) {
+            cardEl.classList.remove('copied-flash');
+            void cardEl.offsetWidth;
+            cardEl.classList.add('copied-flash');
+        }
+    }
+
+    function handleCardClick(cardEl, baseName) {
+        if (currentClickMode === 'mercari') {
+            openMercariSearch(baseName);
+            if (cardEl) {
+                cardEl.classList.remove('copied-flash');
+                void cardEl.offsetWidth;
+                cardEl.classList.add('copied-flash');
+            }
+        } else {
+            copyItemName(cardEl, baseName);
+        }
+    }
+
+    function fallbackCopy(name) {
+        const textArea = document.createElement("textarea");
+        textArea.value = name;
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            showToast('コピーしました: ' + name);
+        } catch (err) {
+            alert("コピーに失敗しました: " + name);
+        }
+        document.body.removeChild(textArea);
+    }
+
+    // ==========================================
+    // 検索・フィルタリングロジック
+    // ==========================================
+    const searchInput = document.getElementById('searchInput');
+    const searchClearBtn = document.getElementById('searchClearBtn');
+    const searchResultsGrid = document.getElementById('searchResultsGrid');
+    const monthSection = document.getElementById('monthSection');
+    const searchStatusBar = document.getElementById('searchStatusBar');
+    const searchStatusText = document.getElementById('searchStatusText');
+
+    // ひらがな・カタカナ正規化関数（あいまい検索用）
+    function normalizeText(str) {
+        if (!str) return '';
+        return str
+            .toLowerCase()
+            // 全角英数を半角に変換
+            .replace(/[！-～]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0))
+            // カタカナをひらがなに統一
+            .replace(/[\u30a1-\u30f6]/g, match => String.fromCharCode(match.charCodeAt(0) - 0x60))
+            .replace(/[\s\-_・.:;!?,~〜]/g, '');
+    }
+
+    searchInput.addEventListener('input', () => {
+        executeSearch();
+    });
+
+    function clearSearchInput() {
+        searchInput.value = '';
+        executeSearch();
+        searchInput.focus();
+    }
+
+    function setMakerFilter(maker, btn) {
+        selectedMaker = maker;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        executeSearch();
+    }
+
+    function onMonthFilterChange(monthVal) {
+        selectedMonth = monthVal;
+        executeSearch();
+    }
+
+    function resetAllFilters() {
+        searchInput.value = '';
+        selectedMaker = '';
+        selectedMonth = '';
+        document.getElementById('monthFilterSelect').value = '';
+        document.querySelectorAll('.filter-btn').forEach((b, idx) => {
+            if (idx === 0) b.classList.add('active');
+            else b.classList.remove('active');
+        });
+        executeSearch();
+    }
+
+    function getMakerClass(mText) {
+        if (!mText) return "maker-other";
+        if (mText.includes("バンプレスト") || mText.includes("BANDAI")) return "maker-banpresto";
+        if (mText.includes("セガ") || mText.includes("SEGA")) return "maker-sega";
+        if (mText.includes("フリュー") || mText.includes("FuRyu")) return "maker-furyu";
+        if (mText.includes("タイトー") || mText.includes("TAITO")) return "maker-taito";
+        if (mText.includes("ブシロード")) return "maker-bushiroad";
+        if (mText.includes("コナミ") || mText.includes("KONAMI")) return "maker-konami";
+        return "maker-other";
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function executeSearch() {
+        const rawQuery = searchInput.value.trim();
+        searchClearBtn.style.display = rawQuery ? 'flex' : 'none';
+
+        const isFiltering = rawQuery.length > 0 || selectedMaker !== '' || selectedMonth !== '';
+
+        if (!isFiltering) {
+            // 検索なし：月別カレンダー目次を表示
+            searchResultsGrid.classList.remove('show');
+            searchResultsGrid.innerHTML = '';
+            monthSection.style.display = 'block';
+            searchStatusBar.classList.remove('show');
+            return;
+        }
+
+        // 検索中：検索結果グリッドを表示
+        monthSection.style.display = 'none';
+        searchResultsGrid.classList.add('show');
+        searchStatusBar.classList.add('show');
+
+        if (typeof PRIZE_ITEMS === 'undefined' || !Array.isArray(PRIZE_ITEMS)) {
+            searchResultsGrid.innerHTML = '<div class="no-results"><div class="no-results-icon">⚠️</div><p>検索データを読み込み中または見つかりません。</p></div>';
+            return;
+        }
+
+        // 検索キーワード分割（AND検索）
+        const queryKeywords = rawQuery.split(/\s+/).filter(k => k.length > 0).map(k => normalizeText(k));
+
+        const matchedItems = PRIZE_ITEMS.filter(item => {
+            // 月フィルター
+            if (selectedMonth && item.month !== selectedMonth) {
+                return false;
+            }
+            // メーカーフィルター
+            if (selectedMaker && !item.maker.includes(selectedMaker)) {
+                return false;
+            }
+            // キーワード検索（タイトル、メルカリ検索名、メーカー、月名）
+            if (queryKeywords.length > 0) {
+                const targetText = normalizeText(item.title + ' ' + item.mercari + ' ' + item.maker + ' ' + item.monthName + ' ' + item.date);
+                for (const kw of queryKeywords) {
+                    if (!targetText.includes(kw)) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        });
+
+        // ステータスバー更新
+        let statusMsg = `🔍 検索結果: ${matchedItems.length}件`;
+        if (rawQuery) statusMsg += ` (キーワード: 「${escapeHtml(rawQuery)}」)`;
+        if (selectedMaker) statusMsg += ` [メーカー: ${escapeHtml(selectedMaker)}]`;
+        if (selectedMonth) {
+            const mOption = document.querySelector(`#monthFilterSelect option[value="${selectedMonth}"]`);
+            statusMsg += ` [${mOption ? mOption.text : selectedMonth}]`;
+        }
+        statusMsg += ` / 全${PRIZE_ITEMS.length}商品中`;
+        searchStatusText.innerHTML = statusMsg;
+
+        if (matchedItems.length === 0) {
+            searchResultsGrid.innerHTML = `
+                <div class="no-results">
+                    <div class="no-results-icon">🔎</div>
+                    <p>該当する商品が見つかりませんでした。</p>
+                    <p style="font-size: 12px; margin-top: 4px; color: #94a3b8;">別のキーワードやメーカー・対象月でお試しください。</p>
+                </div>
+            `;
+            return;
+        }
+
+        // カードHTMLのレンダリング
+        let html = '';
+        for (const item of matchedItems) {
+            const titleEsc = escapeHtml(item.title);
+            const mercariEsc = escapeHtml(item.mercari);
+            const makerEsc = escapeHtml(item.maker || 'メーカー未記載');
+            const sizeEsc = escapeHtml(item.size || 'サイズ未記載');
+            const makerClass = getMakerClass(item.maker);
+            const dateEsc = escapeHtml(item.date);
+            const monthNameEsc = escapeHtml(item.monthName);
+            const imgSrc = item.img ? item.img : 'https://via.placeholder.com/200?text=No+Image';
+            const mercariJson = JSON.stringify(item.mercari);
+
+            html += `
+                <div class="item-card" onclick='handleCardClick(this, ${mercariJson})' title="${titleEsc}">
+                    <div class="item-date-badge">
+                        <span class="badge-month">${monthNameEsc}</span>
+                        <span>${dateEsc}</span>
+                    </div>
+                    <div class="img-wrap">
+                        <img src="${imgSrc}" alt="${titleEsc}" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/200?text=No+Image';">
+                    </div>
+                    <div class="info-wrap">
+                        <div class="info-top">
+                            <span class="maker-tag ${makerClass}">${makerEsc}</span>
+                            <p class="item-name">${titleEsc}</p>
+                        </div>
+                        <div>
+                            <div class="item-size">
+                                <span class="size-icon">📏</span>
+                                <span>${sizeEsc}</span>
+                            </div>
+                            <a href="${item.calUrl}" class="item-cal-link" onclick="event.stopPropagation();">📅 カレンダーで見る ➔</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        searchResultsGrid.innerHTML = html;
+    }
+</script>
 </body>
 </html>

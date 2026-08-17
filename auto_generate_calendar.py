@@ -920,6 +920,9 @@ def main():
                 <a href="../index.html" class="nav-top-btn">
                     <span>🏠</span><span>トップへ</span>
                 </a>
+                <a href="../index.html" class="nav-top-btn" style="background: rgba(255,255,255,0.35); color: #ffffff;">
+                    <span>🔍</span><span>全月検索</span>
+                </a>
                 <div class="month-select-wrap">
                     <span class="month-icon">📅</span>
                     <select id="monthSelect" class="month-dropdown" onchange="if(this.value) location.href='../' + this.value + '/calendar.html'">
@@ -1254,6 +1257,14 @@ def main():
 
     print(f"成功: {target_month_display} のカレンダーHTMLと画像データを {output_dir} に出力しました。")
 
+    # --- 全月横断検索インデックスの自動更新 ---
+    try:
+        from update_search_index import generate_search_index
+        print("\n[検索インデックス] 全月横断検索データを最新に更新中...")
+        generate_search_index(base_dir)
+    except Exception as e:
+        print(f"[検索インデックス] 更新スキップまたはエラー: {e}")
+
     # --- GitHub への自動同期 ＆ プッシュ ---
     sync_and_push_to_github(base_dir, target_month_str)
 
@@ -1268,10 +1279,15 @@ def sync_and_push_to_github(src_dir, target_month_str):
     print(f"\n[GitHub自動同期] {dst_dir} へ最新ファイルを同期中...")
     
     # 必要ファイル・フォルダの同期
-    items = ['index.html', 'auto_generate_calendar.py', 'generate_calendar.py', 'instructions_for_ai.md', '.gitignore', '.nojekyll']
+    items = ['index.html', 'search_data.js', 'search_data.json', 'update_search_index.py', 'auto_generate_calendar.py', 'generate_calendar.py', 'instructions_for_ai.md', '.gitignore', '.nojekyll']
     for it in items:
         s = os.path.join(src_dir, it)
         d = os.path.join(dst_dir, it)
+        if os.path.exists(s):
+            try:
+                shutil.copy2(s, d)
+            except Exception as e:
+                print(f"[同期警告] {it} のコピーに失敗: {e}")
     # 全月フォルダの同期（存在する月フォルダすべて）
     for entry in os.listdir(src_dir):
         if entry.isdigit() and len(entry) == 6:
@@ -1293,7 +1309,7 @@ def sync_and_push_to_github(src_dir, target_month_str):
     # Git Commit & Push
     try:
         subprocess.run(["git", "add", "."], cwd=dst_dir, capture_output=True, check=True)
-        commit_res = subprocess.run(["git", "commit", "-m", f"Auto update calendar for {target_month_str}"], cwd=dst_dir, capture_output=True, text=True)
+        commit_res = subprocess.run(["git", "commit", "-m", f"Auto update calendar & search index for {target_month_str}"], cwd=dst_dir, capture_output=True, text=True)
         print(f"[GitHub自動同期] コミット完了: {commit_res.stdout.strip() if commit_res.stdout else '変更なし'}")
         push_res = subprocess.run(["git", "push", "origin", "main"], cwd=dst_dir, capture_output=True, text=True)
         print(f"[GitHub自動同期] GitHubへプッシュ完了！\n公開URL: https://jamaisvu0404.github.io/like/")
@@ -1302,3 +1318,4 @@ def sync_and_push_to_github(src_dir, target_month_str):
 
 if __name__ == "__main__":
     main()
+
