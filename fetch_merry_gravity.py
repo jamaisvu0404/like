@@ -1,6 +1,6 @@
 """
 プライズ重心情報（Merry✩An、831生活、あかり、もぐらクレーン）2026年分
-カレンダー形式（calendar.htmlデザイン統一版）収集＆HTML生成スクリプト
+calendar.html完全互換デザイン＆列数切替システム 収集＆HTML生成スクリプト
 """
 
 import os
@@ -12,7 +12,6 @@ import requests
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-# 実行ディレクトリ
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_JSON_PATH = os.path.join(BASE_DIR, "gravity_data.json")
 OUTPUT_HTML_PATH = os.path.join(BASE_DIR, "gravity.html")
@@ -20,7 +19,6 @@ PRIZE_HTML_PATH = os.path.join(BASE_DIR, "prize_gravity_viewer.html")
 
 SUPABASE_URL = "https://cguiwksdixdgxaebbwye.supabase.co"
 
-# 対象アカウント
 TARGET_AUTHORS = {
     "merry": {
         "name": "Merry☆An",
@@ -70,20 +68,17 @@ def get_supabase_key():
     return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNndWl3a3NkaXhkZ3hhZWJid3llIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjgzMDUyMzksImV4cCI6MjA0Mzg4MTIzOX0.N-J1oMhK49g2vW9uW-K4Ff0bS5X8Z9"
 
 def fetch_anime_titles(headers):
-    print("作品タイトルマスタを取得中...")
     anime_map = {}
     try:
         r = requests.get(f"{SUPABASE_URL}/rest/v1/anime_titles?select=id,title,sub_title,reading_kana&limit=2000", headers=headers, timeout=15)
         if r.status_code == 200:
             for item in r.json():
                 anime_map[item['id']] = item
-            print(f"-> {len(anime_map)} 件の作品タイトルを取得しました。")
     except Exception as e:
         print(f"Error fetching anime titles: {e}")
     return anime_map
 
 def fetch_all_cog_records(headers, limit_total=None):
-    print("重心情報レコードのインデックスを取得中...")
     all_records = []
     page_size = 1000
     offset = 0
@@ -97,7 +92,6 @@ def fetch_all_cog_records(headers, limit_total=None):
             if not items:
                 break
             all_records.extend(items)
-            print(f"-> {len(all_records)} 件取得済み...")
             if limit_total and len(all_records) >= limit_total:
                 all_records = all_records[:limit_total]
                 break
@@ -105,16 +99,13 @@ def fetch_all_cog_records(headers, limit_total=None):
                 break
             offset += page_size
         except Exception as e:
-            print(f"Exception during pagination: {e}")
             break
-    print(f"合計 {len(all_records)} 件のレコードインデックスを取得しました。")
     return all_records
 
 def clean_url_or_text(s):
     if not s:
         return ""
-    cleaned = re.sub(r'https?://t\.co/[a-zA-Z0-9]+', '', s).strip()
-    return cleaned
+    return re.sub(r'https?://t\.co/[a-zA-Z0-9]+', '', s).strip()
 
 def parse_tweet_content(text, author_name, anime_title=""):
     if not text:
@@ -129,7 +120,6 @@ def parse_tweet_content(text, author_name, anime_title=""):
     condition_details = []
     tags = set()
 
-    # 景品名の抽出
     name_candidates = []
     for line in lines:
         if any(line.startswith(prefix) for prefix in ['＃重心情報', '#重心情報', '重心情報', '#cranity', '#クレーンゲーム']):
@@ -292,9 +282,8 @@ def collect_data(limit_records=3500, target_year="2026"):
                     c_date = str(item.get('created_at', ''))
                     if not target_year or c_date.startswith(target_year):
                         existing_items[item['tweet_id']] = item
-            print(f"既存キャッシュから {len(existing_items)} 件（{target_year}年分）をロードしました。")
-        except Exception as e:
-            print(f"Warning loading cache: {e}")
+        except Exception:
+            pass
 
     unique_items = []
     seen_ids = set()
@@ -304,21 +293,13 @@ def collect_data(limit_records=3500, target_year="2026"):
             seen_ids.add(tid)
             unique_items.append(rec)
             
-    print(f"チェック対象のユニークツイート数: {len(unique_items)} 件")
     to_fetch = [item for item in unique_items if item['tweet_id'] not in existing_items]
-    print(f"新規取得が必要なツイート数: {len(to_fetch)} 件")
     
     new_count = 0
     if to_fetch:
-        print("ツイート詳細を並行ダウンロード中 (15スレッド)...")
         with ThreadPoolExecutor(max_workers=15) as executor:
             future_to_item = {executor.submit(fetch_single_tweet, item['tweet_id']): item for item in to_fetch}
-            completed = 0
             for future in as_completed(future_to_item):
-                completed += 1
-                if completed % 100 == 0 or completed == len(to_fetch):
-                    print(f"-> 進行状況: {completed}/{len(to_fetch)} 完了")
-                
                 item = future_to_item[future]
                 tid, tweet_data = future.result()
                 if not tweet_data:
@@ -402,21 +383,15 @@ def collect_data(limit_records=3500, target_year="2026"):
         item['tags'] = parsed.get('tags', [])
         final_dict[tid] = item
 
-    print(f"収集完了: 新規 {new_count} 件を追加、2026年分合計 {len(final_dict)} 件の重心情報を保持。")
-    
     final_list = list(final_dict.values())
     final_list.sort(key=lambda x: str(x.get('created_at', '')), reverse=True)
     
     with open(DATA_JSON_PATH, "w", encoding="utf-8") as f:
         json.dump(final_list, f, ensure_ascii=False, indent=2)
-    print(f"データを保存しました: {DATA_JSON_PATH}")
     
     return final_list
 
 def generate_html(gravity_items):
-    """calendar.htmlと完全に同一のUI・レイアウト形式で重心情報ビューアを生成"""
-    print("カレンダー形式の重心ビューアHTMLを生成中...")
-    
     total_count = len(gravity_items)
     anime_titles = sorted(list({item.get('anime_title', 'その他') for item in gravity_items if item.get('anime_title')}))
     updated_time = datetime.now().strftime('%Y年%m月%d日 %H:%M')
@@ -533,6 +508,38 @@ def generate_html(gravity_items):
         gap: 3px;
     }}
 
+    /* モード切替ボタングループ */
+    .mode-btn-group {{
+        display: inline-flex;
+        background: rgba(0,0,0,0.25);
+        padding: 2px;
+        border-radius: 6px;
+        border: 1px solid rgba(255,255,255,0.2);
+    }}
+    .mode-btn {{
+        padding: 4px 10px;
+        border: none;
+        background: transparent;
+        color: rgba(255,255,255,0.85);
+        font-size: 11.5px;
+        font-weight: 700;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.15s ease;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }}
+    .mode-btn.active {{
+        background: #ffffff;
+        color: var(--primary-dark);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }}
+    .mode-btn.active.mercari-mode {{
+        background: var(--mercari);
+        color: #ffffff;
+    }}
+
     /* 検索バー */
     .search-input-box {{
         padding: 5px 12px;
@@ -543,7 +550,7 @@ def generate_html(gravity_items):
         color: #0f172a;
         font-weight: 600;
         outline: none;
-        min-width: 220px;
+        min-width: 200px;
     }}
     .search-input-box:focus {{
         border-color: #ffffff;
@@ -560,7 +567,7 @@ def generate_html(gravity_items):
         font-weight: 700;
         outline: none;
         cursor: pointer;
-        max-width: 180px;
+        max-width: 170px;
     }}
 
     /* 列数切替ボタン */
@@ -802,7 +809,6 @@ def generate_html(gravity_items):
         gap: 3px;
     }}
     
-    /* 作品・タイトル */
     .anime-tag {{
         font-size: 9px;
         font-weight: 800;
@@ -852,7 +858,7 @@ def generate_html(gravity_items):
         line-height: 1.2;
     }}
     
-    /* スペック（サイズ・重量・可動） */
+    /* スペック */
     .item-specs {{
         font-size: 9px;
         color: #64748b;
@@ -881,6 +887,39 @@ def generate_html(gravity_items):
     }}
     .card-x-link:hover {{
         text-decoration: underline;
+    }}
+
+    /* トースト通知 */
+    #toast {{
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: rgba(15, 23, 42, 0.92);
+        color: #ffffff;
+        padding: 8px 16px;
+        border-radius: 25px;
+        font-size: 12px;
+        font-weight: 600;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        backdrop-filter: blur(8px);
+        pointer-events: none;
+        z-index: 99999;
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+        opacity: 0;
+        max-width: 90%;
+        text-align: center;
+    }}
+    #toast.show {{
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }}
+    #toast .toast-icon {{
+        color: #4ade80;
+        font-size: 14px;
     }}
 
     /* モーダル */
@@ -974,11 +1013,6 @@ def generate_html(gravity_items):
         line-height: 1.6;
         border: 1px solid #e2e8f0;
     }}
-
-    /* ライトボックス */
-    #imageLightbox {{
-        background: rgba(0,0,0,0.88);
-    }}
 </style>
 </head>
 <body>
@@ -988,7 +1022,12 @@ def generate_html(gravity_items):
     <div class="header">
         <div class="header-top">
             <div class="header-left">
-                <a href="index.html" class="nav-top-btn">🏠 カレンダー目次</a>
+                <a href="index.html" class="nav-top-btn">
+                    <span>🏠</span><span>トップへ</span>
+                </a>
+                <a href="index.html" class="nav-top-btn" style="background: rgba(255,255,255,0.35); color: #ffffff;">
+                    <span>🔍</span><span>全月検索</span>
+                </a>
                 <h1>プライズフィギュア 重心情報データベース (2026年)</h1>
             </div>
             <div style="font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.9);">
@@ -999,30 +1038,37 @@ def generate_html(gravity_items):
         <!-- ツールバー -->
         <div class="header-toolbar">
             <div class="toolbar-group">
-                <span class="toolbar-label">🔍 検索:</span>
-                <input type="text" id="searchInput" class="search-input-box" placeholder="景品名、作品名、重心キーワードで検索...">
+                <span class="toolbar-label">クリック:</span>
+                <div class="mode-btn-group">
+                    <button type="button" class="mode-btn active" id="modeBtnDetail" onclick="setClickMode('detail')">
+                        <span>🔍</span> 詳細・重心
+                    </button>
+                    <button type="button" class="mode-btn" id="modeBtnMercari" onclick="setClickMode('mercari')">
+                        <span>🔴</span> メルカリ
+                    </button>
+                </div>
             </div>
 
+            <!-- 表示列数ボタングループ（calendar.html完全互換 2列〜8列） -->
             <div class="toolbar-group">
-                <span class="toolbar-label">🏷️ 作品:</span>
+                <span class="toolbar-label">表示列数:</span>
+                <div class="col-btn-group">
+                    <button type="button" class="col-btn" id="colBtn2" onclick="setGridColumns(2)">2列</button>
+                    <button type="button" class="col-btn" id="colBtn3" onclick="setGridColumns(3)">3列</button>
+                    <button type="button" class="col-btn" id="colBtn4" onclick="setGridColumns(4)">4列</button>
+                    <button type="button" class="col-btn" id="colBtn5" onclick="setGridColumns(5)">5列</button>
+                    <button type="button" class="col-btn" id="colBtn6" onclick="setGridColumns(6)">6列</button>
+                    <button type="button" class="col-btn" id="colBtn7" onclick="setGridColumns(7)">7列</button>
+                    <button type="button" class="col-btn" id="colBtn8" onclick="setGridColumns(8)">8列</button>
+                </div>
+            </div>
+
+            <div class="toolbar-group" style="flex: 1; min-width: 200px; justify-content: flex-end;">
+                <input type="text" id="searchInput" class="search-input-box" placeholder="景品名、作品名、重心で検索...">
                 <select id="animeSelect" class="anime-dropdown">
                     <option value="">全作品 ({len(anime_titles)}作品)</option>
                     {''.join([f'<option value="{title}">{title}</option>' for title in anime_titles])}
                 </select>
-            </div>
-
-            <!-- 列数切替ボタングループ -->
-            <div class="toolbar-group">
-                <span class="toolbar-label">📱 列数:</span>
-                <div class="col-btn-group">
-                    <button type="button" class="col-btn" onclick="changeCols(2, this)">2</button>
-                    <button type="button" class="col-btn" onclick="changeCols(3, this)">3</button>
-                    <button type="button" class="col-btn" onclick="changeCols(4, this)">4</button>
-                    <button type="button" class="col-btn" onclick="changeCols(5, this)">5</button>
-                    <button type="button" class="col-btn" onclick="changeCols(6, this)">6</button>
-                    <button type="button" class="col-btn" onclick="changeCols(7, this)">7</button>
-                    <button type="button" class="col-btn" onclick="changeCols(8, this)">8</button>
-                </div>
             </div>
         </div>
     </div>
@@ -1055,9 +1101,15 @@ def generate_html(gravity_items):
         </div>
     </div>
 
-    <!-- 景品カードグリッド（7列レイアウト） -->
-    <div id="cardsGrid" class="grid"></div>
+    <!-- 景品カードグリッド -->
+    <div id="mainGrid" class="grid"></div>
 
+</div>
+
+<!-- トースト通知 -->
+<div id="toast">
+    <span class="toast-icon">✓</span>
+    <span id="toastMsg">列数を切り替えました</span>
 </div>
 
 <!-- 詳細モーダル -->
@@ -1091,8 +1143,11 @@ def generate_html(gravity_items):
                 <div id="modalRawText" class="modal-raw-text"></div>
             </div>
 
-            <div style="text-align: right;">
-                <a id="modalXLink" href="#" target="_blank" rel="noopener noreferrer" style="font-size: 13px; font-weight: 700; color: #0284c7; text-decoration: none; padding: 6px 14px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <button type="button" id="modalMercariBtn" style="font-size: 12.5px; font-weight: 700; color: #fff; background: var(--mercari); border: none; border-radius: 6px; padding: 6px 14px; cursor: pointer;">
+                    🔴 メルカリ検索 ↗
+                </button>
+                <a id="modalXLink" href="#" target="_blank" rel="noopener noreferrer" style="font-size: 12.5px; font-weight: 700; color: #0284c7; text-decoration: none; padding: 6px 14px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px;">
                     Xで元のポストを見る ↗
                 </a>
             </div>
@@ -1101,7 +1156,7 @@ def generate_html(gravity_items):
 </div>
 
 <!-- ライトボックス -->
-<div id="imageLightbox" class="modal-overlay">
+<div id="imageLightbox" class="modal-overlay" style="background: rgba(0,0,0,0.88);">
     <div style="position: relative; max-width: 90vw; max-height: 90vh;">
         <button id="lightboxCloseBtn" class="modal-close-btn" style="position: absolute; top: -40px; right: 0; color: white; background: rgba(255,255,255,0.2);">&times;</button>
         <img id="lightboxImg" src="" alt="" style="max-width: 100%; max-height: 85vh; border-radius: 8px; object-fit: contain; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
@@ -1111,12 +1166,14 @@ def generate_html(gravity_items):
 <script>
     const PRIZE_DATA = {items_json_str};
 
+    let toastTimeout = null;
+    let currentClickMode = localStorage.getItem('prize_gravity_mode') || 'detail';
     let currentFilter = 'all';
     let currentAuthor = 'all';
     let currentAnime = '';
     let currentSearch = '';
 
-    const cardsGrid = document.getElementById('cardsGrid');
+    const cardsGrid = document.getElementById('mainGrid');
     const searchInput = document.getElementById('searchInput');
     const animeSelect = document.getElementById('animeSelect');
     
@@ -1136,10 +1193,22 @@ def generate_html(gravity_items):
     const modalDate = document.getElementById('modalDate');
     const modalRawText = document.getElementById('modalRawText');
     const modalXLink = document.getElementById('modalXLink');
+    const modalMercariBtn = document.getElementById('modalMercariBtn');
 
     const imageLightbox = document.getElementById('imageLightbox');
     const lightboxImg = document.getElementById('lightboxImg');
     const lightboxCloseBtn = document.getElementById('lightboxCloseBtn');
+
+    function showToast(text) {{
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMsg');
+        toastMsg.innerText = text;
+        toast.classList.add('show');
+        if (toastTimeout) clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {{
+            toast.classList.remove('show');
+        }}, 2000);
+    }}
 
     function openLightbox(url) {{
         lightboxImg.src = url;
@@ -1160,6 +1229,11 @@ def generate_html(gravity_items):
         modalDate.textContent = item.created_at || '-';
         modalRawText.textContent = item.full_text || '';
         modalXLink.href = item.tweet_url;
+
+        modalMercariBtn.onclick = () => {{
+            const url = `https://jp.mercari.com/search?keyword=${{encodeURIComponent(item.prize_name)}}&status=sold_out&sort=created_time&order=desc`;
+            window.open(url, '_blank');
+        }};
 
         modalGravityTags.innerHTML = '';
         if (item.gravity_details && item.gravity_details.length > 0) {{
@@ -1190,6 +1264,69 @@ def generate_html(gravity_items):
     detailModal.addEventListener('click', (e) => {{
         if (e.target === detailModal) detailModal.classList.remove('open');
     }});
+
+    function setClickMode(mode) {{
+        currentClickMode = mode;
+        localStorage.setItem('prize_gravity_mode', mode);
+        updateModeButtons();
+        if (mode === 'mercari') {{
+            showToast('カードタップ時の動作を【メルカリ直接検索】に設定しました');
+        }} else {{
+            showToast('カードタップ時の動作を【詳細・重心プレビュー】に設定しました');
+        }}
+    }}
+
+    function updateModeButtons() {{
+        const btnDetail = document.getElementById('modeBtnDetail');
+        const btnMercari = document.getElementById('modeBtnMercari');
+        if (currentClickMode === 'mercari') {{
+            btnMercari.className = 'mode-btn active mercari-mode';
+            btnDetail.className = 'mode-btn';
+        }} else {{
+            btnDetail.className = 'mode-btn active';
+            btnMercari.className = 'mode-btn';
+        }}
+    }}
+
+    // 表示列数切替（calendar.html完全互換）
+    function setGridColumns(cols, save = true) {{
+        const grid = document.getElementById('mainGrid');
+        if (!grid) return;
+        grid.classList.remove('cols-2', 'cols-3', 'cols-4', 'cols-5', 'cols-6', 'cols-7', 'cols-8');
+        grid.classList.add('cols-' + cols);
+        
+        document.querySelectorAll('.col-btn').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = document.getElementById('colBtn' + cols);
+        if (activeBtn) activeBtn.classList.add('active');
+        
+        if (save) {{
+            localStorage.setItem('prize_gravity_cols', cols);
+            showToast(cols + '列表示に切り替えました');
+        }}
+    }}
+
+    // 初期設定ロード
+    (function initSettings() {{
+        updateModeButtons();
+        const storedCols = localStorage.getItem('prize_gravity_cols');
+        if (storedCols) {{
+            setGridColumns(parseInt(storedCols, 10), false);
+        }} else {{
+            const defaultCol = (window.innerWidth <= 650) ? 3 : 7;
+            setGridColumns(defaultCol, false);
+        }}
+    }})();
+
+    function handleCardClick(tweetId, prizeName) {{
+        if (currentClickMode === 'mercari') {{
+            const url = `https://jp.mercari.com/search?keyword=${{encodeURIComponent(prizeName)}}&status=sold_out&sort=created_time&order=desc`;
+            window.open(url, '_blank');
+            showToast('メルカリ検索を開きました: ' + prizeName);
+        }} else {{
+            const item = PRIZE_DATA.find(i => String(i.tweet_id) === String(tweetId));
+            if (item) openModal(item);
+        }}
+    }}
 
     function filterAndRender() {{
         const query = currentSearch.toLowerCase().trim();
@@ -1272,7 +1409,7 @@ def generate_html(gravity_items):
                 : '';
 
             return `
-                <div class="item-card" onclick="viewItemDetails('${{item.tweet_id}}')">
+                <div class="item-card" onclick="handleCardClick('${{item.tweet_id}}', '${{escapeHtml(item.prize_name)}}')">
                     <div class="img-wrap">
                         <span class="card-author-badge">${{escapeHtml(authorName)}}</span>
                         ${{mainImage 
@@ -1312,35 +1449,6 @@ def generate_html(gravity_items):
             .replace(/'/g, '&#039;');
     }}
 
-    window.viewItemDetails = function(tweetId) {{
-        const item = PRIZE_DATA.find(i => String(i.tweet_id) === String(tweetId));
-        if (item) openModal(item);
-    }};
-
-    // 列数切替機能 (calendar.html完全互換)
-    function changeCols(num, btn) {{
-        document.querySelectorAll('.col-btn').forEach(b => b.classList.remove('active'));
-        if (btn) btn.classList.add('active');
-        
-        cardsGrid.className = 'grid';
-        cardsGrid.classList.add('cols-' + num);
-        localStorage.setItem('prize_gravity_cols', num);
-    }}
-
-    // 初期列数のロード
-    (function initCols() {{
-        const saved = localStorage.getItem('prize_gravity_cols');
-        if (saved) {{
-            const targetBtn = Array.from(document.querySelectorAll('.col-btn')).find(b => b.innerText.trim() === String(saved));
-            changeCols(saved, targetBtn);
-        }} else {{
-            const defaultCol = (window.innerWidth <= 650) ? '3' : '7';
-            const targetBtn = Array.from(document.querySelectorAll('.col-btn')).find(b => b.innerText.trim() === defaultCol);
-            if (targetBtn) targetBtn.classList.add('active');
-        }}
-    }})();
-
-    // イベントリスナー
     searchInput.addEventListener('input', (e) => {{
         currentSearch = e.target.value;
         filterAndRender();
@@ -1382,8 +1490,6 @@ def generate_html(gravity_items):
     print(f"HTMLビューアを生成・保存しました:\n - {OUTPUT_HTML_PATH}\n - {PRIZE_HTML_PATH}")
 
 def main():
-    print("=== プライズ重心情報（calendar.htmlデザイン統一版）収集・生成開始 ===")
-    
     limit_records = 3500
     if len(sys.argv) > 1:
         try:
@@ -1393,7 +1499,6 @@ def main():
 
     data = collect_data(limit_records=limit_records, target_year="2026")
     generate_html(data)
-    print("=== 全工程が完了しました ===")
 
 if __name__ == "__main__":
     main()
