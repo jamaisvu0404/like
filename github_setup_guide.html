@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>【完全保存版】プライズフィギュア カレンダー自動化＆GitHub連携 運用マニュアル</title>
+<style>
+    :root {
+        --primary: #e63946;
+        --primary-dark: #c1121f;
+        --primary-light: #fee2e2;
+        --accent: #0284c7;
+        --accent-bg: #e0f2fe;
+        --accent-green: #16a34a;
+        --green-bg: #dcfce7;
+        --accent-purple: #7c3aed;
+        --purple-bg: #f3e8ff;
+        --bg-body: #f8fafc;
+        --card-bg: #ffffff;
+        --card-border: #e2e8f0;
+        --text-main: #0f172a;
+        --text-sub: #475569;
+        --text-muted: #64748b;
+        --code-bg: #f1f5f9;
+    }
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    body {
+        font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+        background-color: var(--bg-body);
+        color: var(--text-main);
+        line-height: 1.75;
+        padding: 40px 15px;
+        display: flex;
+        justify-content: center;
+    }
+    .container {
+        width: 100%;
+        max-width: 980px;
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+    }
+    
+    /* ヘッダー */
+    header {
+        background: #ffffff;
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        padding: 35px 25px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        position: relative;
+    }
+    .badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #e63946, #ba181b);
+        color: #ffffff;
+        font-size: 11px;
+        font-weight: 800;
+        padding: 5px 14px;
+        border-radius: 20px;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+    }
+    h1 {
+        font-size: 26px;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.35;
+        margin-bottom: 10px;
+    }
+    p.lead {
+        color: var(--text-sub);
+        font-size: 14px;
+        max-width: 760px;
+        margin: 0 auto;
+    }
+
+    /* 目次ナビゲーション */
+    .toc-box {
+        background: #ffffff;
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        padding: 20px 24px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    }
+    .toc-title {
+        font-size: 14px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .toc-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 8px 16px;
+        list-style: none;
+    }
+    .toc-list a {
+        color: var(--accent);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: color 0.15s ease;
+    }
+    .toc-list a:hover {
+        color: var(--primary);
+        text-decoration: underline;
+    }
+
+    /* セクションカード */
+    .card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 14px;
+        padding: 28px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+    .card-title {
+        font-size: 19px;
+        font-weight: 800;
+        color: #0f172a;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #f1f5f9;
+    }
+    .card-title .icon {
+        font-size: 22px;
+    }
+    .section-desc {
+        font-size: 13.5px;
+        color: var(--text-sub);
+        margin-bottom: 18px;
+    }
+
+    /* システム全体図（フローチャート） */
+    .flow-diagram {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin: 16px 0;
+    }
+    .flow-step {
+        display: flex;
+        align-items: center;
+        background: #f8fafc;
+        border: 1px solid var(--card-border);
+        border-radius: 10px;
+        padding: 14px 18px;
+        gap: 16px;
+    }
+    .flow-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+    }
+    .flow-1 { background: #fee2e2; color: #b91c1c; }
+    .flow-2 { background: #e0f2fe; color: #0369a1; }
+    .flow-3 { background: #fef3c7; color: #b45309; }
+    .flow-4 { background: #dcfce7; color: #15803d; }
+    .flow-content h4 {
+        font-size: 14px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 2px;
+    }
+    .flow-content p {
+        font-size: 12.5px;
+        color: var(--text-sub);
+        margin: 0;
+    }
+    .flow-arrow {
+        text-align: center;
+        font-size: 16px;
+        color: #94a3b8;
+        line-height: 1;
+    }
+
+    /* プロンプトボックス */
+    .prompt-box {
+        background: #ffffff;
+        border: 1px solid var(--card-border);
+        border-left: 4px solid var(--primary);
+        border-radius: 10px;
+        padding: 16px 18px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .prompt-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    .prompt-label {
+        font-size: 12.5px;
+        font-weight: 800;
+        color: var(--primary-dark);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .copy-btn {
+        background: #f1f5f9;
+        border: 1px solid #cbd5e1;
+        color: #0f172a;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    .copy-btn:hover {
+        background: var(--primary);
+        color: #ffffff;
+        border-color: var(--primary);
+    }
+    .prompt-text {
+        font-family: 'Consolas', 'Courier New', monospace;
+        font-size: 13px;
+        background: var(--code-bg);
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 10px 12px;
+        color: #0f172a;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        word-break: break-all;
+    }
+
+    /* ステップカード */
+    .steps-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .step-card {
+        border: 1px solid var(--card-border);
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 18px;
+        display: flex;
+        gap: 16px;
+    }
+    .step-badge {
+        width: 32px;
+        height: 32px;
+        background: var(--primary);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 800;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 2px 6px rgba(230, 57, 70, 0.3);
+    }
+    .step-body {
+        flex: 1;
+    }
+    .step-body h4 {
+        font-size: 14.5px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 6px;
+    }
+    .step-body p {
+        font-size: 13px;
+        color: var(--text-sub);
+        line-height: 1.55;
+    }
+    .code-inline {
+        background: #e2e8f0;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 12px;
+        font-weight: bold;
+        color: #0f172a;
+    }
+    .code-block {
+        background: #0f172a;
+        color: #f8fafc;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-family: 'Consolas', monospace;
+        font-size: 12.5px;
+        line-height: 1.5;
+        margin: 10px 0;
+        overflow-x: auto;
+    }
+    .code-block .comment {
+        color: #94a3b8;
+    }
+    .code-block .cmd {
+        color: #38bdf8;
+        font-weight: bold;
+    }
+
+    /* 機能グリッド */
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 14px;
+    }
+    .feature-card {
+        background: #f8fafc;
+        border: 1px solid var(--card-border);
+        border-radius: 10px;
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .feature-card .f-icon {
+        font-size: 26px;
+    }
+    .feature-card h4 {
+        font-size: 14px;
+        font-weight: 800;
+        color: #0f172a;
+    }
+    .feature-card p {
+        font-size: 12.5px;
+        color: var(--text-sub);
+        line-height: 1.5;
+    }
+    .feature-card .f-tag {
+        font-size: 10.5px;
+        font-weight: 700;
+        color: var(--accent);
+        background: var(--accent-bg);
+        padding: 2px 8px;
+        border-radius: 4px;
+        width: fit-content;
+    }
+
+    /* テーブル */
+    .styled-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 13px;
+    }
+    .styled-table th, .styled-table td {
+        padding: 12px 14px;
+        border: 1px solid var(--card-border);
+        text-align: left;
+    }
+    .styled-table th {
+        background: #f1f5f9;
+        color: #0f172a;
+        font-weight: 800;
+    }
+    .styled-table td {
+        color: var(--text-sub);
+        line-height: 1.5;
+    }
+    .styled-table tr:nth-child(even) td {
+        background: #fafafa;
+    }
+
+    /* コールアウト */
+    .alert-box {
+        background: #eff6ff;
+        border-left: 4px solid #3b82f6;
+        border-radius: 8px;
+        padding: 14px 18px;
+        font-size: 13px;
+        color: #1e40af;
+        margin-top: 14px;
+    }
+    .alert-box strong {
+        color: #1e3a8a;
+    }
+    .alert-box.green {
+        background: #f0fdf4;
+        border-left-color: #22c55e;
+        color: #166534;
+    }
+    .alert-box.green strong {
+        color: #14532d;
+    }
+    .alert-box.amber {
+        background: #fffbeb;
+        border-left-color: #f59e0b;
+        color: #92400e;
+    }
+    .alert-box.amber strong {
+        color: #78350f;
+    }
+
+    /* トースト */
+    #toast {
+        position: fixed;
+        bottom: 25px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: #0f172a;
+        color: #ffffff;
+        padding: 10px 22px;
+        border-radius: 30px;
+        font-size: 13px;
+        font-weight: 700;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 9999;
+    }
+    #toast.show {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="badge">完全運用マニュアル（保存版）</div>
+        <h1>プライズフィギュア カレンダー自動化＆GitHub連携<br>完全技術解説＆操作ガイド</h1>
+        <p class="lead">AIが裏側で「どうやってファイルを生成し、どういうGit操作でGitHubにアップロードしているのか？」を初心者にもわかりやすく図解・解説しています。</p>
+    </header>
+
+    <!-- 目次 -->
+    <div class="toc-box">
+        <div class="toc-title"><span>📑</span> <span>目次</span></div>
+        <ul class="toc-list">
+            <li><a href="#sec-github-deep">★ 【最重要】AIがGitHubにアップする詳細な仕組み</a></li>
+            <li><a href="#sec1">1. システム全体の仕組み（全体像）</a></li>
+            <li><a href="#sec2">2. AIへの指示の出し方（プロンプト集）</a></li>
+            <li><a href="#sec3">3. 別のパソコンで作業する時の手順</a></li>
+            <li><a href="#sec4">4. AIが裏で自動実行している処理一覧</a></li>
+            <li><a href="#sec5">5. スマホでアプリのように使う方法</a></li>
+            <li><a href="#sec6">6. トラブルシューティング ＆ FAQ</a></li>
+        </ul>
+    </div>
+
+    <!-- ★ 最重要：GitHubアップロードの超詳細解説 -->
+    <div class="card" id="sec-github-deep" style="border: 2px solid var(--accent);">
+        <div class="card-title" style="color: var(--accent);">
+            <span class="icon">🔬</span>
+            <span>【超詳細解説】AIはどうやってGitHubにアップロードしているのか？</span>
+        </div>
+        <p class="section-desc">
+            「Googleドライブ上のファイルをどうやってGitHubに送っているのか？」「なぜスマホから即座に見られるのか？」という裏側の技術と操作フローを完全解説します。
+        </p>
+
+        <h3 style="font-size: 15px; color: #0f172a; margin: 18px 0 8px;">1. Googleドライブの制約と「ローカル中継」の仕組み</h3>
+        <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 12px;">
+            Googleドライブ（<code>H:\マイドライブ</code>）はクラウド同期を行っているため、Gitの管理ファイル（<code>.git</code>）を直接置くとファイルロック競合エラーが発生します。<br>
+            そこでAIは、<strong>パソコン内の高速なローカルフォルダ（<code>C:\Users\pande\prize-calendar</code>）を専用の中継地点</strong>として用意し、そこからGitHubへ安全に送信しています。
+        </p>
+
+        <div class="alert-box amber">
+            ⚠️ <strong>Googleドライブのロック問題を防ぐ工夫</strong>:
+            <code>H:\マイドライブ</code>（元データ保管） ➔ <code>C:\Users\pande\prize-calendar</code>（Git中継地点） ➔ <code>GitHub（クラウド）</code> という3段構造で確実にエラーを回避しています。
+        </div>
+
+        <h3 style="font-size: 15px; color: #0f172a; margin: 24px 0 8px;">2. AIが自動実行している5つのGitステップ（コマンドの全貌）</h3>
+        <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 12px;">
+            カレンダーHTMLの生成が終わると、AIのスクリプト（<code>auto_generate_calendar.py</code>）の末尾にある <code>sync_and_push_to_github()</code> 関数が自動的に起動し、以下の5段階のコマンドをミリ秒単位で連続実行しています。
+        </p>
+
+        <div class="steps-container">
+            <!-- Step 1 -->
+            <div class="step-card">
+                <div class="step-badge" style="background: var(--accent);">1</div>
+                <div class="step-body">
+                    <h4>ファイルの最新同期（Python shutilコピー）</h4>
+                    <p>生成された最新のカレンダーHTML（<code>202611/calendar.html</code>）、画像データ、トップページ（<code>index.html</code>）、設定ファイル（<code>.nojekyll</code>）を中継フォルダへ自動コピーします。</p>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card">
+                <div class="step-badge" style="background: var(--accent);">2</div>
+                <div class="step-body">
+                    <h4>アップロード対象の登録（ステージング）</h4>
+                    <p>変更されたファイルや新しく作られた月フォルダを、Gitの送信待ちリスト（ステージ）に登録します。</p>
+                    <div class="code-block">
+                        <span class="comment"># 変更があった全ファイルを送信準備リストに追加</span><br>
+                        <span class="cmd">git add .</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card">
+                <div class="step-badge" style="background: var(--accent);">3</div>
+                <div class="step-body">
+                    <h4>履歴の確定（コミット）</h4>
+                    <p>「何年何月のカレンダーを更新したか」という記録（スナップショット）を作成し、変更履歴を確定します。</p>
+                    <div class="code-block">
+                        <span class="comment"># 更新メッセージを添えてコミットを記録</span><br>
+                        <span class="cmd">git commit -m "Auto update calendar for 202611"</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="step-card">
+                <div class="step-badge" style="background: var(--accent);">4</div>
+                <div class="step-body">
+                    <h4>GitHubクラウドへ暗号化送信（プッシュ）</h4>
+                    <p>インターネット経由でGitHub上のリモートリポジトリ（<code>https://github.com/jamaisvu0404/like.git</code>）へ最新データを一括送信（push）します。</p>
+                    <div class="code-block">
+                        <span class="comment"># mainブランチへデータをアップロード</span><br>
+                        <span class="cmd">git push origin main</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="step-card">
+                <div class="step-badge" style="background: var(--accent);">5</div>
+                <div class="step-body">
+                    <h4>GitHub Pagesによる自動ビルド＆全世界配信</h4>
+                    <p>データを受け取ったGitHub側のサーバーが、即座に「GitHub Pagesビルド」を自動開始。約15〜30秒で世界中のCDNサーバーに配信され、スマホから <code>https://jamaisvu0404.github.io/like/</code> で閲覧できるようになります。</p>
+                </div>
+            </div>
+        </div>
+
+        <h3 style="font-size: 15px; color: #0f172a; margin: 24px 0 8px;">3. 「.nojekyll」ファイルを入れている重要な理由</h3>
+        <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 8px;">
+            GitHub Pagesは標準で「Jekyll（静的サイト生成ツール）」というシステムが動いています。このシステムは <code>202611</code> や <code>_images</code> のような特殊なフォルダ名を勝手に無視して除外してしまう仕様があります。<br>
+            AIはリポジトリの直下に空の <strong><code>.nojekyll</code></strong> というファイルを自動配置することで、<strong>「Jekyllを無効化し、フォルダ構造やHTML・画像をそのまま100%忠実にWeb公開せよ」</strong> とGitHubに命令しています。
+        </p>
+
+        <div class="alert-box green">
+            🎯 <strong>まとめ</strong>: あなたが「11月も作って」とAIに言うだけで、AIが画像のダウンロードからカレンダーHTML生成、中継地点への同期、Gitコミット、GitHubへのプッシュ、GitHub PagesのWeb配信までを<strong>すべて1本のスクリプトで完全に自動処理</strong>しています！
+        </div>
+    </div>
+
+    <!-- セクション1: 全体像 -->
+    <div class="card" id="sec1">
+        <div class="card-title">
+            <span class="icon">🗺️</span>
+            <span>1. システム全体の仕組み（全体像）</span>
+        </div>
+        <p class="section-desc">あなたがURLをAIに伝えるだけで、以下の4ステップがすべて全自動で連動して実行されます。</p>
+
+        <div class="flow-diagram">
+            <div class="flow-step">
+                <div class="flow-icon flow-1">🌐</div>
+                <div class="flow-content">
+                    <h4>① WEBサイトから最新情報を収集</h4>
+                    <p>指定したURL（tokutame.net）から、各フィギュアの商品名・メーカー・サイズ・入荷予定日・高画質画像を自動取得。</p>
+                </div>
+            </div>
+            <div class="flow-arrow">▼</div>
+            <div class="flow-step">
+                <div class="flow-icon flow-2">🧠</div>
+                <div class="flow-content">
+                    <h4>② メルカリ検索用にキーワードを賢く自動最適化</h4>
+                    <p>英語名のカタカナ変換（LUFFY→ルフィ等）、作品名（初音ミク等）の補完、不要な英語シリーズ名の除外、全記号の除去を一瞬で実行。</p>
+                </div>
+            </div>
+            <div class="flow-arrow">▼</div>
+            <div class="flow-step">
+                <div class="flow-icon flow-3">🎨</div>
+                <div class="flow-content">
+                    <h4>③ スマホ専用3列カレンダーHTMLを自動生成</h4>
+                    <p>完全ライトモードの美しいUI、メルカリ直接検索ボタン、箱無し追加機能、列数切替（2列/3列/4列）を備えたHTMLを作成。</p>
+                </div>
+            </div>
+            <div class="flow-arrow">▼</div>
+            <div class="flow-step">
+                <div class="flow-icon flow-4">☁️</div>
+                <div class="flow-content">
+                    <h4>④ GitHubへ自動送信 ➔ スマホから即座にアクセス可能</h4>
+                    <p>自動でGitHub（jamaisvu0404/like）にプッシュされ、無料のWebサイトとして全世界のスマホから閲覧可能に。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- セクション2: プロンプト集 -->
+    <div class="card" id="sec2">
+        <div class="card-title">
+            <span class="icon">💬</span>
+            <span>2. AIへの指示の出し方（コピペ用プロンプト集）</span>
+        </div>
+        <p class="section-desc">やりたいことに応じて、以下の枠内の文章をコピーしてAIのチャット欄に貼り付けるだけでOKです。</p>
+
+        <!-- パターン1 -->
+        <div class="prompt-box">
+            <div class="prompt-header">
+                <span class="prompt-label">📋 パターンA：新しい月のカレンダーを追加・更新したいとき（一番使う）</span>
+                <button class="copy-btn" onclick="copyPrompt('p1', this)">コピー</button>
+            </div>
+            <div class="prompt-text" id="p1">https://tokutame.net/prize-matome-202611/
+このURLからカレンダーHTMLを自動生成して、GitHub（スマホ用Webサイト）にも自動でアップロード・公開して！</div>
+        </div>
+
+        <!-- パターン2 -->
+        <div class="prompt-box" style="border-left-color: #7c3aed;">
+            <div class="prompt-header">
+                <span class="prompt-label" style="color: #6d28d9;">🚀 パターンB：別のパソコンで初めて作業するとき</span>
+                <button class="copy-btn" onclick="copyPrompt('p2', this)">コピー</button>
+            </div>
+            <div class="prompt-text" id="p2">新しいパソコンでプライズフィギュアのカレンダーを作りたいです。
+instructions_for_ai.md の手順に従って、GitHubの連携設定からカレンダー生成・Webサイト公開まで全自動でやって！
+URL: https://tokutame.net/prize-matome-202611/</div>
+        </div>
+
+        <!-- パターン3 -->
+        <div class="prompt-box" style="border-left-color: #0284c7;">
+            <div class="prompt-header">
+                <span class="prompt-label" style="color: #0369a1;">🔄 パターンC：複数月をまとめて一括作成したいとき</span>
+                <button class="copy-btn" onclick="copyPrompt('p3', this)">コピー</button>
+            </div>
+            <div class="prompt-text" id="p3">2026年11月、12月のカレンダーをまとめて作成してGitHubに公開して！
+・11月: https://tokutame.net/prize-matome-202611/
+・12月: https://tokutame.net/prize-matome-202612/</div>
+        </div>
+
+        <!-- パターン4 -->
+        <div class="prompt-box" style="border-left-color: #16a34a;">
+            <div class="prompt-header">
+                <span class="prompt-label" style="color: #15803d;">🎯 パターンD：特定のキャラクター名や作品名の変換ルールを追加したいとき</span>
+                <button class="copy-btn" onclick="copyPrompt('p4', this)">コピー</button>
+            </div>
+            <div class="prompt-text" id="p4">メルカリ検索キーワードの変換ルールに「〇〇」の作品名として「△△」を追加して、カレンダーを再生成してGitHubにプッシュして！</div>
+        </div>
+
+        <div class="alert-box green">
+            ✅ <strong>自動連携済み</strong>: AIはフォルダ内の <code>instructions_for_ai.md</code>（仕様指示書）を自動で読み込んで動くため、細かいコマンドや設定をあなたが覚える必要はありません。
+        </div>
+    </div>
+
+    <!-- セクション3: 別PCでの手順 -->
+    <div class="card" id="sec3">
+        <div class="card-title">
+            <span class="icon">💻</span>
+            <span>3. 別のパソコン・別アカウントで作業する際の手順</span>
+        </div>
+        <p class="section-desc">会社のPCや新しいノートパソコン等で作業する場合も、以下のわずか3ステップで完了します。</p>
+
+        <div class="steps-container">
+            <div class="step-card">
+                <div class="step-badge">1</div>
+                <div class="step-body">
+                    <h4>Googleドライブまたは作業フォルダを開く</h4>
+                    <p>新しいパソコンで、この <code>web情報まとめ</code> フォルダをAntigravity（またはVS Code等の開発環境）で開きます。</p>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-badge">2</div>
+                <div class="step-body">
+                    <h4>AIにプロンプト（パターンB）を送信する</h4>
+                    <p>チャット欄に「別のPCでカレンダーを作りたいです。instructions_for_ai.mdに従ってやって」とURLを送信します。</p>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-badge">3</div>
+                <div class="step-body">
+                    <h4>GitHubの初回ログイン（8桁コード承認：初回1回のみ・30秒）</h4>
+                    <p>新しいパソコンから初めてGitHubにデータを送る時だけ、AIから「8桁のコード（例: <span class="code-inline">5F15-302C</span>）」が案内されます。<br>
+                    案内されたリンク（<a href="https://github.com/login/device" target="_blank" style="color:var(--accent);">https://github.com/login/device</a>）をブラウザで開き、コードを貼り付けて承認ボタンを1回押すだけで完了です。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert-box">
+            💡 <strong>これだけでOK！</strong>: 承認後は、AIがGitの設定、ファイルのコミット、GitHubへのプッシュ、Webサイトの公開までをすべて自動で完了させます。
+        </div>
+    </div>
+
+    <!-- セクション4: AIが自動実行する処理一覧 -->
+    <div class="card" id="sec4">
+        <div class="card-title">
+            <span class="icon">🤖</span>
+            <span>4. AIが裏で自動実行している処理一覧（全機能解説）</span>
+        </div>
+        <p class="section-desc">手作業で行うと膨大な時間がかかる以下の作業を、AIがプログラムを通じて100%全自動で処理しています。</p>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="f-icon">🕷️</div>
+                <span class="f-tag">データ自動収集</span>
+                <h4>高速スクレイピング＆画像キャッシュ</h4>
+                <p>WEBページから商品名、メーカー、サイズ、予定日、画像を自動取得。既に保存されている画像は再ダウンロードせず高速に処理します。</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="f-icon">🎯</div>
+                <span class="f-tag">メルカリ最適化</span>
+                <h4>作品名スマート補完ロジック</h4>
+                <p>「くらげ」👉「初音ミク くらげ」、「ハム」👉「トイストーリー ハム」のように、単体では検索で埋もれる単語に正確な作品名を自動付与します。</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="f-icon">🔤</div>
+                <span class="f-tag">メルカリ最適化</span>
+                <h4>英語キャラ名のカナ自動変換</h4>
+                <p><code>MONKEY.D.LUFFY GEAR5</code> 👉 <code>モンキー D ルフィ ギア5</code> のように、メルカリで一番ヒットしやすい日本語・カタカナ表記に自動変換します。</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="f-icon">✂️</div>
+                <span class="f-tag">メルカリ最適化</span>
+                <h4>不要英語シリーズ名＆記号の全除去</h4>
+                <p><code>BANPRESTO EVOLVE</code> や <code>HUNTING ARCHIVES</code> 等の邪魔な英語を自動カット。「・」「.」「-」「~」「!」等の全記号をスペース化します。</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="f-icon">📱</div>
+                <span class="f-tag">スマホUI</span>
+                <h4>スマホ3列標準 ＆ 列数切替機能</h4>
+                <p>スマホでは画面に6〜9個以上並ぶ3列表示。ツールバーで「2列」「3列」「4列（12個以上）」にワンタップで切り替え可能です（設定は自動保存）。</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="f-icon">🔴</div>
+                <span class="f-tag">相場リサーチ</span>
+                <h4>メルカリ直接検索ボタン</h4>
+                <p>各カードの「🔴 メルカリ」を押すと、「売り切れ (sold_out)」＋「新しい順 (created_time)」の相場検索結果が別タブで一発で開きます。</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="f-icon">📦</div>
+                <span class="f-tag">相場リサーチ</span>
+                <h4>「箱無し」末尾キーワード機能</h4>
+                <p>「箱無し」「未開封」「箱あり」などのキーワードをワンクリックで付加。検索時にも自動で「〇〇 フィギュア 箱無し」として検索されます。</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="f-icon">☀️</div>
+                <span class="f-tag">デザイン</span>
+                <h4>完全ライトモード（清潔感のある白基調）</h4>
+                <p>見やすく明るいライトグレーと純白カード、読みやすいダークテキストで統一。屋外やスマホ画面でもクッキリ見えます。</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="f-icon">☁️</div>
+                <span class="f-tag">自動デプロイ</span>
+                <h4>GitHub Pagesへの完全自動プッシュ</h4>
+                <p>カレンダー生成完了後、ローカルの一時フォルダを経由してGitHubへ自動プッシュ。Google Driveのロック問題を回避して確実に公開します。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- セクション5: スマホアプリ化 -->
+    <div class="card" id="sec5">
+        <div class="card-title">
+            <span class="icon">📲</span>
+            <span>5. スマホでアプリのように使う方法（ホーム画面追加）</span>
+        </div>
+        <p class="section-desc">スマホのブラウザで一度「ホーム画面に追加」しておくと、専用アプリのようにワンタップでいつでもカレンダーを起動できます。</p>
+
+        <table class="styled-table">
+            <tr>
+                <th style="width: 25%;">iPhone (Safari)</th>
+                <td>
+                    1. Safariで <strong><a href="https://jamaisvu0404.github.io/like/" target="_blank" style="color:var(--accent);">https://jamaisvu0404.github.io/like/</a></strong> を開きます。<br>
+                    2. 画面下部の中央にある <strong>「共有アイコン（四角から矢印が出ているマーク）」</strong> をタップ。<br>
+                    3. メニューから <strong>「ホーム画面に追加」</strong> を選択して右上の「追加」をタップします。
+                </td>
+            </tr>
+            <tr>
+                <th>Android (Chrome)</th>
+                <td>
+                    1. Chromeで <strong><a href="https://jamaisvu0404.github.io/like/" target="_blank" style="color:var(--accent);">https://jamaisvu0404.github.io/like/</a></strong> を開きます。<br>
+                    2. 画面右上の <strong>「3点リーダー（︙）」</strong> をタップ。<br>
+                    3. メニューから <strong>「ホーム画面に追加」</strong> または「アプリをインストール」をタップします。
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- セクション6: トラブルシューティング -->
+    <div class="card" id="sec6">
+        <div class="card-title">
+            <span class="icon">❓</span>
+            <span>6. トラブルシューティング ＆ よくある質問（FAQ）</span>
+        </div>
+
+        <table class="styled-table">
+            <tr>
+                <th style="width: 30%;">Q. スマホで最新のカレンダーが表示されない</th>
+                <td>
+                    <strong>A. ブラウザのキャッシュが残っている可能性があります。</strong><br>
+                    スマホ画面を一番上までスクロールし、指で下に引っ張って「更新（リロード）」してください。またはブラウザの履歴・キャッシュをクリアすると即座に最新になります。
+                </td>
+            </tr>
+            <tr>
+                <th>Q. メルカリ検索で違う商品が出てしまう</th>
+                <td>
+                    <strong>A. AIに「〇〇のキーワードを△△に変更して」とお伝えください。</strong><br>
+                    AIがキーワード変換辞書（<code>SERIES_CLEAN_MAP</code> など）に新しいルールを追加し、再生成してGitHubに自動プッシュします。
+                </td>
+            </tr>
+            <tr>
+                <th>Q. GitHubの利用料金は本当にかからない？</th>
+                <td>
+                    <strong>A. 完全に永久無料（0円）です。</strong><br>
+                    GitHub Pagesは公開リポジトリであれば完全無料で利用できます。クレジットカードの登録も一切不要です。
+                </td>
+            </tr>
+            <tr>
+                <th>Q. 別のGitHubアカウントに変えたい時は？</th>
+                <td>
+                    <strong>A. AIに「GitHubのアカウントを〇〇に変更したい」とお伝えください。</strong><br>
+                    AIが <code>gh auth login</code> を再実行して新しいアカウントに切り替えます。
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div id="toast">プロンプトをコピーしました！</div>
+
+<script>
+    function copyPrompt(id, btn) {
+        const text = document.getElementById(id).innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2200);
+            
+            const orig = btn.innerText;
+            btn.innerText = "✓ コピー完了";
+            setTimeout(() => {
+                btn.innerText = orig;
+            }, 2000);
+        });
+    }
+</script>
+
+</body>
+</html>
