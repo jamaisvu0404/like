@@ -1279,7 +1279,7 @@ def sync_and_push_to_github(src_dir, target_month_str):
     print(f"\n[GitHub自動同期] {dst_dir} へ最新ファイルを同期中...")
     
     # 必要ファイル・フォルダの同期
-    items = ['index.html', 'search_data.js', 'search_data.json', 'update_search_index.py', 'auto_generate_calendar.py', 'generate_calendar.py', 'instructions_for_ai.md', '.gitignore', '.nojekyll']
+    items = ['index.html', 'gravity.html', 'prize_gravity_viewer.html', 'gravity_data.json', 'fetch_merry_gravity.py', 'search_data.js', 'search_data.json', 'update_search_index.py', 'auto_generate_calendar.py', 'generate_calendar.py', 'instructions_for_ai.md', 'github_setup_guide.html', '.gitignore', '.nojekyll']
     for it in items:
         s = os.path.join(src_dir, it)
         d = os.path.join(dst_dir, it)
