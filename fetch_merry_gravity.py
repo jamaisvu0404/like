@@ -1,5 +1,5 @@
 """
-Merry✩An（@6eS8Jm4YNJpPA2D）プライズ重心情報 収集＆HTML生成スクリプト
+プライズ重心情報（Merry✩An、831生活、あかり、もぐらクレーン）2026年分 収集＆HTML生成スクリプト
 """
 
 import os
@@ -19,6 +19,43 @@ PRIZE_HTML_PATH = os.path.join(BASE_DIR, "prize_gravity_viewer.html")
 
 SUPABASE_URL = "https://cguiwksdixdgxaebbwye.supabase.co"
 
+# 対象アカウント（ユーザー名・スクリーンネーム判定用）
+TARGET_AUTHORS = {
+    "merry": {
+        "name": "Merry☆An",
+        "screen_names": ["6es8jm4ynjppa2d"],
+        "keywords": ["merry", "みりあん"]
+    },
+    "831": {
+        "name": "831生活",
+        "screen_names": ["831suky"],
+        "keywords": ["831生活", "831suky"]
+    },
+    "akari": {
+        "name": "あかり",
+        "screen_names": ["yohane150"],
+        "keywords": ["yohane150", "あかり"]
+    },
+    "mogura": {
+        "name": "もぐらクレーン",
+        "screen_names": ["mogurakurenn"],
+        "keywords": ["mogurakurenn", "もぐらクレーン"]
+    }
+}
+
+def identify_author(user_name, screen_name):
+    """投稿者の識別"""
+    u_lower = (user_name or "").lower()
+    s_lower = (screen_name or "").lower()
+    
+    for key, info in TARGET_AUTHORS.items():
+        if s_lower in info["screen_names"]:
+            return info["name"]
+        for kw in info["keywords"]:
+            if kw in u_lower or kw in s_lower:
+                return info["name"]
+    return None
+
 def get_supabase_key():
     """crane-labのJSチャンクからSupabaseの匿名キーを自動取得"""
     try:
@@ -32,11 +69,10 @@ def get_supabase_key():
                     return keys[0]
     except Exception as e:
         print(f"Warning: Failed to auto-extract Supabase key: {e}")
-    # フォールバック用キー
     return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNndWl3a3NkaXhkZ3hhZWJid3llIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjgzMDUyMzksImV4cCI6MjA0Mzg4MTIzOX0.N-J1oMhK49g2vW9uW-K4Ff0bS5X8Z9"
 
 def fetch_anime_titles(headers):
-    """作品タイトル一覧の取得"""
+    """作品タイトルマスタの取得"""
     print("作品タイトルマスタを取得中...")
     anime_map = {}
     try:
@@ -50,7 +86,7 @@ def fetch_anime_titles(headers):
     return anime_map
 
 def fetch_all_cog_records(headers, limit_total=None):
-    """center_of_gravity テーブルから全件/指定件数をページネーション取得"""
+    """center_of_gravity テーブルからレコードインデックスを取得"""
     print("重心情報レコードのインデックスを取得中...")
     all_records = []
     page_size = 1000
@@ -84,88 +120,146 @@ def fetch_all_cog_records(headers, limit_total=None):
 def clean_url_or_text(s):
     if not s:
         return ""
-    # t.coリンクなどのURLを除去
     cleaned = re.sub(r'https?://t\.co/[a-zA-Z0-9]+', '', s).strip()
     return cleaned
 
-def parse_merry_text(text, anime_title=""):
-    """Merry✩An氏のツイート本文から構造化データを精密抽出"""
+def parse_tweet_content(text, author_name, anime_title=""):
+    """各投稿者のフォーマットに合わせて構造化データをパース"""
     if not text:
         return {}
     
     lines = [line.strip() for line in text.split('\n') if line.strip()]
     
-    # 景品名（商品名）の抽出
-    name_lines = []
+    prize_name = ""
+    fig_size = ""
+    box_weight = ""
+    box_size = ""
+    gravity_details = []
+    condition_details = []
+    tags = set()
+
+    # --- 景品名の抽出 ---
+    name_candidates = []
     for line in lines:
-        if any(line.startswith(prefix) for prefix in ['＃重心情報', '#重心情報', '重心情報']):
+        if any(line.startswith(prefix) for prefix in ['＃重心情報', '#重心情報', '重心情報', '#cranity', '#クレーンゲーム']):
             continue
-        if any(line.startswith(prefix) for prefix in ['🔶', '【', '🟨', 'http', '※', '★', '☆']):
+        if any(line.startswith(prefix) for prefix in ['🔶', '【', '🟨', 'http', '※', '★', '☆', '・']):
             break
-        cleaned_line = clean_url_or_text(line)
-        if cleaned_line:
-            name_lines.append(cleaned_line)
-    
-    prize_name = ' '.join(name_lines).strip()
+        if '重心情報:' in line or '重心情報：' in line:
+            break
+        cleaned = clean_url_or_text(line)
+        # 『』「」を除去
+        cleaned = re.sub(r'^[『「【](.*?)[』」】]$', r'\1', cleaned)
+        if cleaned:
+            name_candidates.append(cleaned)
+
+    prize_name = ' '.join(name_candidates).strip()
+    if not prize_name:
+        # 代替として1行目またはアニメタイトル
+        for line in lines:
+            c = clean_url_or_text(line)
+            if c and not any(c.startswith(p) for p in ['#', '＃', '【', '🟨', '🔶']):
+                prize_name = re.sub(r'^[『「【](.*?)[』」】]$', r'\1', c)
+                break
     if not prize_name:
         prize_name = anime_title or "プライズ景品"
-    
-    # URLや余計な末尾記号のクレンジング
+
+    # クレンジング
     prize_name = clean_url_or_text(prize_name)
     prize_name = re.sub(r'[\s　]+', ' ', prize_name)
 
-    # Figure size
+    # --- スペック抽出 ---
     fig_size_match = re.search(r'【Figure size】?\s*([^\n\r【🔶🟨]+)', text, re.IGNORECASE)
-    fig_size = clean_url_or_text(fig_size_match.group(1).rstrip('】')) if fig_size_match else ""
-    
-    # Box weight
-    box_weight_match = re.search(r'【Box weight】?\s*([^\n\r【🔶🟨]+)', text, re.IGNORECASE)
-    box_weight = clean_url_or_text(box_weight_match.group(1).rstrip('】')) if box_weight_match else ""
-    
-    # Box size
-    box_size_match = re.search(r'【Box size】?\s*([^\n\r【🔶🟨]+)', text, re.IGNORECASE)
-    box_size = clean_url_or_text(box_size_match.group(1).rstrip('】')) if box_size_match else ""
-    
-    # 重心詳細 (🟨 行)
-    gravity_details = []
-    tags = set()
-    for line in lines:
-        if line.startswith('＃') or line.startswith('#'):
-            continue
-        if line.startswith('🟨') or ('重心' in line and not line.startswith('🔶')) or '側重' in line:
-            c = clean_url_or_text(line.replace('🟨', '').strip())
-            if c and c not in gravity_details and c not in ['重心情報', '＃重心情報', '#重心情報']:
-                gravity_details.append(c)
-                if '上' in c:
-                    tags.add('上重心')
-                if '下' in c:
-                    tags.add('下重心')
-                if '裏' in c:
-                    tags.add('裏重心')
-                if '表' in c:
-                    tags.add('表重心')
-                if '左' in c:
-                    tags.add('左重心')
-                if '右' in c:
-                    tags.add('右重心')
-                if '中' in c or '真ん中' in c or 'センター' in c:
-                    tags.add('中央重心')
+    if fig_size_match:
+        fig_size = clean_url_or_text(fig_size_match.group(1).rstrip('】'))
 
-    # 内部挙動・個体差 (🔶 行)
-    condition_details = []
+    box_weight_match = re.search(r'【Box weight】?\s*([^\n\r【🔶🟨]+)', text, re.IGNORECASE) or re.search(r'重量[：:]\s*([^\n\r]+)', text)
+    if box_weight_match:
+        box_weight = clean_url_or_text(box_weight_match.group(1).rstrip('】'))
+
+    box_size_match = re.search(r'【Box size】?\s*([^\n\r【🔶🟨]+)', text, re.IGNORECASE)
+    if box_size_match:
+        box_size = clean_url_or_text(box_size_match.group(1).rstrip('】'))
+
+    # --- 重心情報の抽出 ---
+    # 1. 🟨 行（Merry✩An）
+    for line in lines:
+        if line.startswith('🟨'):
+            c = clean_url_or_text(line.replace('🟨', '').strip())
+            if c and c not in gravity_details:
+                gravity_details.append(c)
+
+    # 2. 831生活スタイル（【獲得個体の重心情報】の後、または「・裏面側が重い」等）
+    in_831_section = False
+    for line in lines:
+        if '【獲得個体の重心情報】' in line or '重心情報' in line:
+            in_831_section = True
+            continue
+        if in_831_section:
+            if line.startswith('・') or line.startswith('-') or '重い' in line or '重心' in line:
+                c = clean_url_or_text(line.lstrip('・- ').strip())
+                if c and c not in gravity_details and not c.startswith('http'):
+                    gravity_details.append(c)
+
+    # 3. あかりスタイル（重心情報: の後の行）
+    for i, line in enumerate(lines):
+        if '重心情報:' in line or '重心情報：' in line:
+            # 同じ行にある場合
+            part = line.split(':', 1)[-1].split('：', 1)[-1].strip()
+            if part:
+                c = clean_url_or_text(part)
+                if c and c not in gravity_details:
+                    gravity_details.append(c)
+            # 次の行にある場合
+            elif i + 1 < len(lines):
+                c = clean_url_or_text(lines[i+1])
+                if c and c not in gravity_details and not c.startswith('http'):
+                    gravity_details.append(c)
+
+    # 4. もぐらクレーンスタイル / その他（表下右、裏上右 等の記述）
+    for line in lines:
+        if any(w in line for w in ['重心', '側重', '裏面', '表面', '上側', '下側', '頭側', '足側']):
+            if not line.startswith('🔶') and not line.startswith('＃') and not line.startswith('#') and '【獲得' not in line:
+                c = clean_url_or_text(line.lstrip('・- ').strip())
+                if c and c not in gravity_details and len(c) <= 60 and not c.startswith('http'):
+                    gravity_details.append(c)
+
+    # 5. 内部挙動・個体差 (🔶 行、または備考)
     for line in lines:
         if line.startswith('🔶'):
             c = clean_url_or_text(line.replace('🔶', '').strip())
             if c:
                 condition_details.append(c)
-                if 'ブリスター' in c:
-                    tags.add('ブリスター')
-                if '動かない' in c or 'ほぼ動かない' in c:
-                    tags.add('固定・動かない')
-                if '動く' in c and '動かない' not in c:
-                    tags.add('内部可動あり')
-                if '個体差' in c:
-                    tags.add('個体差あり')
+        elif '個体差' in line or '動く' in line or 'ブリスター' in line:
+            if not line.startswith('🟨') and not line.startswith('#') and not line.startswith('＃'):
+                c = clean_url_or_text(line.lstrip('・- ※').strip())
+                if c and c not in condition_details and len(c) <= 80 and not c.startswith('http'):
+                    condition_details.append(c)
+
+    # --- タグの自動分類 ---
+    all_text = ' '.join(gravity_details + condition_details + lines)
+    if '上' in all_text or '頭' in all_text:
+        tags.add('上重心')
+    if '下' in all_text or '足' in all_text:
+        tags.add('下重心')
+    if '裏' in all_text:
+        tags.add('裏重心')
+    if '表' in all_text:
+        tags.add('表重心')
+    if '左' in all_text:
+        tags.add('左重心')
+    if '右' in all_text:
+        tags.add('右重心')
+    if any(k in all_text for k in ['中', '真ん中', 'センター']):
+        tags.add('中央重心')
+    if 'ブリスター' in all_text:
+        tags.add('ブリスター')
+    if any(k in all_text for k in ['動かない', 'ほぼ動かない', '固定']):
+        tags.add('固定・動かない')
+    if any(k in all_text for k in ['動く', '可動', '全方位動く']) and '動かない' not in all_text:
+        tags.add('内部可動あり')
+    if '個体差' in all_text:
+        tags.add('個体差あり')
 
     return {
         'prize_name': prize_name,
@@ -189,7 +283,6 @@ def fetch_single_tweet(tid):
     except Exception:
         pass
     
-    # フォールバック: Twitter syndication
     try:
         s_url = f"https://cdn.syndication.twimg.com/tweet-result?id={tid}&token=x"
         r = requests.get(s_url, timeout=6)
@@ -202,8 +295,8 @@ def fetch_single_tweet(tid):
         
     return tid, None
 
-def collect_data(limit_records=1500):
-    """Merry✩Anの重心情報を収集してキャッシュ保存"""
+def collect_data(limit_records=3000, target_year="2026"):
+    """指定アカウントの2026年分重心情報を収集"""
     anon_key = get_supabase_key()
     headers = {
         "apikey": anon_key,
@@ -221,25 +314,15 @@ def collect_data(limit_records=1500):
             with open(DATA_JSON_PATH, "r", encoding="utf-8") as f:
                 old_list = json.load(f)
                 for item in old_list:
-                    existing_items[item['tweet_id']] = item
-            print(f"既存のキャッシュから {len(existing_items)} 件をロードしました。")
+                    # 2026年分のみ保持
+                    c_date = str(item.get('created_at', ''))
+                    if not target_year or c_date.startswith(target_year):
+                        existing_items[item['tweet_id']] = item
+            print(f"既存キャッシュから {len(existing_items)} 件（{target_year}年分）をロードしました。")
         except Exception as e:
             print(f"Warning loading cache: {e}")
 
-    # 既存キャッシュの再パース（最新ロジック適用）
-    for tid, item in existing_items.items():
-        text = item.get('full_text', '')
-        anime_title = item.get('anime_title', '')
-        parsed = parse_merry_text(text, anime_title)
-        item['prize_name'] = parsed.get('prize_name', item.get('prize_name', ''))
-        item['figure_size'] = parsed.get('figure_size', item.get('figure_size', ''))
-        item['box_weight'] = parsed.get('box_weight', item.get('box_weight', ''))
-        item['box_size'] = parsed.get('box_size', item.get('box_size', ''))
-        item['gravity_details'] = parsed.get('gravity_details', [])
-        item['condition_details'] = parsed.get('condition_details', [])
-        item['tags'] = parsed.get('tags', [])
-
-    # 重複なしのツイートIDリスト
+    # 重複なしツイートID
     unique_items = []
     seen_ids = set()
     for rec in cog_records:
@@ -250,11 +333,10 @@ def collect_data(limit_records=1500):
             
     print(f"チェック対象のユニークツイート数: {len(unique_items)} 件")
     
-    # 未取得のツイートのみ取得
     to_fetch = [item for item in unique_items if item['tweet_id'] not in existing_items]
     print(f"新規取得が必要なツイート数: {len(to_fetch)} 件")
     
-    new_merry_count = 0
+    new_count = 0
     if to_fetch:
         print("ツイート詳細を並行ダウンロード中 (15スレッド)...")
         with ThreadPoolExecutor(max_workers=15) as executor:
@@ -262,7 +344,7 @@ def collect_data(limit_records=1500):
             completed = 0
             for future in as_completed(future_to_item):
                 completed += 1
-                if completed % 50 == 0 or completed == len(to_fetch):
+                if completed % 100 == 0 or completed == len(to_fetch):
                     print(f"-> 進行状況: {completed}/{len(to_fetch)} 完了")
                 
                 item = future_to_item[future]
@@ -274,65 +356,92 @@ def collect_data(limit_records=1500):
                 screen_name = user.get('screen_name', '')
                 user_name = user.get('name', '')
                 
-                # Merry✩Anの投稿を判定
-                if '6eS8Jm4YNJpPA2D' in screen_name or 'Merry' in user_name or 'みりあん' in user_name:
-                    anime_info = anime_map.get(item.get('anime_title_id'), {})
-                    anime_title = anime_info.get('title', '')
-                    text = tweet_data.get('text', '')
-                    
-                    parsed = parse_merry_text(text, anime_title)
-                    
-                    # 画像URLの抽出
-                    media_list = []
-                    media_details = tweet_data.get('mediaDetails') or tweet_data.get('entities', {}).get('media', [])
-                    for m in media_details:
-                        if isinstance(m, dict):
-                            m_url = m.get('media_url_https') or m.get('url')
-                            if m_url and m_url not in media_list:
-                                media_list.append(m_url)
+                # 投稿者の識別（Merry✩An、831生活、あかり、もぐらクレーン）
+                author_display_name = identify_author(user_name, screen_name)
+                if not author_display_name:
+                    continue
+                
+                # 投稿日時のパース
+                raw_created_at = tweet_data.get('created_at', '')
+                formatted_date = raw_created_at
+                try:
+                    if 'T' in raw_created_at:
+                        dt = datetime.fromisoformat(raw_created_at.replace('Z', '+00:00'))
+                        formatted_date = dt.strftime('%Y-%m-%d %H:%M')
+                    else:
+                        dt = datetime.strptime(raw_created_at, '%a %b %d %H:%M:%S +0000 %Y')
+                        formatted_date = dt.strftime('%Y-%m-%d %H:%M')
+                except Exception:
+                    pass
 
-                    # 投稿日時のパース
-                    raw_created_at = tweet_data.get('created_at', '')
-                    formatted_date = raw_created_at
-                    try:
-                        # ISO format or Twitter date format
-                        if 'T' in raw_created_at:
-                            dt = datetime.fromisoformat(raw_created_at.replace('Z', '+00:00'))
-                            formatted_date = dt.strftime('%Y-%m-%d %H:%M')
-                        else:
-                            dt = datetime.strptime(raw_created_at, '%a %b %d %H:%M:%S +0000 %Y')
-                            formatted_date = dt.strftime('%Y-%m-%d %H:%M')
-                    except Exception:
-                        pass
+                # 2026年限定フィルター
+                if target_year and not formatted_date.startswith(target_year):
+                    continue
 
-                    entry = {
-                        'id': item.get('id'),
-                        'tweet_id': tid,
-                        'user_name': user_name,
-                        'screen_name': screen_name,
-                        'anime_title': anime_title or "その他",
-                        'prize_name': parsed.get('prize_name', ''),
-                        'figure_size': parsed.get('figure_size', ''),
-                        'box_weight': parsed.get('box_weight', ''),
-                        'box_size': parsed.get('box_size', ''),
-                        'gravity_details': parsed.get('gravity_details', []),
-                        'condition_details': parsed.get('condition_details', []),
-                        'tags': parsed.get('tags', []),
-                        'media': media_list,
-                        'created_at': formatted_date,
-                        'tweet_url': f"https://x.com/{screen_name}/status/{tid}",
-                        'full_text': text
-                    }
-                    existing_items[tid] = entry
-                    new_merry_count += 1
+                anime_info = anime_map.get(item.get('anime_title_id'), {})
+                anime_title = anime_info.get('title', '')
+                text = tweet_data.get('text', '')
+                
+                parsed = parse_tweet_content(text, author_display_name, anime_title)
+                
+                # 画像URL
+                media_list = []
+                media_details = tweet_data.get('mediaDetails') or tweet_data.get('entities', {}).get('media', [])
+                for m in media_details:
+                    if isinstance(m, dict):
+                        m_url = m.get('media_url_https') or m.get('url')
+                        if m_url and m_url not in media_list:
+                            media_list.append(m_url)
 
-    print(f"収集完了: 新規 {new_merry_count} 件を追加、合計 {len(existing_items)} 件のMerry✩An重心情報を保持。")
+                entry = {
+                    'id': item.get('id'),
+                    'tweet_id': tid,
+                    'author_name': author_display_name,
+                    'user_name': user_name,
+                    'screen_name': screen_name,
+                    'anime_title': anime_title or "その他",
+                    'prize_name': parsed.get('prize_name', ''),
+                    'figure_size': parsed.get('figure_size', ''),
+                    'box_weight': parsed.get('box_weight', ''),
+                    'box_size': parsed.get('box_size', ''),
+                    'gravity_details': parsed.get('gravity_details', []),
+                    'condition_details': parsed.get('condition_details', []),
+                    'tags': parsed.get('tags', []),
+                    'media': media_list,
+                    'created_at': formatted_date,
+                    'tweet_url': f"https://x.com/{screen_name}/status/{tid}",
+                    'full_text': text
+                }
+                existing_items[tid] = entry
+                new_count += 1
+
+    # 既存データの再パースと年フィルタリング
+    final_dict = {}
+    for tid, item in existing_items.items():
+        c_date = str(item.get('created_at', ''))
+        if target_year and not c_date.startswith(target_year):
+            continue
+        
+        # 投稿者名の確定
+        auth_name = item.get('author_name') or identify_author(item.get('user_name', ''), item.get('screen_name', '')) or item.get('user_name', '')
+        item['author_name'] = auth_name
+        
+        # 最新パーサー適用
+        parsed = parse_tweet_content(item.get('full_text', ''), auth_name, item.get('anime_title', ''))
+        item['prize_name'] = parsed.get('prize_name', item.get('prize_name', ''))
+        item['figure_size'] = parsed.get('figure_size', item.get('figure_size', ''))
+        item['box_weight'] = parsed.get('box_weight', item.get('box_weight', ''))
+        item['box_size'] = parsed.get('box_size', item.get('box_size', ''))
+        item['gravity_details'] = parsed.get('gravity_details', [])
+        item['condition_details'] = parsed.get('condition_details', [])
+        item['tags'] = parsed.get('tags', [])
+        final_dict[tid] = item
+
+    print(f"収集完了: 新規 {new_count} 件を追加、2026年分合計 {len(final_dict)} 件の重心情報を保持。")
     
-    # リスト化して日付順（降順）にソート
-    final_list = list(existing_items.values())
+    final_list = list(final_dict.values())
     final_list.sort(key=lambda x: str(x.get('created_at', '')), reverse=True)
     
-    # JSONに保存
     with open(DATA_JSON_PATH, "w", encoding="utf-8") as f:
         json.dump(final_list, f, ensure_ascii=False, indent=2)
     print(f"データを保存しました: {DATA_JSON_PATH}")
@@ -343,12 +452,10 @@ def generate_html(gravity_items):
     """ライトモードに準拠した高機能・美麗なHTMLビューアを生成"""
     print("HTMLビューアを生成中...")
     
-    # 統計情報の集計
     total_count = len(gravity_items)
     anime_titles = sorted(list({item.get('anime_title', 'その他') for item in gravity_items if item.get('anime_title')}))
     updated_time = datetime.now().strftime('%Y年%m月%d日 %H:%M')
     
-    # データをJSON文字列として安全に埋め込み
     items_json_str = json.dumps(gravity_items, ensure_ascii=False)
 
     html_content = f"""<!DOCTYPE html>
@@ -356,7 +463,7 @@ def generate_html(gravity_items):
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>プライズ重心情報データベース - Merry✩An (@6eS8Jm4YNJpPA2D)</title>
+  <title>プライズフィギュア 重心情報データベース (2026年版)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -425,34 +532,8 @@ def generate_html(gravity_items):
     .header-left {{
       display: flex;
       align-items: center;
-      gap: 20px;
+      gap: 16px;
       flex-wrap: wrap;
-    }}
-
-    .header-nav-links {{
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }}
-
-    .nav-link-btn {{
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: linear-gradient(135deg, #e63946 0%, #c1121f 100%);
-      color: #ffffff !important;
-      padding: 7px 15px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 700;
-      text-decoration: none;
-      box-shadow: 0 2px 8px rgba(230, 57, 70, 0.25);
-      transition: all 0.2s ease;
-    }}
-    .nav-link-btn:hover {{
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(230, 57, 70, 0.35);
-      filter: brightness(1.05);
     }}
 
     .logo-area {{
@@ -490,31 +571,51 @@ def generate_html(gravity_items):
     .logo-title p {{
       font-size: 12px;
       color: var(--text-muted);
-      font-weight: 500;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
     }}
 
-    .badge-author {{
+    .badge-author-link {{
+      color: #0284c7;
+      text-decoration: none;
+      font-weight: 700;
+    }}
+    .badge-author-link:hover {{
+      text-decoration: underline;
+    }}
+
+    .header-nav-links {{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }}
+
+    .nav-link-btn {{
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: #eff6ff;
-      color: #1d4ed8;
-      padding: 3px 10px;
+      background: linear-gradient(135deg, #e63946 0%, #c1121f 100%);
+      color: #ffffff !important;
+      padding: 7px 15px;
       border-radius: 999px;
-      font-size: 11.5px;
+      font-size: 13px;
       font-weight: 700;
       text-decoration: none;
-      border: 1px solid #dbeafe;
+      box-shadow: 0 2px 8px rgba(230, 57, 70, 0.25);
       transition: all 0.2s ease;
     }}
-    .badge-author:hover {{
-      background: #dbeafe;
+    .nav-link-btn:hover {{
       transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(230, 57, 70, 0.35);
+      filter: brightness(1.05);
     }}
 
     .header-stats {{
       display: flex;
-      gap: 16px;
+      gap: 12px;
       font-size: 13px;
       color: var(--text-sub);
     }}
@@ -538,7 +639,7 @@ def generate_html(gravity_items):
       padding: 0 24px;
     }}
 
-    /* Filter & Search Bar */
+    /* Controls Panel */
     .controls-panel {{
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
@@ -546,12 +647,14 @@ def generate_html(gravity_items):
       padding: 20px;
       margin-bottom: 24px;
       box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
     }}
 
     .search-row {{
       display: flex;
       gap: 12px;
-      margin-bottom: 16px;
       flex-wrap: wrap;
     }}
 
@@ -612,29 +715,35 @@ def generate_html(gravity_items):
     }}
 
     /* Filter Chips */
-    .filter-chips {{
+    .filter-chips-section {{
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-light);
+    }}
+
+    .filter-chips-row {{
       display: flex;
       align-items: center;
       gap: 8px;
       flex-wrap: wrap;
-      padding-top: 6px;
-      border-top: 1px solid var(--border-light);
     }}
 
     .filter-label {{
       font-size: 12px;
       font-weight: 700;
       color: var(--text-muted);
-      margin-right: 4px;
+      min-width: 60px;
     }}
 
     .chip-btn {{
       background: var(--bg-subtle);
       border: 1px solid var(--border-color);
       color: var(--text-sub);
-      padding: 6px 13px;
+      padding: 5px 12px;
       border-radius: 999px;
-      font-size: 12.5px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.15s ease;
@@ -651,7 +760,13 @@ def generate_html(gravity_items):
       box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
     }}
 
-    /* Status Banner */
+    .chip-btn.author-chip.active {{
+      background: #0284c7;
+      border-color: #0284c7;
+      color: #ffffff;
+    }}
+
+    /* Result Info */
     .result-info-bar {{
       display: flex;
       align-items: center;
@@ -687,7 +802,7 @@ def generate_html(gravity_items):
       border-color: #cbd5e1;
     }}
 
-    /* Card Image */
+    /* Card Media */
     .card-media {{
       position: relative;
       width: 100%;
@@ -717,6 +832,20 @@ def generate_html(gravity_items):
       font-weight: 700;
       padding: 3px 8px;
       border-radius: 6px;
+    }}
+
+    .author-badge-on-card {{
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(15, 23, 42, 0.82);
+      backdrop-filter: blur(4px);
+      color: #ffffff;
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }}
 
     .no-image-placeholder {{
@@ -778,7 +907,7 @@ def generate_html(gravity_items):
       min-height: 43px;
     }}
 
-    /* Gravity Badges Section */
+    /* Gravity Badges */
     .gravity-box {{
       background: #fffbeb;
       border: 1px solid #fef3c7;
@@ -842,7 +971,6 @@ def generate_html(gravity_items):
       text-overflow: ellipsis;
     }}
 
-    /* Movement & Notes */
     .movement-note {{
       font-size: 12px;
       color: var(--text-sub);
@@ -1001,16 +1129,6 @@ def generate_html(gravity_items):
       border: 1px dashed var(--border-color);
       grid-column: 1 / -1;
     }}
-    .empty-state h3 {{
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 6px;
-    }}
-    .empty-state p {{
-      color: var(--text-muted);
-      font-size: 13.5px;
-    }}
 
     @media (max-width: 768px) {{
       .header-inner {{
@@ -1039,8 +1157,14 @@ def generate_html(gravity_items):
         <div class="logo-area">
           <div class="logo-icon">⚖</div>
           <div class="logo-title">
-            <h1>プライズフィギュア 重心データベース</h1>
-            <p>情報提供：<a href="https://x.com/6eS8Jm4YNJpPA2D" target="_blank" rel="noopener noreferrer" class="badge-author">Merry✩An (@6eS8Jm4YNJpPA2D) ↗</a></p>
+            <h1>プライズフィギュア 重心データベース (2026年)</h1>
+            <p>
+              情報源：
+              <a href="https://x.com/6eS8Jm4YNJpPA2D" target="_blank" rel="noopener noreferrer" class="badge-author-link">Merry✩An</a>・
+              <a href="https://x.com/831suky" target="_blank" rel="noopener noreferrer" class="badge-author-link">831生活</a>・
+              <a href="https://x.com/yohane150" target="_blank" rel="noopener noreferrer" class="badge-author-link">あかり</a>・
+              <a href="https://x.com/mogurakurenn" target="_blank" rel="noopener noreferrer" class="badge-author-link">もぐらクレーン</a>
+            </p>
           </div>
         </div>
         <div class="header-nav-links">
@@ -1050,8 +1174,8 @@ def generate_html(gravity_items):
         </div>
       </div>
       <div class="header-stats">
-        <div class="stat-pill">収録数: <b id="totalItemsCount">{total_count}</b> 件</div>
-        <div class="stat-pill">最終更新: <b>{updated_time}</b></div>
+        <div class="stat-pill">2026年収録: <b id="totalItemsCount">{total_count}</b> 件</div>
+        <div class="stat-pill">更新: <b>{updated_time}</b></div>
       </div>
     </div>
   </header>
@@ -1086,19 +1210,32 @@ def generate_html(gravity_items):
         </div>
       </div>
 
-      <!-- Quick Filter Chips -->
-      <div class="filter-chips">
-        <span class="filter-label">重心フィルター:</span>
-        <button class="chip-btn active" data-filter="all">すべて</button>
-        <button class="chip-btn" data-filter="上重心">上重心</button>
-        <button class="chip-btn" data-filter="下重心">下重心</button>
-        <button class="chip-btn" data-filter="裏重心">裏重心</button>
-        <button class="chip-btn" data-filter="表重心">表重心</button>
-        <button class="chip-btn" data-filter="左重心">左重心</button>
-        <button class="chip-btn" data-filter="右重心">右重心</button>
-        <button class="chip-btn" data-filter="ブリスター">ブリスター</button>
-        <button class="chip-btn" data-filter="固定・動かない">動かない(固定)</button>
-        <button class="chip-btn" data-filter="個体差あり">個体差注意</button>
+      <!-- Filters Section -->
+      <div class="filter-chips-section">
+        <!-- Author filter -->
+        <div class="filter-chips-row">
+          <span class="filter-label">👤 投稿者:</span>
+          <button class="chip-btn author-chip active" data-author="all">全員</button>
+          <button class="chip-btn author-chip" data-author="Merry☆An">Merry☆An</button>
+          <button class="chip-btn author-chip" data-author="831生活">831生活</button>
+          <button class="chip-btn author-chip" data-author="あかり">あかり</button>
+          <button class="chip-btn author-chip" data-author="もぐらクレーン">もぐらクレーン</button>
+        </div>
+
+        <!-- Gravity tags filter -->
+        <div class="filter-chips-row">
+          <span class="filter-label">⚖ 重心:</span>
+          <button class="chip-btn grav-chip active" data-filter="all">すべて</button>
+          <button class="chip-btn grav-chip" data-filter="上重心">上重心</button>
+          <button class="chip-btn grav-chip" data-filter="下重心">下重心</button>
+          <button class="chip-btn grav-chip" data-filter="裏重心">裏重心</button>
+          <button class="chip-btn grav-chip" data-filter="表重心">表重心</button>
+          <button class="chip-btn grav-chip" data-filter="左重心">左重心</button>
+          <button class="chip-btn grav-chip" data-filter="右重心">右重心</button>
+          <button class="chip-btn grav-chip" data-filter="ブリスター">ブリスター</button>
+          <button class="chip-btn grav-chip" data-filter="固定・動かない">動かない(固定)</button>
+          <button class="chip-btn grav-chip" data-filter="個体差あり">個体差注意</button>
+        </div>
       </div>
     </div>
 
@@ -1108,9 +1245,7 @@ def generate_html(gravity_items):
     </div>
 
     <!-- Cards Grid -->
-    <div id="cardsGrid" class="cards-grid">
-      <!-- Cards rendered via JavaScript -->
-    </div>
+    <div id="cardsGrid" class="cards-grid"></div>
 
   </main>
 
@@ -1119,6 +1254,7 @@ def generate_html(gravity_items):
     <div class="modal-content">
       <div class="modal-header">
         <div>
+          <span id="modalAuthorBadge" style="font-size: 11px; font-weight: 800; background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; margin-right: 6px;">投稿者</span>
           <span id="modalAnimeBadge" class="anime-badge">作品名</span>
           <h2 id="modalPrizeTitle" style="font-size: 18px; font-weight: 800; margin-top: 6px; color: var(--text-main);">景品名</h2>
         </div>
@@ -1174,10 +1310,10 @@ def generate_html(gravity_items):
   </div>
 
   <script>
-    // Embedded Gravity Data
     const PRIZE_DATA = {items_json_str};
 
     let currentFilter = 'all';
+    let currentAuthor = 'all';
     let currentAnime = '';
     let currentSearch = '';
     let currentSort = 'newest';
@@ -1187,11 +1323,14 @@ def generate_html(gravity_items):
     const animeSelect = document.getElementById('animeSelect');
     const sortSelect = document.getElementById('sortSelect');
     const filteredCount = document.getElementById('filteredCount');
-    const chipBtns = document.querySelectorAll('.chip-btn');
+    
+    const authorChips = document.querySelectorAll('.author-chip');
+    const gravChips = document.querySelectorAll('.grav-chip');
 
     // Detail Modal Elements
     const detailModal = document.getElementById('detailModal');
     const modalCloseBtn = document.getElementById('modalCloseBtn');
+    const modalAuthorBadge = document.getElementById('modalAuthorBadge');
     const modalAnimeBadge = document.getElementById('modalAnimeBadge');
     const modalPrizeTitle = document.getElementById('modalPrizeTitle');
     const modalGallery = document.getElementById('modalGallery');
@@ -1219,6 +1358,7 @@ def generate_html(gravity_items):
     }});
 
     function openModal(item) {{
+      modalAuthorBadge.textContent = item.author_name || item.user_name || '有志';
       modalAnimeBadge.textContent = item.anime_title || 'その他';
       modalPrizeTitle.textContent = item.prize_name;
       modalFigSize.textContent = item.figure_size || '記載なし';
@@ -1228,7 +1368,6 @@ def generate_html(gravity_items):
       modalRawText.textContent = item.full_text || '';
       modalXLink.href = item.tweet_url;
 
-      // Gravity tags
       modalGravityTags.innerHTML = '';
       if (item.gravity_details && item.gravity_details.length > 0) {{
         item.gravity_details.forEach(g => {{
@@ -1241,7 +1380,6 @@ def generate_html(gravity_items):
         modalGravityTags.innerHTML = '<span style="font-size:12px; color:var(--text-muted);">個別重心数値記載なし (本文参照)</span>';
       }}
 
-      // Gallery
       modalGallery.innerHTML = '';
       if (item.media && item.media.length > 0) {{
         item.media.forEach(m => {{
@@ -1261,11 +1399,16 @@ def generate_html(gravity_items):
       if (e.target === detailModal) detailModal.classList.remove('open');
     }});
 
-    // Filtering & Rendering
     function filterAndRender() {{
       const query = currentSearch.toLowerCase().trim();
 
       let filtered = PRIZE_DATA.filter(item => {{
+        // Author Filter
+        if (currentAuthor !== 'all') {{
+          const aName = (item.author_name || item.user_name || '');
+          if (!aName.includes(currentAuthor)) return false;
+        }}
+
         // Anime Filter
         if (currentAnime && item.anime_title !== currentAnime) {{
           return false;
@@ -1290,6 +1433,7 @@ def generate_html(gravity_items):
           const searchCorpus = [
             item.prize_name,
             item.anime_title,
+            item.author_name,
             item.figure_size,
             item.box_weight,
             item.box_size,
@@ -1323,8 +1467,8 @@ def generate_html(gravity_items):
       if (items.length === 0) {{
         cardsGrid.innerHTML = `
           <div class="empty-state">
-            <h3>条件に一致する景品が見つかりませんでした</h3>
-            <p>検索キーワードやフィルター条件を変更してお試しください。</p>
+            <h3 style="font-size:16px; font-weight:700; color:var(--text-main); margin-bottom:6px;">条件に一致する景品が見つかりませんでした</h3>
+            <p style="font-size:13px; color:var(--text-muted);">検索キーワードやフィルター条件を変更してお試しください。</p>
           </div>
         `;
         return;
@@ -1333,6 +1477,7 @@ def generate_html(gravity_items):
       cardsGrid.innerHTML = items.map(item => {{
         const mainImage = (item.media && item.media.length > 0) ? item.media[0] : null;
         const mediaCount = (item.media && item.media.length > 1) ? item.media.length : 0;
+        const authorName = item.author_name || item.user_name || '有志';
         
         const gravBadges = (item.gravity_details && item.gravity_details.length > 0)
           ? item.gravity_details.slice(0, 3).map(g => `<span class="gravity-pill">${{escapeHtml(g)}}</span>`).join('')
@@ -1347,6 +1492,7 @@ def generate_html(gravity_items):
         return `
           <article class="prize-card">
             <div class="card-media" onclick="viewItemDetails('${{item.tweet_id}}')">
+              <span class="author-badge-on-card">${{escapeHtml(authorName)}}</span>
               ${{mainImage 
                 ? `<img src="${{mainImage}}" alt="${{escapeHtml(item.prize_name)}}" loading="lazy">` 
                 : `<div class="no-image-placeholder"><span>📷</span><span>No Image</span></div>`
@@ -1429,16 +1575,24 @@ def generate_html(gravity_items):
       filterAndRender();
     }});
 
-    chipBtns.forEach(btn => {{
+    authorChips.forEach(btn => {{
       btn.addEventListener('click', () => {{
-        chipBtns.forEach(b => b.classList.remove('active'));
+        authorChips.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentAuthor = btn.dataset.author;
+        filterAndRender();
+      }});
+    }});
+
+    gravChips.forEach(btn => {{
+      btn.addEventListener('click', () => {{
+        gravChips.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentFilter = btn.dataset.filter;
         filterAndRender();
       }});
     }});
 
-    // Initial render
     filterAndRender();
   </script>
 </body>
@@ -1452,19 +1606,18 @@ def generate_html(gravity_items):
     print(f"HTMLビューアを生成・保存しました:\n - {OUTPUT_HTML_PATH}\n - {PRIZE_HTML_PATH}")
 
 def main():
-    print("=== Merry✩An プライズ重心情報 収集＆HTML作成開始 ===")
+    print("=== プライズ重心情報（Merry✩An / 831生活 / あかり / もぐらクレーン）2026年分 収集開始 ===")
     
-    # 取得件数上限（全件または指定数、初回は2000件程度で走査）
-    limit_records = 2500
+    limit_records = 3500
     if len(sys.argv) > 1:
         try:
             limit_records = int(sys.argv[1])
         except ValueError:
             pass
 
-    data = collect_data(limit_records=limit_records)
+    data = collect_data(limit_records=limit_records, target_year="2026")
     generate_html(data)
-    print("=== 全工程が完了しました ===")
+    print("=== 収集・生成工程が完了しました ===")
 
 if __name__ == "__main__":
     main()
