@@ -806,19 +806,24 @@ def generate_html(gravity_items):
     .card-media {{
       position: relative;
       width: 100%;
-      height: 220px;
-      background: #f1f5f9;
+      height: 240px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-color);
       overflow: hidden;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
     }}
     .card-media img {{
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      transition: transform 0.4s ease;
+      object-fit: contain;
+      transition: transform 0.3s ease;
     }}
     .prize-card:hover .card-media img {{
-      transform: scale(1.04);
+      transform: scale(1.03);
     }}
 
     .media-count-badge {{
