@@ -1,5 +1,6 @@
 """
-プライズ重心情報（Merry✩An、831生活、あかり、もぐらクレーン）2026年分 収集＆HTML生成スクリプト
+プライズ重心情報（Merry✩An、831生活、あかり、もぐらクレーン）2026年分
+カレンダー形式（calendar.htmlデザイン統一版）収集＆HTML生成スクリプト
 """
 
 import os
@@ -19,7 +20,7 @@ PRIZE_HTML_PATH = os.path.join(BASE_DIR, "prize_gravity_viewer.html")
 
 SUPABASE_URL = "https://cguiwksdixdgxaebbwye.supabase.co"
 
-# 対象アカウント（ユーザー名・スクリーンネーム判定用）
+# 対象アカウント
 TARGET_AUTHORS = {
     "merry": {
         "name": "Merry☆An",
@@ -44,10 +45,8 @@ TARGET_AUTHORS = {
 }
 
 def identify_author(user_name, screen_name):
-    """投稿者の識別"""
     u_lower = (user_name or "").lower()
     s_lower = (screen_name or "").lower()
-    
     for key, info in TARGET_AUTHORS.items():
         if s_lower in info["screen_names"]:
             return info["name"]
@@ -57,7 +56,6 @@ def identify_author(user_name, screen_name):
     return None
 
 def get_supabase_key():
-    """crane-labのJSチャンクからSupabaseの匿名キーを自動取得"""
     try:
         r = requests.get("https://crane-lab.com/center-of-gravity", timeout=10)
         chunks = re.findall(r'src="(/_next/static/chunks/[^"]+)"', r.text)
@@ -72,7 +70,6 @@ def get_supabase_key():
     return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNndWl3a3NkaXhkZ3hhZWJid3llIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjgzMDUyMzksImV4cCI6MjA0Mzg4MTIzOX0.N-J1oMhK49g2vW9uW-K4Ff0bS5X8Z9"
 
 def fetch_anime_titles(headers):
-    """作品タイトルマスタの取得"""
     print("作品タイトルマスタを取得中...")
     anime_map = {}
     try:
@@ -86,18 +83,15 @@ def fetch_anime_titles(headers):
     return anime_map
 
 def fetch_all_cog_records(headers, limit_total=None):
-    """center_of_gravity テーブルからレコードインデックスを取得"""
     print("重心情報レコードのインデックスを取得中...")
     all_records = []
     page_size = 1000
     offset = 0
-    
     while True:
         url = f"{SUPABASE_URL}/rest/v1/center_of_gravity?select=*&order=id.desc&limit={page_size}&offset={offset}"
         try:
             r = requests.get(url, headers=headers, timeout=15)
             if r.status_code != 200:
-                print(f"Error fetching page at offset {offset}: status {r.status_code}")
                 break
             items = r.json()
             if not items:
@@ -113,7 +107,6 @@ def fetch_all_cog_records(headers, limit_total=None):
         except Exception as e:
             print(f"Exception during pagination: {e}")
             break
-            
     print(f"合計 {len(all_records)} 件のレコードインデックスを取得しました。")
     return all_records
 
@@ -124,10 +117,8 @@ def clean_url_or_text(s):
     return cleaned
 
 def parse_tweet_content(text, author_name, anime_title=""):
-    """各投稿者のフォーマットに合わせて構造化データをパース"""
     if not text:
         return {}
-    
     lines = [line.strip() for line in text.split('\n') if line.strip()]
     
     prize_name = ""
@@ -138,7 +129,7 @@ def parse_tweet_content(text, author_name, anime_title=""):
     condition_details = []
     tags = set()
 
-    # --- 景品名の抽出 ---
+    # 景品名の抽出
     name_candidates = []
     for line in lines:
         if any(line.startswith(prefix) for prefix in ['＃重心情報', '#重心情報', '重心情報', '#cranity', '#クレーンゲーム']):
@@ -148,14 +139,12 @@ def parse_tweet_content(text, author_name, anime_title=""):
         if '重心情報:' in line or '重心情報：' in line:
             break
         cleaned = clean_url_or_text(line)
-        # 『』「」を除去
         cleaned = re.sub(r'^[『「【](.*?)[』」】]$', r'\1', cleaned)
         if cleaned:
             name_candidates.append(cleaned)
 
     prize_name = ' '.join(name_candidates).strip()
     if not prize_name:
-        # 代替として1行目またはアニメタイトル
         for line in lines:
             c = clean_url_or_text(line)
             if c and not any(c.startswith(p) for p in ['#', '＃', '【', '🟨', '🔶']):
@@ -164,11 +153,9 @@ def parse_tweet_content(text, author_name, anime_title=""):
     if not prize_name:
         prize_name = anime_title or "プライズ景品"
 
-    # クレンジング
     prize_name = clean_url_or_text(prize_name)
     prize_name = re.sub(r'[\s　]+', ' ', prize_name)
 
-    # --- スペック抽出 ---
     fig_size_match = re.search(r'【Figure size】?\s*([^\n\r【🔶🟨]+)', text, re.IGNORECASE)
     if fig_size_match:
         fig_size = clean_url_or_text(fig_size_match.group(1).rstrip('】'))
@@ -181,15 +168,12 @@ def parse_tweet_content(text, author_name, anime_title=""):
     if box_size_match:
         box_size = clean_url_or_text(box_size_match.group(1).rstrip('】'))
 
-    # --- 重心情報の抽出 ---
-    # 1. 🟨 行（Merry✩An）
     for line in lines:
         if line.startswith('🟨'):
             c = clean_url_or_text(line.replace('🟨', '').strip())
             if c and c not in gravity_details:
                 gravity_details.append(c)
 
-    # 2. 831生活スタイル（【獲得個体の重心情報】の後、または「・裏面側が重い」等）
     in_831_section = False
     for line in lines:
         if '【獲得個体の重心情報】' in line or '重心情報' in line:
@@ -201,22 +185,18 @@ def parse_tweet_content(text, author_name, anime_title=""):
                 if c and c not in gravity_details and not c.startswith('http'):
                     gravity_details.append(c)
 
-    # 3. あかりスタイル（重心情報: の後の行）
     for i, line in enumerate(lines):
         if '重心情報:' in line or '重心情報：' in line:
-            # 同じ行にある場合
             part = line.split(':', 1)[-1].split('：', 1)[-1].strip()
             if part:
                 c = clean_url_or_text(part)
                 if c and c not in gravity_details:
                     gravity_details.append(c)
-            # 次の行にある場合
             elif i + 1 < len(lines):
                 c = clean_url_or_text(lines[i+1])
                 if c and c not in gravity_details and not c.startswith('http'):
                     gravity_details.append(c)
 
-    # 4. もぐらクレーンスタイル / その他（表下右、裏上右 等の記述）
     for line in lines:
         if any(w in line for w in ['重心', '側重', '裏面', '表面', '上側', '下側', '頭側', '足側']):
             if not line.startswith('🔶') and not line.startswith('＃') and not line.startswith('#') and '【獲得' not in line:
@@ -224,7 +204,6 @@ def parse_tweet_content(text, author_name, anime_title=""):
                 if c and c not in gravity_details and len(c) <= 60 and not c.startswith('http'):
                     gravity_details.append(c)
 
-    # 5. 内部挙動・個体差 (🔶 行、または備考)
     for line in lines:
         if line.startswith('🔶'):
             c = clean_url_or_text(line.replace('🔶', '').strip())
@@ -236,7 +215,6 @@ def parse_tweet_content(text, author_name, anime_title=""):
                 if c and c not in condition_details and len(c) <= 80 and not c.startswith('http'):
                     condition_details.append(c)
 
-    # --- タグの自動分類 ---
     all_text = ' '.join(gravity_details + condition_details + lines)
     if '上' in all_text or '頭' in all_text:
         tags.add('上重心')
@@ -272,7 +250,6 @@ def parse_tweet_content(text, author_name, anime_title=""):
     }
 
 def fetch_single_tweet(tid):
-    """単一ツイートのデータを取得"""
     try:
         url = f"https://crane-lab.com/api/tweet/{tid}"
         r = requests.get(url, timeout=6)
@@ -295,8 +272,7 @@ def fetch_single_tweet(tid):
         
     return tid, None
 
-def collect_data(limit_records=3000, target_year="2026"):
-    """指定アカウントの2026年分重心情報を収集"""
+def collect_data(limit_records=3500, target_year="2026"):
     anon_key = get_supabase_key()
     headers = {
         "apikey": anon_key,
@@ -307,14 +283,12 @@ def collect_data(limit_records=3000, target_year="2026"):
     anime_map = fetch_anime_titles(headers)
     cog_records = fetch_all_cog_records(headers, limit_total=limit_records)
     
-    # 既存キャッシュの読み込み
     existing_items = {}
     if os.path.exists(DATA_JSON_PATH):
         try:
             with open(DATA_JSON_PATH, "r", encoding="utf-8") as f:
                 old_list = json.load(f)
                 for item in old_list:
-                    # 2026年分のみ保持
                     c_date = str(item.get('created_at', ''))
                     if not target_year or c_date.startswith(target_year):
                         existing_items[item['tweet_id']] = item
@@ -322,7 +296,6 @@ def collect_data(limit_records=3000, target_year="2026"):
         except Exception as e:
             print(f"Warning loading cache: {e}")
 
-    # 重複なしツイートID
     unique_items = []
     seen_ids = set()
     for rec in cog_records:
@@ -332,7 +305,6 @@ def collect_data(limit_records=3000, target_year="2026"):
             unique_items.append(rec)
             
     print(f"チェック対象のユニークツイート数: {len(unique_items)} 件")
-    
     to_fetch = [item for item in unique_items if item['tweet_id'] not in existing_items]
     print(f"新規取得が必要なツイート数: {len(to_fetch)} 件")
     
@@ -356,12 +328,10 @@ def collect_data(limit_records=3000, target_year="2026"):
                 screen_name = user.get('screen_name', '')
                 user_name = user.get('name', '')
                 
-                # 投稿者の識別（Merry✩An、831生活、あかり、もぐらクレーン）
                 author_display_name = identify_author(user_name, screen_name)
                 if not author_display_name:
                     continue
                 
-                # 投稿日時のパース
                 raw_created_at = tweet_data.get('created_at', '')
                 formatted_date = raw_created_at
                 try:
@@ -374,7 +344,6 @@ def collect_data(limit_records=3000, target_year="2026"):
                 except Exception:
                     pass
 
-                # 2026年限定フィルター
                 if target_year and not formatted_date.startswith(target_year):
                     continue
 
@@ -384,7 +353,6 @@ def collect_data(limit_records=3000, target_year="2026"):
                 
                 parsed = parse_tweet_content(text, author_display_name, anime_title)
                 
-                # 画像URL
                 media_list = []
                 media_details = tweet_data.get('mediaDetails') or tweet_data.get('entities', {}).get('media', [])
                 for m in media_details:
@@ -415,18 +383,15 @@ def collect_data(limit_records=3000, target_year="2026"):
                 existing_items[tid] = entry
                 new_count += 1
 
-    # 既存データの再パースと年フィルタリング
     final_dict = {}
     for tid, item in existing_items.items():
         c_date = str(item.get('created_at', ''))
         if target_year and not c_date.startswith(target_year):
             continue
         
-        # 投稿者名の確定
         auth_name = item.get('author_name') or identify_author(item.get('user_name', ''), item.get('screen_name', '')) or item.get('user_name', '')
         item['author_name'] = auth_name
         
-        # 最新パーサー適用
         parsed = parse_tweet_content(item.get('full_text', ''), auth_name, item.get('anime_title', ''))
         item['prize_name'] = parsed.get('prize_name', item.get('prize_name', ''))
         item['figure_size'] = parsed.get('figure_size', item.get('figure_size', ''))
@@ -449,8 +414,8 @@ def collect_data(limit_records=3000, target_year="2026"):
     return final_list
 
 def generate_html(gravity_items):
-    """ライトモードに準拠した高機能・美麗なHTMLビューアを生成"""
-    print("HTMLビューアを生成中...")
+    """calendar.htmlと完全に同一のUI・レイアウト形式で重心情報ビューアを生成"""
+    print("カレンダー形式の重心ビューアHTMLを生成中...")
     
     total_count = len(gravity_items)
     anime_titles = sorted(list({item.get('anime_title', 'その他') for item in gravity_items if item.get('anime_title')}))
@@ -461,878 +426,703 @@ def generate_html(gravity_items):
     html_content = f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>プライズフィギュア 重心情報データベース (2026年版)</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
-  <style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>プライズフィギュア 重心情報データベース - 2026年</title>
+<style>
     :root {{
-      --bg-main: #f8fafc;
-      --bg-surface: #ffffff;
-      --bg-subtle: #f1f5f9;
-      --border-color: #e2e8f0;
-      --border-light: #f1f5f9;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --text-sub: #475569;
-      
-      --brand-primary: #f59e0b;
-      --brand-dark: #d97706;
-      --brand-light: #fef3c7;
-      --accent-orange: #ea580c;
-      --accent-blue: #0284c7;
-      --accent-blue-light: #e0f2fe;
-      
-      --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-      --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-      --radius-sm: 8px;
-      --radius-md: 14px;
-      --radius-lg: 20px;
+        --primary: #e63946;
+        --primary-dark: #c1121f;
+        --mercari: #ff0211;
+        --mercari-dark: #d6000e;
+        --bg-body: #f1f5f9;
+        --card-bg: #ffffff;
+        --text-main: #0f172a;
+        --text-sub: #64748b;
+        --border-color: #e2e8f0;
     }}
-
     * {{
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+        box-sizing: border-box;
     }}
-
     body {{
-      font-family: 'Plus Jakarta Sans', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: var(--bg-main);
-      color: var(--text-main);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-      padding-bottom: 60px;
+        margin: 0;
+        padding: 16px 8px;
+        font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+        background-color: var(--bg-body);
+        display: flex;
+        justify-content: center;
+        color: var(--text-main);
     }}
-
-    /* Header */
-    header {{
-      background: var(--bg-surface);
-      border-bottom: 1px solid var(--border-color);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      box-shadow: var(--shadow-sm);
-    }}
-
-    .header-inner {{
-      max-width: 1360px;
-      margin: 0 auto;
-      padding: 14px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-    }}
-
-    .header-left {{
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }}
-
-    .logo-area {{
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      text-decoration: none;
-      color: var(--text-main);
-    }}
-
-    .logo-icon {{
-      width: 44px;
-      height: 44px;
-      background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 900;
-      font-size: 22px;
-      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
-    }}
-
-    .logo-title h1 {{
-      font-size: 19px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }}
-
-    .logo-title p {{
-      font-size: 12px;
-      color: var(--text-muted);
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }}
-
-    .badge-author-link {{
-      color: #0284c7;
-      text-decoration: none;
-      font-weight: 700;
-    }}
-    .badge-author-link:hover {{
-      text-decoration: underline;
-    }}
-
-    .header-nav-links {{
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }}
-
-    .nav-link-btn {{
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: linear-gradient(135deg, #e63946 0%, #c1121f 100%);
-      color: #ffffff !important;
-      padding: 7px 15px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 700;
-      text-decoration: none;
-      box-shadow: 0 2px 8px rgba(230, 57, 70, 0.25);
-      transition: all 0.2s ease;
-    }}
-    .nav-link-btn:hover {{
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(230, 57, 70, 0.35);
-      filter: brightness(1.05);
-    }}
-
-    .header-stats {{
-      display: flex;
-      gap: 12px;
-      font-size: 13px;
-      color: var(--text-sub);
-    }}
-
-    .stat-pill {{
-      background: var(--bg-subtle);
-      padding: 6px 14px;
-      border-radius: 999px;
-      border: 1px solid var(--border-color);
-      font-weight: 600;
-    }}
-    .stat-pill b {{
-      color: var(--accent-orange);
-      font-weight: 800;
-    }}
-
-    /* Main Container */
     .container {{
-      max-width: 1360px;
-      margin: 24px auto;
-      padding: 0 24px;
+        width: 100%;
+        max-width: 1680px;
+        background-color: #ffffff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        border: 1px solid #e2e8f0;
+    }}
+    .header {{
+        background: linear-gradient(135deg, #e63946 0%, #ba181b 100%);
+        color: #fff;
+        padding: 12px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }}
+    .header-top {{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }}
+    .header-left {{
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }}
+    .nav-top-btn {{
+        color: #fff;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 700;
+        background: rgba(0,0,0,0.25);
+        padding: 5px 12px;
+        border-radius: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: background 0.2s ease;
+    }}
+    .nav-top-btn:hover {{
+        background: rgba(0,0,0,0.4);
+    }}
+    .header h1 {{
+        margin: 0;
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
     }}
 
-    /* Controls Panel */
-    .controls-panel {{
-      background: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      margin-bottom: 24px;
-      box-shadow: var(--shadow-sm);
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
+    /* コントロールツールバー */
+    .header-toolbar {{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(0, 0, 0, 0.22);
+        padding: 8px 12px;
+        border-radius: 8px;
+        flex-wrap: wrap;
+        gap: 8px;
+        backdrop-filter: blur(4px);
+    }}
+    .toolbar-group {{
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }}
+    .toolbar-label {{
+        font-size: 12px;
+        font-weight: 700;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 3px;
     }}
 
-    .search-row {{
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
+    /* 検索バー */
+    .search-input-box {{
+        padding: 5px 12px;
+        font-size: 12.5px;
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.4);
+        background: #ffffff;
+        color: #0f172a;
+        font-weight: 600;
+        outline: none;
+        min-width: 220px;
+    }}
+    .search-input-box:focus {{
+        border-color: #ffffff;
+        box-shadow: 0 0 0 2px rgba(255,255,255,0.4);
     }}
 
-    .search-input-wrapper {{
-      flex: 1;
-      min-width: 280px;
-      position: relative;
+    .anime-dropdown {{
+        padding: 5px 10px;
+        font-size: 12px;
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.4);
+        background: #ffffff;
+        color: #0f172a;
+        font-weight: 700;
+        outline: none;
+        cursor: pointer;
+        max-width: 180px;
     }}
 
-    .search-icon {{
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      width: 18px;
-      height: 18px;
+    /* 列数切替ボタン */
+    .col-btn-group {{
+        display: inline-flex;
+        background: rgba(0,0,0,0.25);
+        padding: 2px;
+        border-radius: 6px;
+        border: 1px solid rgba(255,255,255,0.2);
+    }}
+    .col-btn {{
+        padding: 3px 7px;
+        border: none;
+        background: transparent;
+        color: rgba(255,255,255,0.85);
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.15s ease;
+    }}
+    .col-btn.active {{
+        background: #ffffff;
+        color: #0f172a;
     }}
 
-    .search-input {{
-      width: 100%;
-      padding: 12px 16px 12px 42px;
-      border-radius: var(--radius-md);
-      border: 1.5px solid var(--border-color);
-      font-size: 14.5px;
-      font-family: inherit;
-      outline: none;
-      transition: all 0.2s ease;
-      background: #fafafa;
+    /* サブフィルターバー */
+    .filter-bar {{
+        background: #ffffff;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 10px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
     }}
-    .search-input:focus {{
-      border-color: var(--brand-primary);
-      background: #ffffff;
-      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+    .filter-row {{
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
     }}
-
-    .select-wrapper {{
-      min-width: 200px;
+    .filter-row-label {{
+        font-size: 11.5px;
+        font-weight: 700;
+        color: #475569;
+        min-width: 54px;
     }}
-
-    .custom-select {{
-      width: 100%;
-      padding: 12px 16px;
-      border-radius: var(--radius-md);
-      border: 1.5px solid var(--border-color);
-      font-size: 14px;
-      font-family: inherit;
-      background-color: #fafafa;
-      color: var(--text-main);
-      font-weight: 600;
-      outline: none;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }}
-    .custom-select:focus {{
-      border-color: var(--brand-primary);
-      background-color: #ffffff;
-    }}
-
-    /* Filter Chips */
-    .filter-chips-section {{
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding-top: 8px;
-      border-top: 1px solid var(--border-light);
-    }}
-
-    .filter-chips-row {{
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }}
-
-    .filter-label {{
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-muted);
-      min-width: 60px;
-    }}
-
     .chip-btn {{
-      background: var(--bg-subtle);
-      border: 1px solid var(--border-color);
-      color: var(--text-sub);
-      padding: 5px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      font-family: inherit;
+        padding: 3px 9px;
+        border: 1px solid #e2e8f0;
+        background: #f1f5f9;
+        color: #334155;
+        font-size: 11.5px;
+        font-weight: 700;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.15s ease;
     }}
     .chip-btn:hover {{
-      background: #e2e8f0;
-      color: var(--text-main);
+        background: #e2e8f0;
+        border-color: #cbd5e1;
     }}
     .chip-btn.active {{
-      background: #0f172a;
-      color: #ffffff;
-      border-color: #0f172a;
-      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
+        background: var(--primary);
+        color: #ffffff;
+        border-color: var(--primary-dark);
+        box-shadow: 0 2px 6px rgba(230, 57, 70, 0.25);
     }}
-
     .chip-btn.author-chip.active {{
-      background: #0284c7;
-      border-color: #0284c7;
-      color: #ffffff;
+        background: #0284c7;
+        border-color: #0369a1;
+        box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
     }}
 
-    /* Result Info */
-    .result-info-bar {{
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 18px;
-      font-size: 13.5px;
-      color: var(--text-sub);
-      font-weight: 600;
+    /* グリッドレイアウト（PC・大画面は7列） */
+    .grid {{
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 8px;
+        padding: 12px;
+        background-color: #f8fafc;
+    }}
+    @media (max-width: 1200px) {{
+        .grid {{
+            grid-template-columns: repeat(5, 1fr);
+        }}
+    }}
+    @media (max-width: 900px) {{
+        .grid {{
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            padding: 8px;
+        }}
     }}
 
-    /* Grid Layout */
-    .cards-grid {{
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 22px;
+    /* スマホ・小型端末（デフォルト3列表示で一画面に多数表示） */
+    @media (max-width: 650px) {{
+        body {{
+            padding: 4px 2px;
+        }}
+        .container {{
+            border-radius: 6px;
+        }}
+        .header {{
+            padding: 10px 10px;
+            gap: 8px;
+        }}
+        .header h1 {{
+            font-size: 15px;
+        }}
+        .header-toolbar {{
+            padding: 6px 8px;
+            gap: 6px;
+        }}
+        .grid {{
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            padding: 5px;
+        }}
+        .info-wrap {{
+            padding: 4px 4px 6px !important;
+            gap: 3px !important;
+        }}
+        .item-name {{
+            font-size: 9.5px !important;
+            line-height: 1.25 !important;
+        }}
+        .gravity-pill {{
+            font-size: 8.5px !important;
+            padding: 1px 4px !important;
+        }}
     }}
 
-    /* Prize Card */
-    .prize-card {{
-      background: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      display: flex;
-      flex-direction: column;
-      position: relative;
+    /* ユーザーが列数を手動で切り替えた時の上書きクラス */
+    .grid.cols-2 {{ grid-template-columns: repeat(2, 1fr) !important; }}
+    .grid.cols-3 {{ grid-template-columns: repeat(3, 1fr) !important; }}
+    .grid.cols-4 {{ grid-template-columns: repeat(4, 1fr) !important; }}
+    .grid.cols-5 {{ grid-template-columns: repeat(5, 1fr) !important; }}
+    .grid.cols-6 {{ grid-template-columns: repeat(6, 1fr) !important; }}
+    .grid.cols-7 {{ grid-template-columns: repeat(7, 1fr) !important; }}
+    .grid.cols-8 {{ grid-template-columns: repeat(8, 1fr) !important; }}
+    
+    /* アイテムカード */
+    .item-card {{
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        cursor: pointer;
+        position: relative;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
     }}
-    .prize-card:hover {{
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-lg);
-      border-color: #cbd5e1;
+    .item-card:hover {{
+        transform: translateY(-2px);
+        box-shadow: 0 8px 18px rgba(0,0,0,0.09);
+        border-color: var(--primary);
     }}
-
-    /* Card Media */
-    .card-media {{
-      position: relative;
-      width: 100%;
-      height: 240px;
-      background: #ffffff;
-      border-bottom: 1px solid var(--border-color);
-      overflow: hidden;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 6px;
+    .item-card:active {{
+        transform: scale(0.98);
     }}
-    .card-media img {{
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      transition: transform 0.3s ease;
+    
+    /* 画像ラッパー */
+    .img-wrap {{
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        background-color: #ffffff;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-bottom: 1px solid #f1f5f9;
     }}
-    .prize-card:hover .card-media img {{
-      transform: scale(1.03);
+    .img-wrap img {{
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 3px;
+        transition: transform 0.2s ease;
     }}
-
-    .media-count-badge {{
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(4px);
-      color: white;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 6px;
-    }}
-
-    .author-badge-on-card {{
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(15, 23, 42, 0.82);
-      backdrop-filter: blur(4px);
-      color: #ffffff;
-      font-size: 10.5px;
-      font-weight: 800;
-      padding: 3px 9px;
-      border-radius: 6px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    .item-card:hover .img-wrap img {{
+        transform: scale(1.04);
     }}
 
-    .no-image-placeholder {{
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      color: #94a3b8;
-      font-size: 13px;
-      font-weight: 600;
-      gap: 6px;
+    .card-author-badge {{
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        background: rgba(15, 23, 42, 0.85);
+        color: #ffffff;
+        font-size: 8.5px;
+        font-weight: 800;
+        padding: 2px 6px;
+        border-radius: 4px;
+        letter-spacing: 0.2px;
+        z-index: 2;
+        backdrop-filter: blur(4px);
     }}
 
-    /* Card Content */
-    .card-body {{
-      padding: 18px;
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      gap: 12px;
+    .card-photo-count {{
+        position: absolute;
+        bottom: 4px;
+        right: 4px;
+        background: rgba(0, 0, 0, 0.65);
+        color: #ffffff;
+        font-size: 8.5px;
+        font-weight: 700;
+        padding: 1px 5px;
+        border-radius: 4px;
+        z-index: 2;
     }}
 
-    .card-meta {{
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
+    .no-img-text {{
+        font-size: 11px;
+        color: #94a3b8;
+        font-weight: 700;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+    }}
+    
+    /* 情報ブロック */
+    .info-wrap {{
+        padding: 6px 6px 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex-grow: 1;
+        justify-content: space-between;
+        background: #ffffff;
+    }}
+    .info-top {{
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }}
+    
+    /* 作品・タイトル */
+    .anime-tag {{
+        font-size: 9px;
+        font-weight: 800;
+        padding: 1px 5px;
+        border-radius: 4px;
+        display: inline-block;
+        width: fit-content;
+        letter-spacing: 0.2px;
+        background-color: #fef3c7;
+        color: #b45309;
+        border: 1px solid #fde68a;
+        max-width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }}
+    
+    .item-name {{
+        font-size: 10.5px;
+        font-weight: 700;
+        line-height: 1.35;
+        color: #0f172a;
+        word-break: break-word;
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 28px;
     }}
 
-    .anime-badge {{
-      background: #fef3c7;
-      color: #b45309;
-      font-size: 11.5px;
-      font-weight: 800;
-      padding: 3px 9px;
-      border-radius: 6px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 70%;
+    /* 重心バッジ */
+    .gravity-badge-wrap {{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 3px;
+        margin-top: 2px;
     }}
-
-    .post-date {{
-      font-size: 11.5px;
-      color: var(--text-muted);
-      font-weight: 500;
-    }}
-
-    .prize-title {{
-      font-size: 15.5px;
-      font-weight: 800;
-      color: var(--text-main);
-      line-height: 1.4;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      min-height: 43px;
-    }}
-
-    /* Gravity Badges */
-    .gravity-box {{
-      background: #fffbeb;
-      border: 1px solid #fef3c7;
-      border-radius: var(--radius-sm);
-      padding: 10px 12px;
-    }}
-
-    .gravity-title {{
-      font-size: 11px;
-      font-weight: 800;
-      color: #d97706;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }}
-
-    .gravity-tags {{
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }}
-
     .gravity-pill {{
-      background: #ffffff;
-      color: #92400e;
-      border: 1px solid #fde68a;
-      font-size: 12px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 6px;
+        background: #fffbeb;
+        color: #92400e;
+        border: 1px solid #fde68a;
+        font-size: 9px;
+        font-weight: 800;
+        padding: 1.5px 5px;
+        border-radius: 4px;
+        line-height: 1.2;
+    }}
+    
+    /* スペック（サイズ・重量・可動） */
+    .item-specs {{
+        font-size: 9px;
+        color: #64748b;
+        font-weight: 600;
+        line-height: 1.3;
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        padding-top: 2px;
+        border-top: 1px dashed #f1f5f9;
     }}
 
-    /* Specs List */
-    .specs-grid {{
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px 12px;
-      background: var(--bg-subtle);
-      padding: 10px 12px;
-      border-radius: var(--radius-sm);
-      font-size: 11.5px;
+    .card-bottom-bar {{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 9.5px;
+        color: #94a3b8;
+        font-weight: 600;
+        margin-top: 2px;
+    }}
+    .card-x-link {{
+        color: #0284c7;
+        text-decoration: none;
+        font-weight: 700;
+    }}
+    .card-x-link:hover {{
+        text-decoration: underline;
     }}
 
-    .spec-item {{
-      display: flex;
-      flex-direction: column;
-    }}
-    .spec-label {{
-      color: var(--text-muted);
-      font-weight: 600;
-      font-size: 10.5px;
-    }}
-    .spec-value {{
-      color: var(--text-main);
-      font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }}
-
-    .movement-note {{
-      font-size: 12px;
-      color: var(--text-sub);
-      background: #f8fafc;
-      border-left: 3px solid #f59e0b;
-      padding: 6px 10px;
-      border-radius: 0 6px 6px 0;
-      line-height: 1.45;
-    }}
-
-    /* Card Footer */
-    .card-footer {{
-      margin-top: auto;
-      padding-top: 10px;
-      border-top: 1px solid var(--border-light);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }}
-
-    .x-link-btn {{
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      color: #0284c7;
-      text-decoration: none;
-      transition: color 0.15s ease;
-    }}
-    .x-link-btn:hover {{
-      color: #0369a1;
-      text-decoration: underline;
-    }}
-
-    .detail-modal-btn {{
-      background: none;
-      border: none;
-      color: var(--text-sub);
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      padding: 4px 8px;
-      border-radius: 6px;
-      transition: background 0.15s ease;
-    }}
-    .detail-modal-btn:hover {{
-      background: var(--bg-subtle);
-      color: var(--text-main);
-    }}
-
-    /* Modal */
+    /* モーダル */
     .modal-overlay {{
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(4px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-      padding: 20px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(15, 23, 42, 0.65);
+        backdrop-filter: blur(4px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 99999;
+        padding: 16px;
     }}
     .modal-overlay.open {{
-      display: flex;
+        display: flex;
     }}
-
     .modal-content {{
-      background: var(--bg-surface);
-      border-radius: var(--radius-lg);
-      max-width: 760px;
-      width: 100%;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: var(--shadow-lg);
-      position: relative;
-      display: flex;
-      flex-direction: column;
+        background: #ffffff;
+        border-radius: 12px;
+        max-width: 680px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        position: relative;
+        display: flex;
+        flex-direction: column;
     }}
-
     .modal-header {{
-      padding: 20px 24px;
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 16px;
-      position: sticky;
-      top: 0;
-      background: var(--bg-surface);
-      z-index: 10;
+        padding: 14px 18px;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        position: sticky;
+        top: 0;
+        background: #ffffff;
+        z-index: 10;
     }}
-
     .modal-close-btn {{
-      background: var(--bg-subtle);
-      border: none;
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      font-size: 18px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-muted);
-      transition: all 0.15s ease;
+        background: #f1f5f9;
+        border: none;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        font-size: 18px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        transition: all 0.15s ease;
     }}
     .modal-close-btn:hover {{
-      background: #e2e8f0;
-      color: var(--text-main);
+        background: #e2e8f0;
+        color: #0f172a;
     }}
-
     .modal-body {{
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
     }}
-
     .modal-gallery {{
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 12px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 8px;
     }}
     .modal-gallery img {{
-      width: 100%;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border-color);
-      cursor: pointer;
-      transition: transform 0.2s ease;
+        width: 100%;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        cursor: pointer;
+        transition: transform 0.2s ease;
     }}
     .modal-gallery img:hover {{
-      transform: scale(1.02);
+        transform: scale(1.02);
     }}
-
     .modal-raw-text {{
-      background: var(--bg-subtle);
-      padding: 16px;
-      border-radius: var(--radius-sm);
-      font-size: 13px;
-      white-space: pre-wrap;
-      word-break: break-word;
-      line-height: 1.6;
-      border: 1px solid var(--border-color);
+        background: #f8fafc;
+        padding: 12px;
+        border-radius: 6px;
+        font-size: 12.5px;
+        white-space: pre-wrap;
+        word-break: break-word;
+        line-height: 1.6;
+        border: 1px solid #e2e8f0;
     }}
 
-    /* Empty state */
-    .empty-state {{
-      text-align: center;
-      padding: 60px 20px;
-      background: var(--bg-surface);
-      border-radius: var(--radius-lg);
-      border: 1px dashed var(--border-color);
-      grid-column: 1 / -1;
+    /* ライトボックス */
+    #imageLightbox {{
+        background: rgba(0,0,0,0.88);
     }}
-
-    @media (max-width: 768px) {{
-      .header-inner {{
-        flex-direction: column;
-        align-items: flex-start;
-      }}
-      .header-stats {{
-        width: 100%;
-        justify-content: space-between;
-      }}
-      .search-row {{
-        flex-direction: column;
-      }}
-      .select-wrapper {{
-        width: 100%;
-      }}
-    }}
-  </style>
+</style>
 </head>
 <body>
+<div class="container">
 
-  <!-- Header -->
-  <header>
-    <div class="header-inner">
-      <div class="header-left">
-        <div class="logo-area">
-          <div class="logo-icon">⚖</div>
-          <div class="logo-title">
-            <h1>プライズフィギュア 重心データベース (2026年)</h1>
-            <p>
-              情報源：
-              <a href="https://x.com/6eS8Jm4YNJpPA2D" target="_blank" rel="noopener noreferrer" class="badge-author-link">Merry✩An</a>・
-              <a href="https://x.com/831suky" target="_blank" rel="noopener noreferrer" class="badge-author-link">831生活</a>・
-              <a href="https://x.com/yohane150" target="_blank" rel="noopener noreferrer" class="badge-author-link">あかり</a>・
-              <a href="https://x.com/mogurakurenn" target="_blank" rel="noopener noreferrer" class="badge-author-link">もぐらクレーン</a>
-            </p>
-          </div>
-        </div>
-        <div class="header-nav-links">
-          <a href="index.html" class="nav-link-btn">
-            📅 入荷カレンダー・横断検索 ↗
-          </a>
-        </div>
-      </div>
-      <div class="header-stats">
-        <div class="stat-pill">2026年収録: <b id="totalItemsCount">{total_count}</b> 件</div>
-        <div class="stat-pill">更新: <b>{updated_time}</b></div>
-      </div>
-    </div>
-  </header>
-
-  <!-- Main Container -->
-  <main class="container">
-
-    <!-- Controls Panel -->
-    <div class="controls-panel">
-      <div class="search-row">
-        <div class="search-input-wrapper">
-          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-          </svg>
-          <input type="text" id="searchInput" class="search-input" placeholder="景品名、作品名、重心（上/下/裏/表/動かない等）で検索...">
+    <!-- ヘッダー（calendar.htmlデザイン） -->
+    <div class="header">
+        <div class="header-top">
+            <div class="header-left">
+                <a href="index.html" class="nav-top-btn">🏠 カレンダー目次</a>
+                <h1>プライズフィギュア 重心情報データベース (2026年)</h1>
+            </div>
+            <div style="font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.9);">
+                収録: <b id="totalItemsCount" style="color: #fff; font-size: 14px;">{total_count}</b> 件 ({updated_time} 更新)
+            </div>
         </div>
 
-        <div class="select-wrapper">
-          <select id="animeSelect" class="custom-select">
-            <option value="">すべての作品 ({len(anime_titles)}作品)</option>
-            {''.join([f'<option value="{title}">{title}</option>' for title in anime_titles])}
-          </select>
-        </div>
+        <!-- ツールバー -->
+        <div class="header-toolbar">
+            <div class="toolbar-group">
+                <span class="toolbar-label">🔍 検索:</span>
+                <input type="text" id="searchInput" class="search-input-box" placeholder="景品名、作品名、重心キーワードで検索...">
+            </div>
 
-        <div class="select-wrapper" style="max-width: 160px;">
-          <select id="sortSelect" class="custom-select">
-            <option value="newest">新着順</option>
-            <option value="oldest">古い順</option>
-            <option value="title">景品名順</option>
-            <option value="anime">作品名順</option>
-          </select>
-        </div>
-      </div>
+            <div class="toolbar-group">
+                <span class="toolbar-label">🏷️ 作品:</span>
+                <select id="animeSelect" class="anime-dropdown">
+                    <option value="">全作品 ({len(anime_titles)}作品)</option>
+                    {''.join([f'<option value="{title}">{title}</option>' for title in anime_titles])}
+                </select>
+            </div>
 
-      <!-- Filters Section -->
-      <div class="filter-chips-section">
-        <!-- Author filter -->
-        <div class="filter-chips-row">
-          <span class="filter-label">👤 投稿者:</span>
-          <button class="chip-btn author-chip active" data-author="all">全員</button>
-          <button class="chip-btn author-chip" data-author="Merry☆An">Merry☆An</button>
-          <button class="chip-btn author-chip" data-author="831生活">831生活</button>
-          <button class="chip-btn author-chip" data-author="あかり">あかり</button>
-          <button class="chip-btn author-chip" data-author="もぐらクレーン">もぐらクレーン</button>
+            <!-- 列数切替ボタングループ -->
+            <div class="toolbar-group">
+                <span class="toolbar-label">📱 列数:</span>
+                <div class="col-btn-group">
+                    <button type="button" class="col-btn" onclick="changeCols(2, this)">2</button>
+                    <button type="button" class="col-btn" onclick="changeCols(3, this)">3</button>
+                    <button type="button" class="col-btn" onclick="changeCols(4, this)">4</button>
+                    <button type="button" class="col-btn" onclick="changeCols(5, this)">5</button>
+                    <button type="button" class="col-btn" onclick="changeCols(6, this)">6</button>
+                    <button type="button" class="col-btn" onclick="changeCols(7, this)">7</button>
+                    <button type="button" class="col-btn" onclick="changeCols(8, this)">8</button>
+                </div>
+            </div>
         </div>
-
-        <!-- Gravity tags filter -->
-        <div class="filter-chips-row">
-          <span class="filter-label">⚖ 重心:</span>
-          <button class="chip-btn grav-chip active" data-filter="all">すべて</button>
-          <button class="chip-btn grav-chip" data-filter="上重心">上重心</button>
-          <button class="chip-btn grav-chip" data-filter="下重心">下重心</button>
-          <button class="chip-btn grav-chip" data-filter="裏重心">裏重心</button>
-          <button class="chip-btn grav-chip" data-filter="表重心">表重心</button>
-          <button class="chip-btn grav-chip" data-filter="左重心">左重心</button>
-          <button class="chip-btn grav-chip" data-filter="右重心">右重心</button>
-          <button class="chip-btn grav-chip" data-filter="ブリスター">ブリスター</button>
-          <button class="chip-btn grav-chip" data-filter="固定・動かない">動かない(固定)</button>
-          <button class="chip-btn grav-chip" data-filter="個体差あり">個体差注意</button>
-        </div>
-      </div>
     </div>
 
-    <!-- Result info bar -->
-    <div class="result-info-bar">
-      <div>表示中: <span id="filteredCount" style="color: var(--text-main); font-weight: 800;">{total_count}</span> 件</div>
+    <!-- サブフィルターバー -->
+    <div class="filter-bar">
+        <!-- 投稿者別フィルター -->
+        <div class="filter-row">
+            <span class="filter-row-label">👤 投稿者:</span>
+            <button class="chip-btn author-chip active" data-author="all">全員</button>
+            <button class="chip-btn author-chip" data-author="Merry☆An">Merry☆An</button>
+            <button class="chip-btn author-chip" data-author="831生活">831生活</button>
+            <button class="chip-btn author-chip" data-author="あかり">あかり</button>
+            <button class="chip-btn author-chip" data-author="もぐらクレーン">もぐらクレーン</button>
+        </div>
+
+        <!-- 重心別フィルター -->
+        <div class="filter-row">
+            <span class="filter-row-label">⚖ 重心:</span>
+            <button class="chip-btn grav-chip active" data-filter="all">すべて</button>
+            <button class="chip-btn grav-chip" data-filter="上重心">上重心</button>
+            <button class="chip-btn grav-chip" data-filter="下重心">下重心</button>
+            <button class="chip-btn grav-chip" data-filter="裏重心">裏重心</button>
+            <button class="chip-btn grav-chip" data-filter="表重心">表重心</button>
+            <button class="chip-btn grav-chip" data-filter="左重心">左重心</button>
+            <button class="chip-btn grav-chip" data-filter="右重心">右重心</button>
+            <button class="chip-btn grav-chip" data-filter="ブリスター">ブリスター</button>
+            <button class="chip-btn grav-chip" data-filter="固定・動かない">動かない</button>
+            <button class="chip-btn grav-chip" data-filter="個体差あり">個体差注意</button>
+        </div>
     </div>
 
-    <!-- Cards Grid -->
-    <div id="cardsGrid" class="cards-grid"></div>
+    <!-- 景品カードグリッド（7列レイアウト） -->
+    <div id="cardsGrid" class="grid"></div>
 
-  </main>
+</div>
 
-  <!-- Detail Modal -->
-  <div id="detailModal" class="modal-overlay">
+<!-- 詳細モーダル -->
+<div id="detailModal" class="modal-overlay">
     <div class="modal-content">
-      <div class="modal-header">
-        <div>
-          <span id="modalAuthorBadge" style="font-size: 11px; font-weight: 800; background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; margin-right: 6px;">投稿者</span>
-          <span id="modalAnimeBadge" class="anime-badge">作品名</span>
-          <h2 id="modalPrizeTitle" style="font-size: 18px; font-weight: 800; margin-top: 6px; color: var(--text-main);">景品名</h2>
+        <div class="modal-header">
+            <div>
+                <span id="modalAuthorBadge" style="font-size: 10px; font-weight: 800; background: #e0f2fe; color: #0369a1; padding: 2px 7px; border-radius: 4px; margin-right: 4px;">投稿者</span>
+                <span id="modalAnimeBadge" class="anime-tag">作品名</span>
+                <h2 id="modalPrizeTitle" style="font-size: 16px; font-weight: 800; margin-top: 6px; color: #0f172a;">景品名</h2>
+            </div>
+            <button id="modalCloseBtn" class="modal-close-btn">&times;</button>
         </div>
-        <button id="modalCloseBtn" class="modal-close-btn">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div id="modalGallery" class="modal-gallery"></div>
-        
-        <div id="modalGravitySection" class="gravity-box">
-          <div class="gravity-title">⚖ 重心測定データ</div>
-          <div id="modalGravityTags" class="gravity-tags"></div>
-        </div>
+        <div class="modal-body">
+            <div id="modalGallery" class="modal-gallery"></div>
+            
+            <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 10px 12px;">
+                <div style="font-size: 11px; font-weight: 800; color: #d97706; margin-bottom: 6px;">⚖ 重心測定データ</div>
+                <div id="modalGravityTags" style="display: flex; flex-wrap: wrap; gap: 4px;"></div>
+            </div>
 
-        <div class="specs-grid">
-          <div class="spec-item">
-            <span class="spec-label">フィギュアサイズ</span>
-            <span id="modalFigSize" class="spec-value">-</span>
-          </div>
-          <div class="spec-item">
-            <span class="spec-label">箱の重さ</span>
-            <span id="modalBoxWeight" class="spec-value">-</span>
-          </div>
-          <div class="spec-item">
-            <span class="spec-label">箱のサイズ</span>
-            <span id="modalBoxSize" class="spec-value">-</span>
-          </div>
-          <div class="spec-item">
-            <span class="spec-label">投稿日時</span>
-            <span id="modalDate" class="spec-value">-</span>
-          </div>
-        </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; background: #f8fafc; padding: 10px 12px; border-radius: 6px; font-size: 11.5px;">
+                <div><span style="color:#64748b;">フィギュアサイズ:</span> <b id="modalFigSize" style="color:#0f172a;">-</b></div>
+                <div><span style="color:#64748b;">箱の重さ:</span> <b id="modalBoxWeight" style="color:#0f172a;">-</b></div>
+                <div style="grid-column: 1 / -1;"><span style="color:#64748b;">箱サイズ:</span> <b id="modalBoxSize" style="color:#0f172a;">-</b></div>
+                <div style="grid-column: 1 / -1;"><span style="color:#64748b;">投稿日時:</span> <b id="modalDate" style="color:#0f172a;">-</b></div>
+            </div>
 
-        <div>
-          <div style="font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">ツイート本文</div>
-          <div id="modalRawText" class="modal-raw-text"></div>
-        </div>
+            <div>
+                <div style="font-size: 11.5px; font-weight: 700; color: #64748b; margin-bottom: 4px;">ツイート本文</div>
+                <div id="modalRawText" class="modal-raw-text"></div>
+            </div>
 
-        <div style="text-align: right;">
-          <a id="modalXLink" href="#" target="_blank" rel="noopener noreferrer" class="x-link-btn" style="font-size: 13.5px; padding: 8px 16px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px;">
-            X（旧Twitter）でポストを見る ↗
-          </a>
+            <div style="text-align: right;">
+                <a id="modalXLink" href="#" target="_blank" rel="noopener noreferrer" style="font-size: 13px; font-weight: 700; color: #0284c7; text-decoration: none; padding: 6px 14px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px;">
+                    Xで元のポストを見る ↗
+                </a>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
+</div>
 
-  <!-- Image Lightbox Modal -->
-  <div id="imageLightbox" class="modal-overlay" style="background: rgba(0,0,0,0.85);">
+<!-- ライトボックス -->
+<div id="imageLightbox" class="modal-overlay">
     <div style="position: relative; max-width: 90vw; max-height: 90vh;">
-      <button id="lightboxCloseBtn" class="modal-close-btn" style="position: absolute; top: -45px; right: 0; color: white; background: rgba(255,255,255,0.2);">&times;</button>
-      <img id="lightboxImg" src="" alt="" style="max-width: 100%; max-height: 85vh; border-radius: 8px; object-fit: contain; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+        <button id="lightboxCloseBtn" class="modal-close-btn" style="position: absolute; top: -40px; right: 0; color: white; background: rgba(255,255,255,0.2);">&times;</button>
+        <img id="lightboxImg" src="" alt="" style="max-width: 100%; max-height: 85vh; border-radius: 8px; object-fit: contain; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
     </div>
-  </div>
+</div>
 
-  <script>
+<script>
     const PRIZE_DATA = {items_json_str};
 
     let currentFilter = 'all';
     let currentAuthor = 'all';
     let currentAnime = '';
     let currentSearch = '';
-    let currentSort = 'newest';
 
     const cardsGrid = document.getElementById('cardsGrid');
     const searchInput = document.getElementById('searchInput');
     const animeSelect = document.getElementById('animeSelect');
-    const sortSelect = document.getElementById('sortSelect');
-    const filteredCount = document.getElementById('filteredCount');
     
     const authorChips = document.querySelectorAll('.author-chip');
     const gravChips = document.querySelectorAll('.grav-chip');
 
-    // Detail Modal Elements
     const detailModal = document.getElementById('detailModal');
     const modalCloseBtn = document.getElementById('modalCloseBtn');
     const modalAuthorBadge = document.getElementById('modalAuthorBadge');
@@ -1347,259 +1137,240 @@ def generate_html(gravity_items):
     const modalRawText = document.getElementById('modalRawText');
     const modalXLink = document.getElementById('modalXLink');
 
-    // Lightbox
     const imageLightbox = document.getElementById('imageLightbox');
     const lightboxImg = document.getElementById('lightboxImg');
     const lightboxCloseBtn = document.getElementById('lightboxCloseBtn');
 
     function openLightbox(url) {{
-      lightboxImg.src = url;
-      imageLightbox.classList.add('open');
+        lightboxImg.src = url;
+        imageLightbox.classList.add('open');
     }}
-
     lightboxCloseBtn.addEventListener('click', () => imageLightbox.classList.remove('open'));
     imageLightbox.addEventListener('click', (e) => {{
-      if (e.target === imageLightbox) imageLightbox.classList.remove('open');
+        if (e.target === imageLightbox) imageLightbox.classList.remove('open');
     }});
 
     function openModal(item) {{
-      modalAuthorBadge.textContent = item.author_name || item.user_name || '有志';
-      modalAnimeBadge.textContent = item.anime_title || 'その他';
-      modalPrizeTitle.textContent = item.prize_name;
-      modalFigSize.textContent = item.figure_size || '記載なし';
-      modalBoxWeight.textContent = item.box_weight || '記載なし';
-      modalBoxSize.textContent = item.box_size || '記載なし';
-      modalDate.textContent = item.created_at || '-';
-      modalRawText.textContent = item.full_text || '';
-      modalXLink.href = item.tweet_url;
+        modalAuthorBadge.textContent = item.author_name || item.user_name || '有志';
+        modalAnimeBadge.textContent = item.anime_title || 'その他';
+        modalPrizeTitle.textContent = item.prize_name;
+        modalFigSize.textContent = item.figure_size || '記載なし';
+        modalBoxWeight.textContent = item.box_weight || '記載なし';
+        modalBoxSize.textContent = item.box_size || '記載なし';
+        modalDate.textContent = item.created_at || '-';
+        modalRawText.textContent = item.full_text || '';
+        modalXLink.href = item.tweet_url;
 
-      modalGravityTags.innerHTML = '';
-      if (item.gravity_details && item.gravity_details.length > 0) {{
-        item.gravity_details.forEach(g => {{
-          const span = document.createElement('span');
-          span.className = 'gravity-pill';
-          span.textContent = g;
-          modalGravityTags.appendChild(span);
-        }});
-      }} else {{
-        modalGravityTags.innerHTML = '<span style="font-size:12px; color:var(--text-muted);">個別重心数値記載なし (本文参照)</span>';
-      }}
+        modalGravityTags.innerHTML = '';
+        if (item.gravity_details && item.gravity_details.length > 0) {{
+            item.gravity_details.forEach(g => {{
+                const span = document.createElement('span');
+                span.className = 'gravity-pill';
+                span.textContent = g;
+                modalGravityTags.appendChild(span);
+            }});
+        }} else {{
+            modalGravityTags.innerHTML = '<span style="font-size:11px; color:#64748b;">個別重心数値記載なし (本文参照)</span>';
+        }}
 
-      modalGallery.innerHTML = '';
-      if (item.media && item.media.length > 0) {{
-        item.media.forEach(m => {{
-          const img = document.createElement('img');
-          img.src = m;
-          img.loading = 'lazy';
-          img.addEventListener('click', () => openLightbox(m));
-          modalGallery.appendChild(img);
-        }});
-      }}
+        modalGallery.innerHTML = '';
+        if (item.media && item.media.length > 0) {{
+            item.media.forEach(m => {{
+                const img = document.createElement('img');
+                img.src = m;
+                img.loading = 'lazy';
+                img.addEventListener('click', () => openLightbox(m));
+                modalGallery.appendChild(img);
+            }});
+        }}
 
-      detailModal.classList.add('open');
+        detailModal.classList.add('open');
     }}
-
     modalCloseBtn.addEventListener('click', () => detailModal.classList.remove('open'));
     detailModal.addEventListener('click', (e) => {{
-      if (e.target === detailModal) detailModal.classList.remove('open');
+        if (e.target === detailModal) detailModal.classList.remove('open');
     }});
 
     function filterAndRender() {{
-      const query = currentSearch.toLowerCase().trim();
+        const query = currentSearch.toLowerCase().trim();
 
-      let filtered = PRIZE_DATA.filter(item => {{
-        // Author Filter
-        if (currentAuthor !== 'all') {{
-          const aName = (item.author_name || item.user_name || '');
-          if (!aName.includes(currentAuthor)) return false;
-        }}
+        let filtered = PRIZE_DATA.filter(item => {{
+            if (currentAuthor !== 'all') {{
+                const aName = (item.author_name || item.user_name || '');
+                if (!aName.includes(currentAuthor)) return false;
+            }}
 
-        // Anime Filter
-        if (currentAnime && item.anime_title !== currentAnime) {{
-          return false;
-        }}
+            if (currentAnime && item.anime_title !== currentAnime) {{
+                return false;
+            }}
 
-        // Gravity Chip Filter
-        if (currentFilter !== 'all') {{
-          const tags = item.tags || [];
-          const gravDetails = (item.gravity_details || []).join(' ');
-          const condDetails = (item.condition_details || []).join(' ');
-          const full = (item.full_text || '');
-          
-          const matchTag = tags.includes(currentFilter);
-          const matchText = gravDetails.includes(currentFilter.replace('重心', '')) || 
-                            condDetails.includes(currentFilter) ||
-                            full.includes(currentFilter);
-          if (!matchTag && !matchText) return false;
-        }}
+            if (currentFilter !== 'all') {{
+                const tags = item.tags || [];
+                const gravDetails = (item.gravity_details || []).join(' ');
+                const condDetails = (item.condition_details || []).join(' ');
+                const full = (item.full_text || '');
+                
+                const matchTag = tags.includes(currentFilter);
+                const matchText = gravDetails.includes(currentFilter.replace('重心', '')) || 
+                                  condDetails.includes(currentFilter) ||
+                                  full.includes(currentFilter);
+                if (!matchTag && !matchText) return false;
+            }}
 
-        // Text Search
-        if (query) {{
-          const searchCorpus = [
-            item.prize_name,
-            item.anime_title,
-            item.author_name,
-            item.figure_size,
-            item.box_weight,
-            item.box_size,
-            (item.gravity_details || []).join(' '),
-            (item.condition_details || []).join(' '),
-            item.full_text
-          ].join(' ').toLowerCase();
+            if (query) {{
+                const searchCorpus = [
+                    item.prize_name,
+                    item.anime_title,
+                    item.author_name,
+                    item.figure_size,
+                    item.box_weight,
+                    item.box_size,
+                    (item.gravity_details || []).join(' '),
+                    (item.condition_details || []).join(' '),
+                    item.full_text
+                ].join(' ').toLowerCase();
 
-          if (!searchCorpus.includes(query)) return false;
-        }}
+                if (!searchCorpus.includes(query)) return false;
+            }}
 
-        return true;
-      }});
+            return true;
+        }});
 
-      // Sorting
-      if (currentSort === 'newest') {{
         filtered.sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
-      }} else if (currentSort === 'oldest') {{
-        filtered.sort((a, b) => String(a.created_at).localeCompare(String(b.created_at)));
-      }} else if (currentSort === 'title') {{
-        filtered.sort((a, b) => a.prize_name.localeCompare(b.prize_name, 'ja'));
-      }} else if (currentSort === 'anime') {{
-        filtered.sort((a, b) => a.anime_title.localeCompare(b.anime_title, 'ja'));
-      }}
-
-      filteredCount.textContent = filtered.length;
-      renderCards(filtered);
+        renderCards(filtered);
     }}
 
     function renderCards(items) {{
-      if (items.length === 0) {{
-        cardsGrid.innerHTML = `
-          <div class="empty-state">
-            <h3 style="font-size:16px; font-weight:700; color:var(--text-main); margin-bottom:6px;">条件に一致する景品が見つかりませんでした</h3>
-            <p style="font-size:13px; color:var(--text-muted);">検索キーワードやフィルター条件を変更してお試しください。</p>
-          </div>
-        `;
-        return;
-      }}
-
-      cardsGrid.innerHTML = items.map(item => {{
-        const mainImage = (item.media && item.media.length > 0) ? item.media[0] : null;
-        const mediaCount = (item.media && item.media.length > 1) ? item.media.length : 0;
-        const authorName = item.author_name || item.user_name || '有志';
-        
-        const gravBadges = (item.gravity_details && item.gravity_details.length > 0)
-          ? item.gravity_details.slice(0, 3).map(g => `<span class="gravity-pill">${{escapeHtml(g)}}</span>`).join('')
-          : (item.tags && item.tags.length > 0)
-            ? item.tags.slice(0, 3).map(t => `<span class="gravity-pill">${{escapeHtml(t)}}</span>`).join('')
-            : '<span style="font-size:11px; color:var(--text-muted);">本文記載</span>';
-
-        const conditionNote = (item.condition_details && item.condition_details.length > 0)
-          ? `<div class="movement-note">${{escapeHtml(item.condition_details[0].substring(0, 48))}}...</div>`
-          : '';
-
-        return `
-          <article class="prize-card">
-            <div class="card-media" onclick="viewItemDetails('${{item.tweet_id}}')">
-              <span class="author-badge-on-card">${{escapeHtml(authorName)}}</span>
-              ${{mainImage 
-                ? `<img src="${{mainImage}}" alt="${{escapeHtml(item.prize_name)}}" loading="lazy">` 
-                : `<div class="no-image-placeholder"><span>📷</span><span>No Image</span></div>`
-              }}
-              ${{mediaCount > 0 ? `<span class="media-count-badge">📷 ${{mediaCount}}枚</span>` : ''}}
-            </div>
-            <div class="card-body">
-              <div class="card-meta">
-                <span class="anime-badge" title="${{escapeHtml(item.anime_title)}}">${{escapeHtml(item.anime_title || 'その他')}}</span>
-                <span class="post-date">${{escapeHtml(item.created_at ? item.created_at.split(' ')[0] : '')}}</span>
-              </div>
-              <h3 class="prize-title" title="${{escapeHtml(item.prize_name)}}">${{escapeHtml(item.prize_name)}}</h3>
-              
-              <div class="gravity-box">
-                <div class="gravity-title">⚖ 重心データ</div>
-                <div class="gravity-tags">
-                  ${{gravBadges}}
+        if (items.length === 0) {{
+            cardsGrid.innerHTML = `
+                <div style="grid-column: 1 / -1; padding: 40px 20px; text-align: center; color: #64748b; background: #ffffff; border-radius: 8px; border: 1px dashed #cbd5e1;">
+                    <p style="font-size: 14px; font-weight: 700;">条件に一致する景品が見つかりませんでした</p>
+                    <p style="font-size: 12px; margin-top: 4px;">検索キーワードやフィルター条件を変更してお試しください。</p>
                 </div>
-              </div>
+            `;
+            return;
+        }}
 
-              <div class="specs-grid">
-                <div class="spec-item">
-                  <span class="spec-label">フィギュア</span>
-                  <span class="spec-value">${{escapeHtml(item.figure_size || '-')}}</span>
-                </div>
-                <div class="spec-item">
-                  <span class="spec-label">箱の重さ</span>
-                  <span class="spec-value">${{escapeHtml(item.box_weight || '-')}}</span>
-                </div>
-                <div class="spec-item" style="grid-column: 1 / -1;">
-                  <span class="spec-label">箱サイズ</span>
-                  <span class="spec-value">${{escapeHtml(item.box_size || '-')}}</span>
-                </div>
-              </div>
+        cardsGrid.innerHTML = items.map(item => {{
+            const mainImage = (item.media && item.media.length > 0) ? item.media[0] : null;
+            const mediaCount = (item.media && item.media.length > 1) ? item.media.length : 0;
+            const authorName = item.author_name || item.user_name || '有志';
+            
+            const gravBadges = (item.gravity_details && item.gravity_details.length > 0)
+                ? item.gravity_details.slice(0, 3).map(g => `<span class="gravity-pill">${{escapeHtml(g)}}</span>`).join('')
+                : (item.tags && item.tags.length > 0)
+                    ? item.tags.slice(0, 3).map(t => `<span class="gravity-pill">${{escapeHtml(t)}}</span>`).join('')
+                    : '<span style="font-size:8.5px; color:#94a3b8;">本文記載</span>';
 
-              ${{conditionNote}}
+            const specs = [];
+            if (item.figure_size) specs.push(`📏 ${{escapeHtml(item.figure_size)}}`);
+            if (item.box_weight) specs.push(`⚖ ${{escapeHtml(item.box_weight)}}`);
+            if (item.box_size) specs.push(`📦 ${{escapeHtml(item.box_size)}}`);
 
-              <div class="card-footer">
-                <a href="${{item.tweet_url}}" target="_blank" rel="noopener noreferrer" class="x-link-btn" onclick="event.stopPropagation()">
-                  Xポスト ↗
-                </a>
-                <button class="detail-modal-btn" onclick="viewItemDetails('${{item.tweet_id}}')">
-                  詳細を見る
-                </button>
-              </div>
-            </div>
-          </article>
-        `;
-      }}).join('');
+            const specsHtml = specs.length > 0
+                ? `<div class="item-specs">${{specs.map(s => `<span>${{s}}</span>`).join('')}}</div>`
+                : '';
+
+            return `
+                <div class="item-card" onclick="viewItemDetails('${{item.tweet_id}}')">
+                    <div class="img-wrap">
+                        <span class="card-author-badge">${{escapeHtml(authorName)}}</span>
+                        ${{mainImage 
+                            ? `<img src="${{mainImage}}" alt="${{escapeHtml(item.prize_name)}}" loading="lazy">` 
+                            : `<div class="no-img-text"><span>📷</span><span>No Image</span></div>`
+                        }}
+                        ${{mediaCount > 0 ? `<span class="card-photo-count">📷 ${{mediaCount}}</span>` : ''}}
+                    </div>
+                    <div class="info-wrap">
+                        <div class="info-top">
+                            <span class="anime-tag">${{escapeHtml(item.anime_title || 'その他')}}</span>
+                            <div class="item-name" title="${{escapeHtml(item.prize_name)}}">${{escapeHtml(item.prize_name)}}</div>
+                            <div class="gravity-badge-wrap">
+                                ${{gravBadges}}
+                            </div>
+                        </div>
+                        ${{specsHtml}}
+                        <div class="card-bottom-bar">
+                            <span>${{escapeHtml(item.created_at ? item.created_at.split(' ')[0] : '')}}</span>
+                            <a href="${{item.tweet_url}}" target="_blank" rel="noopener noreferrer" class="card-x-link" onclick="event.stopPropagation()">
+                                X ↗
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }}).join('');
     }}
 
     function escapeHtml(str) {{
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
     }}
 
     window.viewItemDetails = function(tweetId) {{
-      const item = PRIZE_DATA.find(i => String(i.tweet_id) === String(tweetId));
-      if (item) openModal(item);
+        const item = PRIZE_DATA.find(i => String(i.tweet_id) === String(tweetId));
+        if (item) openModal(item);
     }};
 
-    // Event Listeners
+    // 列数切替機能 (calendar.html完全互換)
+    function changeCols(num, btn) {{
+        document.querySelectorAll('.col-btn').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        
+        cardsGrid.className = 'grid';
+        cardsGrid.classList.add('cols-' + num);
+        localStorage.setItem('prize_gravity_cols', num);
+    }}
+
+    // 初期列数のロード
+    (function initCols() {{
+        const saved = localStorage.getItem('prize_gravity_cols');
+        if (saved) {{
+            const targetBtn = Array.from(document.querySelectorAll('.col-btn')).find(b => b.innerText.trim() === String(saved));
+            changeCols(saved, targetBtn);
+        }} else {{
+            const defaultCol = (window.innerWidth <= 650) ? '3' : '7';
+            const targetBtn = Array.from(document.querySelectorAll('.col-btn')).find(b => b.innerText.trim() === defaultCol);
+            if (targetBtn) targetBtn.classList.add('active');
+        }}
+    }})();
+
+    // イベントリスナー
     searchInput.addEventListener('input', (e) => {{
-      currentSearch = e.target.value;
-      filterAndRender();
+        currentSearch = e.target.value;
+        filterAndRender();
     }});
 
     animeSelect.addEventListener('change', (e) => {{
-      currentAnime = e.target.value;
-      filterAndRender();
-    }});
-
-    sortSelect.addEventListener('change', (e) => {{
-      currentSort = e.target.value;
-      filterAndRender();
+        currentAnime = e.target.value;
+        filterAndRender();
     }});
 
     authorChips.forEach(btn => {{
-      btn.addEventListener('click', () => {{
-        authorChips.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentAuthor = btn.dataset.author;
-        filterAndRender();
-      }});
+        btn.addEventListener('click', () => {{
+            authorChips.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentAuthor = btn.dataset.author;
+            filterAndRender();
+        }});
     }});
 
     gravChips.forEach(btn => {{
-      btn.addEventListener('click', () => {{
-        gravChips.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentFilter = btn.dataset.filter;
-        filterAndRender();
-      }});
+        btn.addEventListener('click', () => {{
+            gravChips.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = btn.dataset.filter;
+            filterAndRender();
+        }});
     }});
 
     filterAndRender();
-  </script>
+</script>
 </body>
 </html>
 """
@@ -1611,7 +1382,7 @@ def generate_html(gravity_items):
     print(f"HTMLビューアを生成・保存しました:\n - {OUTPUT_HTML_PATH}\n - {PRIZE_HTML_PATH}")
 
 def main():
-    print("=== プライズ重心情報（Merry✩An / 831生活 / あかり / もぐらクレーン）2026年分 収集開始 ===")
+    print("=== プライズ重心情報（calendar.htmlデザイン統一版）収集・生成開始 ===")
     
     limit_records = 3500
     if len(sys.argv) > 1:
@@ -1622,7 +1393,7 @@ def main():
 
     data = collect_data(limit_records=limit_records, target_year="2026")
     generate_html(data)
-    print("=== 収集・生成工程が完了しました ===")
+    print("=== 全工程が完了しました ===")
 
 if __name__ == "__main__":
     main()
