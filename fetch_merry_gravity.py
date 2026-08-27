@@ -14,6 +14,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_JSON_PATH = os.path.join(BASE_DIR, "gravity_data.json")
+SYNC_INFO_PATH = os.path.join(BASE_DIR, "gravity_sync_info.json")
 OUTPUT_HTML_PATH = os.path.join(BASE_DIR, "gravity.html")
 PRIZE_HTML_PATH = os.path.join(BASE_DIR, "prize_gravity_viewer.html")
 
@@ -270,6 +271,19 @@ def collect_data(limit_records=3500, target_year="2026"):
         "Content-Type": "application/json"
     }
     
+    # 前回の同期情報を読み込み
+    prev_sync_info = {}
+    if os.path.exists(SYNC_INFO_PATH):
+        try:
+            with open(SYNC_INFO_PATH, "r", encoding="utf-8") as f:
+                prev_sync_info = json.load(f)
+        except Exception:
+            pass
+
+    prev_time = prev_sync_info.get("last_sync_time", "2026-08-23 09:17")
+    prev_total = prev_sync_info.get("total_records", 0)
+    prev_authors = prev_sync_info.get("author_counts", {})
+
     anime_map = fetch_anime_titles(headers)
     cog_records = fetch_all_cog_records(headers, limit_total=limit_records)
     
@@ -296,6 +310,7 @@ def collect_data(limit_records=3500, target_year="2026"):
     to_fetch = [item for item in unique_items if item['tweet_id'] not in existing_items]
     
     new_count = 0
+    new_items_by_author = {}
     if to_fetch:
         with ThreadPoolExecutor(max_workers=15) as executor:
             future_to_item = {executor.submit(fetch_single_tweet, item['tweet_id']): item for item in to_fetch}
@@ -363,6 +378,7 @@ def collect_data(limit_records=3500, target_year="2026"):
                 }
                 existing_items[tid] = entry
                 new_count += 1
+                new_items_by_author[author_display_name] = new_items_by_author.get(author_display_name, 0) + 1
 
     final_dict = {}
     for tid, item in existing_items.items():
@@ -388,14 +404,64 @@ def collect_data(limit_records=3500, target_year="2026"):
     
     with open(DATA_JSON_PATH, "w", encoding="utf-8") as f:
         json.dump(final_list, f, ensure_ascii=False, indent=2)
-    
-    return final_list
 
-def generate_html(gravity_items):
+    # 投稿者別集計
+    current_authors = {}
+    for item in final_list:
+        a_name = item.get('author_name', 'その他')
+        current_authors[a_name] = current_authors.get(a_name, 0) + 1
+
+    current_time_str = datetime.now().strftime('%Y-%m-%d %H:%M')
+    history = prev_sync_info.get("history", [])
+    
+    if new_count > 0 or not history:
+        history.insert(0, {
+            "timestamp": current_time_str,
+            "total": len(final_list),
+            "new_added": new_count
+        })
+        history = history[:30] # 直近30回分を保持
+
+    sync_info = {
+        "last_sync_time": current_time_str,
+        "previous_sync_time": prev_time,
+        "total_records": len(final_list),
+        "new_records_count": new_count,
+        "author_counts": current_authors,
+        "author_new_counts": new_items_by_author,
+        "history": history
+    }
+
+    with open(SYNC_INFO_PATH, "w", encoding="utf-8") as f:
+        json.dump(sync_info, f, ensure_ascii=False, indent=2)
+
+    print("\n" + "=" * 60)
+    print("📊 プライズ重心情報 収集・同期レポート")
+    print("=" * 60)
+    print(f"🕒 前回更新日時 : {prev_time}")
+    print(f"🕒 今回更新日時 : {current_time_str}")
+    print(f"📦 今回追加件数 : +{new_count} 件")
+    print(f"🎯 2026年総件数 : {len(final_list):,} 件")
+    print("-" * 60)
+    print("👤 投稿者別内訳:")
+    for a_name, count in sorted(current_authors.items(), key=lambda x: x[1], reverse=True):
+        diff = new_items_by_author.get(a_name, 0)
+        diff_str = f" (+{diff})" if diff > 0 else ""
+        print(f"  - {a_name:<10} : {count:>4} 件{diff_str}")
+    print("=" * 60 + "\n")
+    
+    return final_list, sync_info
+
+def generate_html(gravity_items, sync_info=None):
     total_count = len(gravity_items)
     anime_titles = sorted(list({item.get('anime_title', 'その他') for item in gravity_items if item.get('anime_title')}))
     updated_time = datetime.now().strftime('%Y年%m月%d日 %H:%M')
     
+    diff_badge = ""
+    if sync_info and sync_info.get("new_records_count", 0) > 0:
+        new_cnt = sync_info["new_records_count"]
+        diff_badge = f' <span style="background: rgba(255,255,255,0.25); padding: 1px 7px; border-radius: 10px; font-size: 11px; margin-left: 4px; font-weight: 700;">+{new_cnt}件追加</span>'
+
     items_json_str = json.dumps(gravity_items, ensure_ascii=False)
 
     html_content = f"""<!DOCTYPE html>
@@ -1030,8 +1096,8 @@ def generate_html(gravity_items):
                 </a>
                 <h1>プライズフィギュア 重心情報データベース (2026年)</h1>
             </div>
-            <div style="font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.9);">
-                収録: <b id="totalItemsCount" style="color: #fff; font-size: 14px;">{total_count}</b> 件 ({updated_time} 更新)
+            <div style="font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.9); text-align: right;">
+                収録: <b id="totalItemsCount" style="color: #fff; font-size: 14px;">{total_count}</b> 件 ({updated_time} 更新){diff_badge}
             </div>
         </div>
 
@@ -1497,8 +1563,8 @@ def main():
         except ValueError:
             pass
 
-    data = collect_data(limit_records=limit_records, target_year="2026")
-    generate_html(data)
+    data, sync_info = collect_data(limit_records=limit_records, target_year="2026")
+    generate_html(data, sync_info=sync_info)
 
 if __name__ == "__main__":
     main()
