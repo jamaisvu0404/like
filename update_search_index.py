@@ -30,6 +30,7 @@ def generate_search_index(output_dir=None):
         "202609": "2026年 9月",
         "202610": "2026年 10月",
         "202611": "2026年 11月",
+        "202612": "2026年 12月",
     }
     
     month_counts = {}
