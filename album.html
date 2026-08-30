@@ -892,7 +892,6 @@
           <p>写真と金額から自動更新された獲得アルバム＆詳細ダッシュボード</p>
         </div>
         <div class="header-actions">
-          <button id="cloudSyncBadge" class="btn btn-secondary" onclick="fetchLatestCloudData(true)" style="font-size: 11px; padding: 6px 12px; border-color: #cbd5e1; color: #0d9488; background: #f0fdf4; cursor: pointer;" title="クリックでGoogleドライブの最新データと手動同期">☁️ Google同期中...</button>
           <a href="index.html" class="btn btn-secondary">🏠 カレンダーTOP</a>
           <a href="gravity.html" class="btn btn-secondary">⚖️ 重心情報</a>
           <button class="btn btn-secondary" onclick="openExportModal()">📤 店舗データを出力</button>
@@ -1620,88 +1619,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       initShopSelectOptions();
       refreshAllCardShopBadges();
-      fetchLatestCloudData(false);
     });
-
-    const GAS_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbxX6xd9qBmqgsuF6_hVIquOWqsVhTAvkYkI2pPkLdtWAdVPufa7s2-pXjQ6MjLCAORChQ/exec";
-
-    // ☁️ クラウド（Googleドライブ）から最新データを取得してリアルタイム同期
-    async function fetchLatestCloudData(isManual) {
-      const badge = document.getElementById('cloudSyncBadge');
-      if (badge) {
-        badge.innerText = '☁️ 最新データ同期中...';
-        badge.style.color = '#0284c7';
-        badge.style.background = '#e0f2fe';
-      }
-
-      function applyCloudData(cloudData) {
-        if (!Array.isArray(cloudData) || cloudData.length === 0) return false;
-        console.log('[GAS同期] クラウドから最新データ取得成功:', cloudData.length, '件');
-        cloudData.forEach(cItem => {
-          const local = recordsData.find(r => r.id === cItem.id);
-          if (local) {
-            if (cItem.shops) local.shops = cItem.shops;
-            storedCustomShops[local.id] = local.shops || [];
-          }
-        });
-        localStorage.setItem('prize_custom_shops', JSON.stringify(storedCustomShops));
-        refreshAllCardShopBadges();
-        
-        // 開いているモーダルがあれば反映
-        const modal = document.getElementById('detailModal');
-        if (modal && modal.classList.contains('active')) {
-          const currentItem = recordsData[currentRecordIndex];
-          if (currentItem) {
-            renderModalContent(currentItem);
-          }
-        }
-
-        const now = new Date();
-        const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
-        if (badge) {
-          badge.innerText = '✓ 同期済み (' + timeStr + ')';
-          badge.style.color = '#047857';
-          badge.style.background = '#dcfce7';
-        }
-        if (isManual) {
-          showToast('✓ Googleドライブから最新データを取得しました！');
-        }
-        return true;
-      }
-
-      // 1. まず標準 fetch を試みる（PCブラウザ・高速対応・Cookie干渉防止）
-      try {
-        const res = await fetch(GAS_ENDPOINT_URL + '?t=' + Date.now(), {
-          credentials: 'omit',
-          headers: { 'Accept': 'application/json' }
-        });
-        if (res.ok) {
-          const cloudData = await res.json();
-          if (applyCloudData(cloudData)) return;
-        }
-      } catch (fetchErr) {
-        console.log('[GAS fetchフォールバック -> JSONP]');
-      }
-
-      // 2. fetch が CORS や環境制限で失敗した場合は JSONP で取得
-      window.onCloudRecordsLoaded = function(cloudData) {
-        applyCloudData(cloudData);
-      };
-
-      const script = document.createElement('script');
-      script.src = GAS_ENDPOINT_URL + '?callback=onCloudRecordsLoaded&t=' + Date.now();
-      script.onerror = function() {
-        console.warn('[GAS同期] クラウド最新データの取得に失敗 (オフライン)');
-        if (badge) {
-          const now = new Date();
-          const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-          badge.innerText = '✓ ローカル表示中 (' + timeStr + ')';
-          badge.style.color = '#475569';
-          badge.style.background = '#f1f5f9';
-        }
-      };
-      document.body.appendChild(script);
-    }
 
     function initShopSelectOptions() {
       const sel1 = document.getElementById('modalShopSelect1');
