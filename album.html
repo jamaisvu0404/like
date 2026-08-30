@@ -1719,6 +1719,12 @@
       
       currentItem.shops = newShops;
       
+      // recordsDataの該当レコードを更新
+      const rec = recordsData.find(r => r.id === currentItem.id);
+      if (rec) {
+        rec.shops = newShops;
+      }
+
       // localStorageに保存
       storedCustomShops[currentItem.id] = newShops;
       localStorage.setItem('prize_custom_shops', JSON.stringify(storedCustomShops));
@@ -1739,6 +1745,29 @@
       setTimeout(() => statusEl.classList.remove('show'), 2000);
 
       showToast(newShops.length > 0 ? `店舗を保存しました: ${newShops.join(' / ')}` : '店舗設定をクリアしました');
+
+      // ☁️ Googleドライブへ自動同期（GAS）
+      syncToGoogleDrive(recordsData);
+    }
+
+    const GAS_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbxX6xd9qBmqgsuF6_hVIquOWqsVhTAvkYkI2pPkLdtWAdVPufa7s2-pXjQ6MjLCAORChQ/exec";
+
+    function syncToGoogleDrive(data) {
+      if (!GAS_ENDPOINT_URL) return;
+      try {
+        fetch(GAS_ENDPOINT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(data)
+        }).then(() => {
+          console.log('[GAS同期] Googleドライブへ同期送信完了');
+        }).catch(err => {
+          console.warn('[GAS同期警告]', err);
+        });
+      } catch (e) {
+        console.warn(e);
+      }
     }
 
     function showToast(msg) {
