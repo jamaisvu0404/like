@@ -796,17 +796,18 @@
             <!-- クイックフィルター -->
             <div class="filter-row">
                 <div class="filter-group">
+                    <span class="filter-label">👀 表示切替:</span>
+                    <button type="button" class="filter-btn" id="showAllItemsBtn" onclick="showAllItems()" style="background: #e0f2fe; color: #0369a1; border-color: #bae6fd; font-weight: 800;">📦 全フィギュア一覧</button>
+                    <button type="button" class="filter-btn" id="filterWishlistBtn" style="background: #fef3c7; color: #92400e; border-color: #fde68a; font-weight: 800;" onclick="toggleWishlistFilter(this)">⭐ 欲しい物リスト (0)</button>
+                </div>
+
+                <div class="filter-group">
                     <span class="filter-label">🏷️ メーカー:</span>
                     <button type="button" class="filter-btn active" data-maker="" onclick="setMakerFilter('', this)">すべて</button>
                     <button type="button" class="filter-btn" data-maker="バンプレスト" onclick="setMakerFilter('バンプレスト', this)">バンプレスト</button>
                     <button type="button" class="filter-btn" data-maker="セガ" onclick="setMakerFilter('セガ', this)">セガ</button>
                     <button type="button" class="filter-btn" data-maker="フリュー" onclick="setMakerFilter('フリュー', this)">フリュー</button>
                     <button type="button" class="filter-btn" data-maker="タイトー" onclick="setMakerFilter('タイトー', this)">タイトー</button>
-                </div>
-
-                <div class="filter-group">
-                    <span class="filter-label">⭐ 欲しい物:</span>
-                    <button type="button" class="filter-btn" id="filterWishlistBtn" style="background: #fef3c7; color: #92400e; border-color: #fde68a;" onclick="toggleWishlistFilter(this)">⭐ 欲しい物リスト (0)</button>
                 </div>
 
                 <div class="filter-group">
@@ -1275,7 +1276,16 @@
         const badge = document.getElementById('wishSyncBadge');
         if (badge) badge.innerText = '☁️ 欲しい物同期中...';
 
+        const syncTimeout = setTimeout(() => {
+            if (badge && badge.innerText.includes('同期中')) {
+                const now = new Date();
+                const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+                badge.innerText = '✓ 欲しい物同期済み (' + timeStr + ')';
+            }
+        }, 2500);
+
         function applyWishlist(cloudWishlist) {
+            clearTimeout(syncTimeout);
             if (!cloudWishlist || typeof cloudWishlist !== 'object') return false;
             wishlistData = cloudWishlist;
             localStorage.setItem('prize_wishlist_data', JSON.stringify(wishlistData));
@@ -1387,6 +1397,22 @@
         }, 800);
     }
 
+    let isShowAllActive = false;
+    function showAllItems() {
+        isShowAllActive = !isShowAllActive;
+        const btn = document.getElementById('showAllItemsBtn');
+        if (isShowAllActive) {
+            btn.classList.add('active');
+            btn.style.background = '#0284c7';
+            btn.style.color = '#ffffff';
+        } else {
+            btn.classList.remove('active');
+            btn.style.background = '#e0f2fe';
+            btn.style.color = '#0369a1';
+        }
+        executeSearch();
+    }
+
     function toggleWishlistFilter(btn) {
         isWishlistFilterActive = !isWishlistFilterActive;
         if (isWishlistFilterActive) {
@@ -1469,7 +1495,7 @@
         const rawQuery = searchInput.value.trim();
         searchClearBtn.style.display = rawQuery ? 'flex' : 'none';
 
-        const isFiltering = rawQuery.length > 0 || selectedMaker !== '' || selectedMonth !== '' || isWishlistFilterActive;
+        const isFiltering = rawQuery.length > 0 || selectedMaker !== '' || selectedMonth !== '' || isWishlistFilterActive || isShowAllActive;
 
         if (!isFiltering) {
             // 検索なし：月別カレンダー目次を表示

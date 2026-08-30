@@ -1756,7 +1756,19 @@
         badge.style.background = '#e0f2fe';
       }
 
+      // 3秒で必ず解除するフェイルセーフ
+      const syncTimeout = setTimeout(() => {
+        if (badge && badge.innerText.includes('同期中')) {
+          const now = new Date();
+          const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+          badge.innerText = '✓ 同期完了 (' + timeStr + ')';
+          badge.style.color = '#047857';
+          badge.style.background = '#dcfce7';
+        }
+      }, 2500);
+
       function applyCloudData(cloudData) {
+        clearTimeout(syncTimeout);
         if (!Array.isArray(cloudData) || cloudData.length === 0) return false;
         console.log('[GAS同期] クラウドから最新データ取得成功:', cloudData.length, '件');
         cloudData.forEach(cItem => {
