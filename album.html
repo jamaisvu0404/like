@@ -1,0 +1,1865 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>クレーンゲーム獲得記録 月別アルバム</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-header: #1e293b;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-sub: #334155;
+      --border-color: #e2e8f0;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --figure-color: #db2777;
+      --figure-bg: #fdf2f8;
+      --plush-color: #7c3aed;
+      --plush-bg: #f5f3ff;
+      --other-color: #d97706;
+      --other-bg: #fffbeb;
+      --shop-color: #0d9488;
+      --shop-bg: #f0fdfa;
+      --shop-border: #99f6e4;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans JP', 'Outfit', sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding-bottom: 80px;
+    }
+
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ヘッダー */
+    header {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: white;
+      padding: 30px 0 26px;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.15);
+      margin-bottom: 28px;
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .header-title-area h1 {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-title-area h1 .logo-badge {
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      color: #0f172a;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .header-title-area p {
+      color: #94a3b8;
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #f1f5f9;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-primary {
+      background: #0ea5e9;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #0284c7;
+    }
+
+    /* サマリーカードグリッド */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .summary-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .summary-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .summary-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: #cbd5e1;
+    }
+
+    .summary-card.accent-blue::before { background: #38bdf8; }
+    .summary-card.accent-indigo::before { background: #6366f1; }
+    .summary-card.accent-emerald::before { background: #10b981; }
+    .summary-card.accent-pink::before { background: #ec4899; }
+    .summary-card.accent-purple::before { background: #8b5cf6; }
+    .summary-card.accent-amber::before { background: #f59e0b; }
+
+    .summary-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .summary-value {
+      font-family: 'Outfit', 'Noto Sans JP', sans-serif;
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+
+    .summary-unit {
+      font-size: 15px;
+      font-weight: 600;
+      margin-left: 4px;
+      color: var(--text-muted);
+    }
+
+    .summary-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    /* 月別内訳チャート */
+    .breakdown-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      margin-bottom: 24px;
+    }
+
+    .breakdown-card .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .monthly-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .month-row {
+      display: grid;
+      grid-template-columns: 60px 140px 1fr 90px;
+      align-items: center;
+      gap: 14px;
+      font-size: 13px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      transition: background 0.15s;
+    }
+
+    .month-row:hover {
+      background: #f1f5f9;
+    }
+
+    .month-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    .badge-blue { background: #e0f2fe; color: #0369a1; }
+    .badge-green { background: #d1fae5; color: #047857; }
+    .badge-yellow { background: #fef9c3; color: #a16207; }
+    .badge-purple { background: #ede9fe; color: #6d28d9; }
+    .badge-red { background: #fee2e2; color: #b91c1c; }
+
+    .month-stat-text {
+      font-weight: 600;
+      color: #334155;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .month-stat-text .small {
+      font-size: 11px;
+      color: #64748b;
+      font-weight: normal;
+    }
+
+    .progress-bar-container {
+      background: #f1f5f9;
+      height: 12px;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .month-cost-text {
+      text-align: right;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text-main);
+    }
+
+    /* フィルターバー */
+    .filter-bar {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 14px 20px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #475569;
+      margin-right: 2px;
+    }
+
+    .filter-btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .filter-btn.active {
+      background: #0f172a;
+      color: white;
+      border-color: #0f172a;
+    }
+
+    .shop-filter-select {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      background: #f8fafc;
+      color: #0f766e;
+      border: 1.5px solid #99f6e4;
+      cursor: pointer;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .shop-filter-select:focus {
+      border-color: #0d9488;
+      box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+    }
+
+    /* 月セクション */
+    .month-section {
+      margin-bottom: 32px;
+    }
+
+    .month-section-header {
+      background: #334155;
+      color: white;
+      padding: 12px 20px;
+      border-radius: var(--radius-md) var(--radius-md) 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .month-section-header h2 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .month-section-header .summary-tag {
+      font-size: 13px;
+      font-weight: 500;
+      color: #e2e8f0;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+    }
+
+    /* カードグリッド */
+    .records-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      background: var(--bg-card);
+      padding: 20px;
+      border-radius: 0 0 var(--radius-md) var(--radius-md);
+      border: 1px solid var(--border-color);
+      border-top: none;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .record-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .record-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+      border-color: #cbd5e1;
+    }
+
+    .card-thumb-wrapper {
+      position: relative;
+      width: 100%;
+      padding-top: 100%; /* 1:1 正方形 */
+      background: #f1f5f9;
+      overflow: hidden;
+    }
+
+    .card-thumb-wrapper img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .record-card:hover .card-thumb-wrapper img {
+      transform: scale(1.04);
+    }
+
+    .card-zoom-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s;
+      color: white;
+      font-weight: 600;
+      font-size: 13px;
+      gap: 6px;
+    }
+
+    .record-card:hover .card-zoom-overlay {
+      opacity: 1;
+    }
+
+    .card-body {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      justify-content: space-between;
+      background: #fafaf9;
+    }
+
+    .card-title-text {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 10px;
+      line-height: 1.4;
+      min-height: 38px;
+    }
+
+    .card-badges {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+
+    .badge-date { background: #e2e8f0; color: #475569; }
+    .badge-shop { background: var(--shop-bg); color: var(--shop-color); border: 1px solid var(--shop-border); font-weight: 700; }
+    .badge-items { background: #fef08a; color: #854d0e; }
+    .badge-cost { background: #e0e7ff; color: #3730a3; font-family: 'Outfit', sans-serif; }
+    .badge-fig { background: var(--figure-bg); color: var(--figure-color); border: 1px solid #fbcfe8; }
+    .badge-other { background: var(--other-bg); color: var(--other-color); border: 1px solid #fde68a; }
+
+    /* モーダル */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: var(--radius-lg);
+      max-width: 920px;
+      width: 100%;
+      max-height: 92vh;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      position: relative;
+      animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modalPop {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-img-container {
+      background: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      position: relative;
+    }
+
+    .modal-img-container img {
+      max-width: 100%;
+      max-height: 82vh;
+      object-fit: contain;
+      border-radius: var(--radius-sm);
+    }
+
+    .modal-info {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: #f1f5f9;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #64748b;
+      transition: all 0.2s;
+      z-index: 10;
+    }
+
+    .modal-close:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .modal-header-meta {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 14px;
+      line-height: 1.35;
+    }
+
+    /* 店舗選択セクション（モーダル内） */
+    .modal-shop-editor {
+      background: #f0fdfa;
+      border: 1.5px solid #99f6e4;
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+
+    .shop-editor-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .shop-editor-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #0f766e;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .shop-save-status {
+      font-size: 11.5px;
+      color: #059669;
+      font-weight: 700;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .shop-save-status.show {
+      opacity: 1;
+    }
+
+    .shop-selects-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .shop-select-box {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .shop-select-box label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .shop-select-box select {
+      width: 100%;
+      padding: 6px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #0f172a;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .shop-select-box select:focus {
+      border-color: #0d9488;
+      box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+    }
+
+    .modal-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .modal-stat-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+    }
+
+    .modal-stat-box .lbl {
+      font-size: 11px;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .modal-stat-box .val {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .modal-items-list {
+      margin-top: 4px;
+    }
+
+    .modal-items-list h4 {
+      font-size: 12.5px;
+      color: #475569;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 4px;
+    }
+
+    .modal-items-list ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .modal-items-list li {
+      font-size: 12.5px;
+      padding: 5px 8px;
+      background: #f8fafc;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #334155;
+    }
+
+    .modal-items-list li::before {
+      content: '✔';
+      color: #10b981;
+      font-weight: bold;
+    }
+
+    .modal-nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      transition: background 0.2s;
+    }
+
+    .modal-nav-btn:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .modal-nav-prev { left: 16px; }
+    .modal-nav-next { right: 16px; }
+
+    /* トースト */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 2000;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* JSONエクスポート用モーダル */
+    .export-modal-content {
+      background: white;
+      border-radius: var(--radius-lg);
+      max-width: 680px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      position: relative;
+    }
+
+    .export-textarea {
+      width: 100%;
+      height: 320px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #f8fafc;
+      margin: 12px 0 16px;
+      outline: none;
+      resize: vertical;
+    }
+
+    /* レスポンシブ */
+    @media (max-width: 900px) {
+      .records-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .modal-content {
+        grid-template-columns: 1fr;
+        max-height: 95vh;
+      }
+      .modal-img-container img {
+        max-height: 40vh;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .records-grid {
+        grid-template-columns: 1fr;
+        padding: 14px;
+      }
+      .month-row {
+        grid-template-columns: 50px 1fr;
+        gap: 8px;
+      }
+      .progress-bar-container {
+        grid-column: 1 / -1;
+      }
+      .month-cost-text {
+        grid-column: 2;
+        text-align: right;
+      }
+      .header-title-area h1 {
+        font-size: 20px;
+      }
+      .shop-selects-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <div class="header-title-area">
+          <h1>
+            <span>フィギュア・プライズ獲得 月別集計</span>
+            <span class="logo-badge">クレーンゲーム記録</span>
+          </h1>
+          <p>写真と金額から自動更新された獲得アルバム＆詳細ダッシュボード</p>
+        </div>
+        <div class="header-actions">
+          <a href="index.html" class="btn btn-secondary">🏠 カレンダーTOP</a>
+          <a href="gravity.html" class="btn btn-secondary">⚖️ 重心情報</a>
+          <button class="btn btn-secondary" onclick="openExportModal()">📤 店舗データを出力</button>
+          <button class="btn btn-secondary" onclick="window.print()">🖨️ 印刷 / PDF保存</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- サマリーKPI -->
+    <section class="summary-grid">
+      <div class="summary-card accent-blue">
+        <div class="summary-label">🎯 記録回数</div>
+        <div class="summary-value">20<span class="summary-unit">回</span></div>
+        <div class="summary-sub">全5ヶ月間 (4月〜8月)</div>
+      </div>
+      <div class="summary-card accent-indigo">
+        <div class="summary-label">📦 合計点数</div>
+        <div class="summary-value">129<span class="summary-unit">点</span></div>
+        <div class="summary-sub">1回あたり平均 6.5 点</div>
+      </div>
+      <div class="summary-card accent-emerald">
+        <div class="summary-label">💰 合計金額</div>
+        <div class="summary-value">205,500<span class="summary-unit">円</span></div>
+        <div class="summary-sub">1回あたり平均 10,275 円</div>
+      </div>
+      <div class="summary-card accent-pink">
+        <div class="summary-label">🎎 フィギュア</div>
+        <div class="summary-value">126<span class="summary-unit">点</span></div>
+        <div class="summary-sub">全体の 97.7%</div>
+      </div>
+      <div class="summary-card accent-purple">
+        <div class="summary-label">🧸 ぬいぐるみ</div>
+        <div class="summary-value">0<span class="summary-unit">点</span></div>
+        <div class="summary-sub">全体の 0.0%</div>
+      </div>
+      <div class="summary-card accent-amber">
+        <div class="summary-label">💡 1点あたり平均</div>
+        <div class="summary-value">1,593<span class="summary-unit">円/個</span></div>
+        <div class="summary-sub">獲得コスト効率</div>
+      </div>
+    </section>
+
+    <!-- 月別内訳チャート -->
+    <section class="breakdown-card">
+      <div class="card-title">
+        <span>📊 月別の内訳</span>
+        <span style="font-size: 13px; font-weight: normal; color: var(--text-muted);">月をクリックして該当月へスクロール</span>
+      </div>
+      <div class="monthly-bars">
+
+        <div class="month-row" onclick="scrollToMonth(4)" style="cursor: pointer;" title="4月のアルバムを見る">
+          <div class="month-badge badge-blue">4月</div>
+          <div class="month-stat-text">
+            3回 / 20点
+            <span class="small">フィギュア 19点, 他1点</span>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" style="width: 35.2%; background: #38bdf8;"></div>
+          </div>
+          <div class="month-cost-text">28,000円</div>
+        </div>
+
+        <div class="month-row" onclick="scrollToMonth(5)" style="cursor: pointer;" title="5月のアルバムを見る">
+          <div class="month-badge badge-green">5月</div>
+          <div class="month-stat-text">
+            3回 / 12点
+            <span class="small">フィギュア 12点</span>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" style="width: 18.9%; background: #34d399;"></div>
+          </div>
+          <div class="month-cost-text">15,000円</div>
+        </div>
+
+        <div class="month-row" onclick="scrollToMonth(6)" style="cursor: pointer;" title="6月のアルバムを見る">
+          <div class="month-badge badge-yellow">6月</div>
+          <div class="month-stat-text">
+            3回 / 16点
+            <span class="small">フィギュア 15点, 他4点</span>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" style="width: 37.7%; background: #facc15;"></div>
+          </div>
+          <div class="month-cost-text">30,000円</div>
+        </div>
+
+        <div class="month-row" onclick="scrollToMonth(7)" style="cursor: pointer;" title="7月のアルバムを見る">
+          <div class="month-badge badge-purple">7月</div>
+          <div class="month-stat-text">
+            5回 / 31点
+            <span class="small">フィギュア 31点, 他5点</span>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" style="width: 66.7%; background: #a78bfa;"></div>
+          </div>
+          <div class="month-cost-text">53,000円</div>
+        </div>
+
+        <div class="month-row" onclick="scrollToMonth(8)" style="cursor: pointer;" title="8月のアルバムを見る">
+          <div class="month-badge badge-red">8月</div>
+          <div class="month-stat-text">
+            6回 / 50点
+            <span class="small">フィギュア 49点, 他7点</span>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" style="width: 100.0%; background: #f87171;"></div>
+          </div>
+          <div class="month-cost-text">79,500円</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- フィルターバー -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <span class="filter-label">カテゴリ:</span>
+        <button class="filter-btn active" onclick="filterCategory('all', this)">すべて (20)</button>
+        <button class="filter-btn" onclick="filterCategory('figures', this)">フィギュア</button>
+        <button class="filter-btn" onclick="filterCategory('others', this)">お菓子・雑貨あり</button>
+      </div>
+
+      <div class="filter-group">
+        <span class="filter-label">🏪 店舗で絞り込み:</span>
+        <select id="shopFilterSelect" class="shop-filter-select" onchange="filterByShop(this.value)">
+          <option value="all">（すべての店舗）</option>
+          <option value="回遊館 橿原店">回遊館 橿原店</option>
+          <option value="回遊館 西条店">回遊館 西条店</option>
+          <option value="開放倉庫橿原店">開放倉庫橿原店</option>
+          <option value="結屋 大和郡山店">結屋 大和郡山店</option>
+          <option value="トレジャーランド南港ＡＴＣ店">トレジャーランド南港ＡＴＣ店</option>
+          <option value="結屋 新世界店">結屋 新世界店</option>
+          <option value="OTAICHI!! POP!! WORLD!! 大阪福島店">OTAICHI!! POP!! WORLD!! 大阪福島店</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <span class="filter-label">月ジャンプ:</span>
+        <button class="filter-btn" onclick="scrollToMonth(4)">4月</button>
+        <button class="filter-btn" onclick="scrollToMonth(5)">5月</button>
+        <button class="filter-btn" onclick="scrollToMonth(6)">6月</button>
+        <button class="filter-btn" onclick="scrollToMonth(7)">7月</button>
+        <button class="filter-btn" onclick="scrollToMonth(8)">8月</button>
+      </div>
+    </div>
+
+    <!-- 月別アルバムセクション -->
+    <div id="album-container">
+
+      <section class="month-section" id="month-sec-4">
+        <div class="month-section-header">
+          <h2>2026年4月</h2>
+          <div class="summary-tag">3回 / 20点 / 28,000円</div>
+        </div>
+        <div class="records-grid">
+
+          <div class="record-card" data-id="1" data-has-others="false" data-shops="回遊館 西条店" onclick="openModal(1)">
+            <div class="card-thumb-wrapper">
+              <img src="images/IMG_2595.jpg" alt="マリオ・スティッチなど" loading="lazy">
+              <div class="card-zoom-overlay">
+                <span>🔍 クリックで拡大・内訳</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-title-text">マリオ・スティッチなど</div>
+              <div class="card-badges">
+                <span class="badge badge-date">4月4日</span>
+                <span id="card-shops-1" class="card-shops-wrap"><span class="badge badge-shop">🏪 回遊館 西条店</span></span>
+                <span class="badge badge-items">8点</span>
+                <span class="badge badge-cost">8,000円</span>
+                <span class="badge badge-fig">フィギュア 8点</span>
+                
+                
+              </div>
+            </div>
+          </div>
+
+          <div class="record-card" data-id="2" data-has-others="false" data-shops="回遊館 橿原店" onclick="openModal(2)">
+            <div class="card-thumb-wrapper">
+              <img src="images/IMG_2726.jpg" alt="時崎狂三・桜ミクなど" loading="lazy">
+              <div class="card-zoom-overlay">
+                <span>🔍 クリックで拡大・内訳</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-title-text">時崎狂三・桜ミクなど</div>
+              <div class="card-badges">
+                <span class="badge badge-date">4月18日</span>
+                <span id="card-shops-2" class="card-shops-wrap"><span class="badge badge-shop">🏪 回遊館 橿原店</span></span>
+                <span class="badge badge-items">6点</span>
+                <span class="badge badge-cost">10,000円</span>
+                <span class="badge badge-fig">フィギュア 6点</span>
+                
+                
+              </div>
+            </div>
+          </div>
+
+          <div class="record-card" data-id="3" data-has-others="true" data-shops="回遊館 橿原店" onclick="openModal(3)">
+            <div class="card-thumb-wrapper">
+              <img src="images/IMG_2855.jpg" alt="初音ミク・喜多川海夢など" loading="lazy">
+              <div class="card-zoom-overlay">
+                <span>🔍 クリックで拡大・内訳</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-title-text">初音ミク・喜多川海夢など</div>
+              <div class="card-badges">
+                <span class="badge badge-date">4月30日</span>
+                <span id="card-shops-3" class="card-shops-wrap"><span class="badge badge-shop">🏪 回遊館 橿原店</span></span>
+                <span class="badge badge-items">6点</span>
+                <span class="badge badge-cost">10,000円</span>
+                <span class="badge badge-fig">フィギュア 5点</span>
+                
+                <span class="badge badge-other">雑貨/菓子 1点</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="month-section" id="month-sec-5">
+        <div class="month-section-header">
+          <h2>2026年5月</h2>
+          <div class="summary-tag">3回 / 12点 / 15,000円</div>
+        </div>
+        <div class="records-grid">
+
+          <div class="record-card" data-id="4" data-has-others="false" data-shops="OTAICHI!! POP!! WORLD!! 大阪福島店" onclick="openModal(4)">
+            <div class="card-thumb-wrapper">
+              <img src="images/IMG_3030.jpg" alt="時崎狂三・桜ミク" loading="lazy">
+              <div class="card-zoom-overlay">
+                <span>🔍 クリックで拡大・内訳</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-title-text">時崎狂三・桜ミク</div>
+              <div class="card-badges">
+                <span class="badge badge-date">5月16日</span>
+                <span id="card-shops-4" class="card-shops-wrap"><span class="badge badge-shop">🏪 OTAICHI!! POP!! WORLD!! 大阪福島店</span></span>
+                <span class="badge badge-items">2点</span>
+                <span class="badge badge-cost">3,000円</span>
+                <span class="badge badge-fig">フィギュア 2点</span>
+                
+                
+              </div>
+            </div>
+          </div>
+
+          <div class="record-card" data-id="5" data-has-others="false" data-shops="結屋 大和郡山店" onclick="openModal(5)">
+            <div class="card-thumb-wrapper">
+              <img src="images/IMG_3084.jpg" alt="初音ミク・レムなど" loading="lazy">
+              <div class="card-zoom-overlay">
+                <span>🔍 クリックで拡大・内訳</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-title-text">初音ミク・レムなど</div>
+              <div class="card-badges">
+                <span class="badge badge-date">5月23日</span>
+                <span id="card-shops-5" class="card-shops-wrap"><span class="badge badge-shop">🏪 結屋 大和郡山店</span></span>
+                <span class="badge badge-items">7点</span>
+                <span class="badge badge-cost">9,000円</span>
+                <span class="badge badge-fig">フィギュア 7点</span>
+                
+                
+              </div>
+            </div>
+          </div>
+
+          <div class="record-card" data-id="6" data-has-others="false" data-shops="結屋 新世界店" onclick="openModal(6)">
+            <div class="card-thumb-wrapper">
+              <img src="images/IMG_3177.jpg" alt="ルパン三世・ワンピースなど" loading="lazy">
+              <div class="card-zoom-overlay">
+                <span>🔍 クリックで拡大・内訳</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-title-text">ルパン三世・ワンピースなど</div>
+              <div class="card-badges">
+                <span class="badge badge-date">5月31日</span>
+                <span id="card-shops-6" class="card-shops-wrap"><span class="badge badge-shop">🏪 結屋 新世界店</span></span>
+                <span class="badge badge-items">3点</span>
+                <span class="badge badge-cost">3,000円</span>
+                <span class="badge badge-fig">フィギュア 3点</span>
+                
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="month-section" id="month-sec-6">
+        <div class="month-section-header">
+          <h2>2026年6月</h2>
+          <div class="summary-tag">3回 / 16点 / 30,000円</div>
+        </div>
+        <div class="records-grid">
+
+          <div class="record-card" data-id="7" data-has-others="true" data-shops="結屋 大和郡山店,回遊館 橿原店" onclick="openModal(7)">
+            <div class="card-thumb-wrapper">
+              <img src="images/IMG_3643.jpg" alt="初音ミク・レムなど" loading="lazy">
+              <div class="card-zoom-overlay">
+                <span>🔍 クリックで拡大・内訳</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-title-text">初音ミク・レムなど</div>
+              <div class="card-badges">
+                <span class="badge badge-date">6月21日</span>
+                <span id="card-shops-7" class="card-shops-wrap"><span class="badge badge-shop">🏪 結屋 大和郡山店</span><span class="badge badge-shop">🏪 回遊館 橿原店</span></span>
+                <span class="badge badge-items">7点</span>
+                <span class="badge badge-cost">16,000円</span>
+                <span class="badge badge-fig">フィギュア 6点</span>
+                
+                <span class="badge badge-other">雑貨/菓子 1点</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="record-card" data-id="8" data-has-others="true" data-shops="結屋 大和郡山店" onclick="openModal(8)">
+            <div class="card-thumb-wrapper">
+              <img src="images/IMG_3732.jpg" alt="初音ミク・ルパン三世など" loading="lazy">
+              <div class="card-zoom-overlay">
+                <span>🔍 クリックで拡大・内訳</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-title-text">初音ミク・ルパン三世など</div>
+              <div class="card-badges">
+                <span class="badge badge-date">6月27日</span>
+                <span id="card-shops-8" class="card-shops-wrap"><span class="badge badge-shop">🏪 結屋 大和郡山店</span></span>
+                <span class="badge badge-items">7点</span>
+                <span class="badge badge-cost">8,000円</span>
+                <span class="badge badge-fig">フィギュア 7点</span>
+                
+                <span class="badge badge-other">雑貨/菓子 2点</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="record-card" data-id="9" data-has-others="true" data-shops="開放倉庫橿原店" onclick="openModal(9)">
+            <div class="card-thumb-wrapper">
+              <img src="images/IMG_3782.jpg" alt="喜多川海夢" loading="lazy">
+              <div class="card-zoom-overlay">
+                <span>🔍 クリックで拡大・内訳</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-title-text">喜多川海夢</div>
+              <div class="card-badges">
+                <span class="badge badge-date">6月30日</span>
+                <span id="card-shops-9" class="card-shops-wrap"><span class="badge badge-shop">🏪 開放倉庫橿原店</span></span>
+                <span class="badge badge-items">2点</span>
+                <span class="badge badge-cost">6,000円</span>
+                <span class="badge badge-fig">フィギュア 2点</span>
+                
+                <span class="badge badge-other">雑貨/菓子 1点</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="month-section" id="month-sec-7">
+        <div class="month-section-header">
+          <h2>2026年7月</h2>
+          <div class="summary-tag">5回 / 31点 / 53,000円</div>
+        </div>
+        <div class="records-grid">
+
+          <div class="record-card" data-id="10" data-has-others="false" data-shops="トレジャーランド南港ＡＴＣ店" onclick="openModal(10)">
+            <div class="card-thumb-wrapper">
+              <img src="images/IMG_3893.jpg" alt="初音ミク・トイ・ストーリーなど" loading="lazy">
+              <div class="card-zoom-overlay">
+                <span>🔍 クリックで拡大・内訳</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-title-text">初音ミク・トイ・ストーリーなど</div>
+              <div class="card-badges">
+                <span class="badge badge-date">7月12日</span>
+                <span id="card-shops-10" class="card-shops-wrap"><span class="badge badge-shop">🏪 トレジャーランド南港ＡＴＣ店</span></span>
+                <span class="badge badge-items">8点</span>
+                <span class="badge badge-cost">6,000円</span>
+                <span class="badge badge-fig">フィギュア 8点</span>
+                
+                
+              </div>
+            </div>
+          </div>
+
+          <div class="record-card" data-id="11" data-has-others="true" data-shops="結屋 大和郡山店" onclick="openModal(11)">
+            <div class="card-thumb-wrapper">
+              <img src="images/IMG_3935.jpg" alt="アニメキャラ・ぬーどるストッパー" loading="lazy">
+              <div class="card-zoom-overlay">
+                <span>🔍 クリックで拡大・内訳</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-title-text">アニメキャラ・ぬーどるストッパー</div>
+              <div class="card-badges">
+                <span class="badge badge-date">7月16日</span>
+                <span id="card-shops-11" class="card-shops-wrap"><span class="badge badge-shop">🏪 結屋 大和郡山店</span></span>
+                <span class="badge badge-items">3点</span>
+                <span class="badge badge-cost">6,000円</span>
+                <span class="badge badge-fig">フィギュア 3点</span>
+                
+                <span class="badge badge-other">雑貨/菓子 5点</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="record-card" data-id="12" data-has-others="false" data-shops="回遊館 橿原店" onclick="openModal(12)">
+            <div class="card-thumb-wrapper">
+              <img src="images/IMG_3988.jpg" alt="初音ミク・アニメ美少女など" loading="lazy">
+              <div class="card-zoom-overlay">
+                <span>🔍 クリックで拡大・内訳</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-title-text">初音ミク・アニメ美少女など</div>
+              <div class="card-badges">
+                <span class="badge badge-date">7月19日</span>
+                <span id="card-shops-12" class="card-shops-wrap"><span class="badge badge-shop">🏪 回遊館 橿原店</span></span>
+                <span class="badge badge-items">8点</span>
+                <span class="badge badge-cost">19,000円</span>
+                <span class="badge badge-fig">フィギュア 8点</span>
+                
+                
+              </div>
+            </div>
+          </div>
+
+          <div class="record-card" data-id="13" data-has-others="false" data-shops="結屋 大和郡山店" onclick="openModal(13)">
+            <div class="card-thumb-wrapper">
+              <img src="images/IMG_4092.jpg" alt="初音ミク・ルパン三世・ケロロなど" loading="lazy">
+              <div class="card-zoom-overlay">
+                <span>🔍 クリックで拡大・内訳</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-title-text">初音ミク・ルパン三世・ケロロなど</div>
+              <div class="card-badges">
+                <span class="badge badge-date">7月23日</span>
+                <span id="card-shops-13" class="card-shops-wrap"><span class="badge badge-shop">🏪 結屋 大和郡山店</span></span>
+                <span class="badge badge-items">7点</span>
+                <span class="badge badge-cost">14,000円</span>
+                <span class="badge badge-fig">フィギュア 7点</span>
+                
+                
+              </div>
+            </div>
+          </div>
+
+          <div class="record-card" data-id="14" data-has-others="false" data-shops="結屋 新世界店" onclick="openModal(14)">
+            <div class="card-thumb-wrapper">
+              <img src="images/IMG_4108.jpg" alt="初音ミク・アニメキャラなど" loading="lazy">
+              <div class="card-zoom-overlay">
+                <span>🔍 クリックで拡大・内訳</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-title-text">初音ミク・アニメキャラなど</div>
+              <div class="card-badges">
+                <span class="badge badge-date">7月25日</span>
+                <span id="card-shops-14" class="card-shops-wrap"><span class="badge badge-shop">🏪 結屋 新世界店</span></span>
+                <span class="badge badge-items">5点</span>
+                <span class="badge badge-cost">8,000円</span>
+                <span class="badge badge-fig">フィギュア 5点</span>
+                
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="month-section" id="month-sec-8">
+        <div class="month-section-header">
+          <h2>2026年8月</h2>
+          <div class="summary-tag">6回 / 50点 / 79,500円</div>
+        </div>
+        <div class="records-grid">
+
+          <div class="record-card" data-id="15" data-has-others="true" data-shops="トレジャーランド南港ＡＴＣ店" onclick="openModal(15)">
+            <div class="card-thumb-wrapper">
+              <img src="images/IMG_4198.jpg" alt="初音ミク・アニメキャラ・お菓子など" loading="lazy">
+              <div class="card-zoom-overlay">
+                <span>🔍 クリックで拡大・内訳</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-title-text">初音ミク・アニメキャラ・お菓子など</div>
+              <div class="card-badges">
+                <span class="badge badge-date">8月2日</span>
+                <span id="card-shops-15" class="card-shops-wrap"><span class="badge badge-shop">🏪 トレジャーランド南港ＡＴＣ店</span></span>
+                <span class="badge badge-items">13点</span>
+                <span class="badge badge-cost">16,000円</span>
+                <span class="badge badge-fig">フィギュア 12点</span>
+                
+                <span class="badge badge-other">雑貨/菓子 1点</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="record-card" data-id="16" data-has-others="false" data-shops="トレジャーランド南港ＡＴＣ店" onclick="openModal(16)">
+            <div class="card-thumb-wrapper">
+              <img src="images/IMG_4289.jpg" alt="初音ミク・HUNTER×HUNTERなど" loading="lazy">
+              <div class="card-zoom-overlay">
+                <span>🔍 クリックで拡大・内訳</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-title-text">初音ミク・HUNTER×HUNTERなど</div>
+              <div class="card-badges">
+                <span class="badge badge-date">8月9日</span>
+                <span id="card-shops-16" class="card-shops-wrap"><span class="badge badge-shop">🏪 トレジャーランド南港ＡＴＣ店</span></span>
+                <span class="badge badge-items">6点</span>
+                <span class="badge badge-cost">10,000円</span>
+                <span class="badge badge-fig">フィギュア 6点</span>
+                
+                
+              </div>
+            </div>
+          </div>
+
+          <div class="record-card" data-id="17" data-has-others="false" data-shops="結屋 新世界店" onclick="openModal(17)">
+            <div class="card-thumb-wrapper">
+              <img src="images/IMG_4391.jpg" alt="らき☆すた・初音ミク" loading="lazy">
+              <div class="card-zoom-overlay">
+                <span>🔍 クリックで拡大・内訳</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-title-text">らき☆すた・初音ミク</div>
+              <div class="card-badges">
+                <span class="badge badge-date">8月13日</span>
+                <span id="card-shops-17" class="card-shops-wrap"><span class="badge badge-shop">🏪 結屋 新世界店</span></span>
+                <span class="badge badge-items">2点</span>
+                <span class="badge badge-cost">10,000円</span>
+                <span class="badge badge-fig">フィギュア 2点</span>
+                
+                
+              </div>
+            </div>
+          </div>
+
+          <div class="record-card" data-id="18" data-has-others="true" data-shops="トレジャーランド南港ＡＴＣ店" onclick="openModal(18)">
+            <div class="card-thumb-wrapper">
+              <img src="images/IMG_4417.jpg" alt="らき☆すた・DEATH NOTE・お菓子など" loading="lazy">
+              <div class="card-zoom-overlay">
+                <span>🔍 クリックで拡大・内訳</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-title-text">らき☆すた・DEATH NOTE・お菓子など</div>
+              <div class="card-badges">
+                <span class="badge badge-date">8月16日</span>
+                <span id="card-shops-18" class="card-shops-wrap"><span class="badge badge-shop">🏪 トレジャーランド南港ＡＴＣ店</span></span>
+                <span class="badge badge-items">7点</span>
+                <span class="badge badge-cost">13,000円</span>
+                <span class="badge badge-fig">フィギュア 7点</span>
+                
+                <span class="badge badge-other">雑貨/菓子 6点</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="record-card" data-id="19" data-has-others="false" data-shops="トレジャーランド南港ＡＴＣ店,結屋 新世界店" onclick="openModal(19)">
+            <div class="card-thumb-wrapper">
+              <img src="images/IMG_4514.jpg" alt="To LOVEる・まどマギ・ケロロ軍曹など" loading="lazy">
+              <div class="card-zoom-overlay">
+                <span>🔍 クリックで拡大・内訳</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-title-text">To LOVEる・まどマギ・ケロロ軍曹など</div>
+              <div class="card-badges">
+                <span class="badge badge-date">8月23日</span>
+                <span id="card-shops-19" class="card-shops-wrap"><span class="badge badge-shop">🏪 トレジャーランド南港ＡＴＣ店</span><span class="badge badge-shop">🏪 結屋 新世界店</span></span>
+                <span class="badge badge-items">8点</span>
+                <span class="badge badge-cost">11,500円</span>
+                <span class="badge badge-fig">フィギュア 8点</span>
+                
+                
+              </div>
+            </div>
+          </div>
+
+          <div class="record-card" data-id="20" data-has-others="false" data-shops="トレジャーランド南港ＡＴＣ店,結屋 新世界店" onclick="openModal(20)">
+            <div class="card-thumb-wrapper">
+              <img src="images/IMG_4580.jpg" alt="初音ミク・ジョジョ・俺妹など" loading="lazy">
+              <div class="card-zoom-overlay">
+                <span>🔍 クリックで拡大・内訳</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-title-text">初音ミク・ジョジョ・俺妹など</div>
+              <div class="card-badges">
+                <span class="badge badge-date">8月29日</span>
+                <span id="card-shops-20" class="card-shops-wrap"><span class="badge badge-shop">🏪 トレジャーランド南港ＡＴＣ店</span><span class="badge badge-shop">🏪 結屋 新世界店</span></span>
+                <span class="badge badge-items">14点</span>
+                <span class="badge badge-cost">19,000円</span>
+                <span class="badge badge-fig">フィギュア 14点</span>
+                
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- 詳細モーダル -->
+  <div class="modal" id="detailModal" onclick="closeModalOnBg(event)">
+    <button class="modal-nav-btn modal-nav-prev" onclick="prevRecord(event)">❮</button>
+    <button class="modal-nav-btn modal-nav-next" onclick="nextRecord(event)">❯</button>
+    
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-img-container">
+        <img id="modalImg" src="" alt="獲得写真">
+      </div>
+      <div class="modal-info">
+        <div class="modal-header-meta">
+          <span class="badge badge-date" id="modalDate"></span>
+          <span id="modalShopBadges"></span>
+          <span class="badge badge-cost" id="modalCost"></span>
+          <span class="badge badge-items" id="modalCount"></span>
+        </div>
+        <h3 class="modal-title" id="modalTitle"></h3>
+        
+        <!-- 店舗プルダウン編集セクション -->
+        <div class="modal-shop-editor">
+          <div class="shop-editor-header">
+            <span class="shop-editor-title">🏪 獲得店舗（最大2店舗まで選択）</span>
+            <span class="shop-save-status" id="shopSaveStatus">✓ 保存しました</span>
+          </div>
+          <div class="shop-selects-row">
+            <div class="shop-select-box">
+              <label>店舗 1</label>
+              <select id="modalShopSelect1" onchange="onShopChange()">
+                <option value="">（未選択 / なし）</option>
+              </select>
+            </div>
+            <div class="shop-select-box">
+              <label>店舗 2</label>
+              <select id="modalShopSelect2" onchange="onShopChange()">
+                <option value="">（未選択 / なし）</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-stats">
+          <div class="modal-stat-box">
+            <div class="lbl">フィギュア</div>
+            <div class="val" id="modalFigures"></div>
+          </div>
+          <div class="modal-stat-box">
+            <div class="lbl">ぬいぐるみ</div>
+            <div class="val" id="modalPlushies"></div>
+          </div>
+          <div class="modal-stat-box">
+            <div class="lbl">その他・雑貨</div>
+            <div class="val" id="modalOthers"></div>
+          </div>
+          <div class="modal-stat-box">
+            <div class="lbl">1個あたり金額</div>
+            <div class="val" id="modalUnitCost"></div>
+          </div>
+        </div>
+
+        <div class="modal-items-list">
+          <h4>📦 主な獲得アイテム一覧</h4>
+          <ul id="modalItemsUl"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JSONエクスポート用モーダル -->
+  <div class="modal" id="exportModal" onclick="closeExportModalOnBg(event)">
+    <div class="export-modal-content" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeExportModal()">✕</button>
+      <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">📤 店舗データのエクスポート</h3>
+      <p style="font-size: 13px; color: #64748b;">
+        現在ブラウザ（localStorage）で設定した店舗名を含む全データです。<br>
+        コピーしてAIチャットに貼り付けると、<code>records_data.json</code> に一括保存できます。
+      </p>
+      <textarea id="exportTextarea" class="export-textarea" readonly></textarea>
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="btn btn-secondary" onclick="closeExportModal()">閉じる</button>
+        <button class="btn btn-primary" onclick="copyExportJson()">📋 JSONをコピー</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast">✓ メッセージ</div>
+
+  <script>
+    const recordsData = [{"id": 1, "year": 2026, "month": 4, "date": "2026-04-04", "display_date": "4月4日", "title": "マリオ・スティッチなど", "count": 8, "cost": 8000, "figures": 8, "plushies": 0, "others": 0, "image_src": "IMG_2595.jpg", "items": ["ちんざじゅう 快獣ブースカ", "スーパーマリオ ビッグアクションフィギュア マリオ", "サンリオ なかよしメモリーズ シナモロール", "サンリオ なかよしメモリーズ ポムポムプリン", "Aqua Float Girls モモ・ベリア・デビルーク", "とある魔術の禁書目録III ESPRESTO 一方通行(アクセラレータ)", "呪術廻戦 XStellar 乙骨憂太", "ディズニー スティッチ きゅるころ"], "shops": ["回遊館 西条店"]}, {"id": 2, "year": 2026, "month": 4, "date": "2026-04-18", "display_date": "4月18日", "title": "時崎狂三・桜ミクなど", "count": 6, "cost": 10000, "figures": 6, "plushies": 0, "others": 0, "image_src": "IMG_2726.jpg", "items": ["その着せ替え人形は恋をする BiCute Dark 喜多川海夢 黒江雫ver.", "ToLOVEる ダークネス BiCute Bunnies 金色の闇", "サンリオ なかよしメモリーズ クロミ", "Coreful フィギュア 桜ミク ～描き下ろし 和風喫茶ver.～", "僕のヒーローアカデミア Fluffy Puffy デクシープ＆バクドッグ", "SOFVIMATES スティッチ"], "shops": ["回遊館 橿原店"]}, {"id": 3, "year": 2026, "month": 4, "date": "2026-04-30", "display_date": "4月30日", "title": "初音ミク・喜多川海夢など", "count": 6, "cost": 10000, "figures": 5, "plushies": 0, "others": 1, "image_src": "IMG_2855.jpg", "items": ["ケロロ軍曹 ケロロ小隊フィギュア タママ", "ケロロ軍曹 ケロロ小隊フィギュア ケロロ", "初音ミク Trio-Try-iT Figure おでかけドレス・RED Ver.", "その着せ替え人形は恋をする BiCute Pure 喜多川海夢", "その着せ替え人形は恋をする GLITTER&GLAMOURS 喜多川海夢 制服", "ちいかわ バニティポーチ"], "shops": ["回遊館 橿原店"]}, {"id": 4, "year": 2026, "month": 5, "date": "2026-05-16", "display_date": "5月16日", "title": "時崎狂三・桜ミク", "count": 2, "cost": 3000, "figures": 2, "plushies": 0, "others": 0, "image_src": "IMG_3030.jpg", "items": ["その着せ替え人形は恋をする T-most 喜多川海夢 フィギュア ～黒江雫ver.～", "初音ミク ぬーどるストッパーフィギュア 桜ミク2026"], "shops": ["OTAICHI!! POP!! WORLD!! 大阪福島店"]}, {"id": 5, "year": 2026, "month": 5, "date": "2026-05-23", "display_date": "5月23日", "title": "初音ミク・レムなど", "count": 7, "cost": 9000, "figures": 7, "plushies": 0, "others": 0, "image_src": "IMG_3084.jpg", "items": ["魔法少女まどか☆マギカ 鹿目まどか フィギュア", "呪術廻戦 XStellar 禪院直哉", "Re:ゼロから始める異世界生活 レム", "ToLOVEる ダークネス BiCute Bunnies モモ・ベリア・デビルーク white ver.", "初音ミク FIGURIZMα 初音ミク -Punk!-", "BLACK LAGOON Vivitフィギュア レヴィ", "ToLOVEる ダークネス Desktop Cute モモ ～ルームウェアVer.～"], "shops": ["結屋 大和郡山店"]}, {"id": 6, "year": 2026, "month": 5, "date": "2026-05-31", "display_date": "5月31日", "title": "ルパン三世・ワンピースなど", "count": 3, "cost": 3000, "figures": 3, "plushies": 0, "others": 0, "image_src": "IMG_3177.jpg", "items": ["ToLOVEる ダークネス Aqua Float Girls ララ", "トムとジェリー ビッグソフビフィギュア -Yummy Bread-", "LUPIN THE IIIRD ルパン三世 フィギュア"], "shops": ["結屋 新世界店"]}, {"id": 7, "year": 2026, "month": 6, "date": "2026-06-21", "display_date": "6月21日", "title": "初音ミク・レムなど", "count": 7, "cost": 16000, "figures": 6, "plushies": 0, "others": 1, "image_src": "IMG_3643.jpg", "items": ["東京喰種 Grandista 金木研", "SILENT HILL 2 バブルヘッドナース", "魔法少女まどか☆マギカ 暁美ほむら", "魔法少女まどか☆マギカ 美樹さやか", "魔法少女まどか☆マギカ 巴マミ", "物語シリーズ Desktop Cute 戦場ヶ原ひたぎ", "僕のヒーローアカデミア GLITTER&GLAMOURS 波動ねじれ", "ディズニー ドナルド クリップオンファン"], "shops": ["結屋 大和郡山店", "回遊館 橿原店"]}, {"id": 8, "year": 2026, "month": 6, "date": "2026-06-27", "display_date": "6月27日", "title": "初音ミク・ルパン三世など", "count": 7, "cost": 8000, "figures": 7, "plushies": 0, "others": 2, "image_src": "IMG_3732.jpg", "items": ["呪術廻戦 FIGURIZMα 乙骨憂太", "初音ミク ぬーどるストッパー", "ToLOVEる Desktop Cute モモ", "ケロロ軍曹 GLITTER&GLAMOURS モア", "LUPIN THE IIIRD 次元大介", "僕のヒーローアカデミア GLITTER&GLAMOURS トガヒミコ", "その着せ替え人形は恋をする GLITTER&GLAMOURS 喜多川海夢 バニーver.", "マネケン ベルギーワッフル", "大粒ラムネSUPER"], "shops": ["結屋 大和郡山店"]}, {"id": 9, "year": 2026, "month": 6, "date": "2026-06-30", "display_date": "6月30日", "title": "喜多川海夢", "count": 2, "cost": 6000, "figures": 2, "plushies": 0, "others": 1, "image_src": "IMG_3782.jpg", "items": ["その着せ替え人形は恋をする T-most 喜多川海夢 フィギュア ～バニーver.～ ×2", "パペットスンスン キーフック"], "shops": ["開放倉庫橿原店"]}, {"id": 10, "year": 2026, "month": 7, "date": "2026-07-12", "display_date": "7月12日", "title": "初音ミク・トイ・ストーリーなど", "count": 8, "cost": 6000, "figures": 8, "plushies": 0, "others": 0, "image_src": "IMG_3893.jpg", "items": ["SUPER SONICO すーぱーそに子 BiCute Bunnies 逆バニー", "ローゼンメイデン 真紅 ×2", "うる星やつら BiCute Bunnies ラム", "死亡遊戯で飯を食う。 BiCute Bunnies 幽鬼 ×2", "トイ・ストーリー ジェシー", "トイ・ストーリー ウッディ"], "shops": ["トレジャーランド南港ＡＴＣ店"]}, {"id": 11, "year": 2026, "month": 7, "date": "2026-07-16", "display_date": "7月16日", "title": "アニメキャラ・ぬーどるストッパー", "count": 3, "cost": 6000, "figures": 3, "plushies": 0, "others": 5, "image_src": "IMG_3935.jpg", "items": ["Steins;Gate 牧瀬紅莉栖 ぬーどるストッパー", "僕のヒーローアカデミア MAXIMATIC ミルコ", "HUNTER×HUNTER ゴン", "mini源氏パイ", "しじみ70個分のちから", "ひるげ", "パペットスンスン バッグ ×2"], "shops": ["結屋 大和郡山店"]}, {"id": 12, "year": 2026, "month": 7, "date": "2026-07-19", "display_date": "7月19日", "title": "初音ミク・アニメ美少女など", "count": 8, "cost": 19000, "figures": 8, "plushies": 0, "others": 0, "image_src": "IMG_3988.jpg", "items": ["Re:ゼロ Yumemirize レム～大熊猫～", "呪術廻戦 ぬーどるストッパー 夏油傑", "ジョジョの奇妙な冒険 イギー", "初音ミク Luminasta", "初音ミク×ラスカル スペシャルフィギュア サマーフェス", "HUNTER×HUNTER Excood Creative ヒソカ", "アイドルマスター フィギュア", "BLACK LAGOON レヴィ バニーVer."], "shops": ["回遊館 橿原店"]}, {"id": 13, "year": 2026, "month": 7, "date": "2026-07-23", "display_date": "7月23日", "title": "初音ミク・ルパン三世・ケロロなど", "count": 7, "cost": 14000, "figures": 7, "plushies": 0, "others": 0, "image_src": "IMG_4092.jpg", "items": ["LUPIN THE IIIRD 峰不二子", "初音ミク Holiday Memories -ゲーム-", "魔法少女まどか☆マギカ ぬーどるストッパー 鹿目まどか", "その着せ替え人形は恋をする GLITTER&GLAMOURS 喜多川海夢 バニー", "その着せ替え人形は恋をする GLITTER&GLAMOURS 喜多川海夢 制服", "ケロロ軍曹 ギロロ", "ケロロ軍曹 ケロロ"], "shops": ["結屋 大和郡山店"]}, {"id": 14, "year": 2026, "month": 7, "date": "2026-07-25", "display_date": "7月25日", "title": "初音ミク・アニメキャラなど", "count": 5, "cost": 8000, "figures": 5, "plushies": 0, "others": 0, "image_src": "IMG_4108.jpg", "items": ["らき☆すた Vivitフィギュア 泉こなた", "その着せ替え人形は恋をする Vivitフィギュア 喜多川海夢 ジャージメイドVer.", "初音ミク×シナモロール Stellar 初音ミク", "初音ミク Holiday Memories -ゲーム-", "METAL GEAR SOLID SNAKE EATER"], "shops": ["結屋 新世界店"]}, {"id": 15, "year": 2026, "month": 8, "date": "2026-08-02", "display_date": "8月2日", "title": "初音ミク・アニメキャラ・お菓子など", "count": 13, "cost": 16000, "figures": 12, "plushies": 0, "others": 1, "image_src": "IMG_4198.jpg", "items": ["僕のヒーローアカデミア MAXIMATIC 爆豪勝己", "とらドラ！ 逢坂大河 タイガー水着ver.", "ToLOVEる ネメシス チャイナドレスver.", "五郎島金時いもタルト", "LUPIN THE IIIRD ルパン三世", "ローゼンメイデン 水銀燈", "初音ミク T-most フィギュア ×2", "初音ミク Wonderland", "呪術廻戦 Grandista 伏黒甚爾", "死亡遊戯で飯を食う。 ぬーどるストッパー 幽鬼", "アイドルマスター Nyaspiration ×2"], "shops": ["トレジャーランド南港ＡＴＣ店"]}, {"id": 16, "year": 2026, "month": 8, "date": "2026-08-09", "display_date": "8月9日", "title": "初音ミク・HUNTER×HUNTERなど", "count": 6, "cost": 10000, "figures": 6, "plushies": 0, "others": 0, "image_src": "IMG_4289.jpg", "items": ["初音ミク ぬーどるストッパー Flower Fairy", "HUNTER×HUNTER キルア", "初音ミク Conceptual series 南国", "初音ミク Clearluxe くらげ・フィギュア", "呪術廻戦 伏黒恵", "初音ミク Trio-Try-iT レイニーダンス"], "shops": ["トレジャーランド南港ＡＴＣ店"]}, {"id": 17, "year": 2026, "month": 8, "date": "2026-08-13", "display_date": "8月13日", "title": "らき☆すた・初音ミク", "count": 2, "cost": 10000, "figures": 2, "plushies": 0, "others": 0, "image_src": "IMG_4391.jpg", "items": ["らき☆すた Vivitフィギュア 柊つかさ", "初音ミク ぬーどるストッパーフィギュア Flower Fairy 桔梗"], "shops": ["結屋 新世界店"]}, {"id": 18, "year": 2026, "month": 8, "date": "2026-08-16", "display_date": "8月16日", "title": "らき☆すた・DEATH NOTE・お菓子など", "count": 7, "cost": 13000, "figures": 7, "plushies": 0, "others": 6, "image_src": "IMG_4417.jpg", "items": ["らき☆すた Trio-Try-iT Figure 柊かがみ ×2", "DEATH NOTE 弥海砂 ×2", "バカとテストと召喚獣 BiCute Bunnies 木下秀吉 ×2", "僕のヒーローアカデミア Fluffy Puffy", "各種ふりかけ (カラムーチョ・松屋牛めし・ポテトチップス等) 計6袋"], "shops": ["トレジャーランド南港ＡＴＣ店"]}, {"id": 19, "year": 2026, "month": 8, "date": "2026-08-23", "display_date": "8月23日", "title": "To LOVEる・まどマギ・ケロロ軍曹など", "count": 8, "cost": 11500, "figures": 8, "plushies": 0, "others": 0, "image_src": "IMG_4514.jpg", "items": ["ToLOVEる ダークネス BiCute Ribbons 金色の闇", "ToLOVEる ダークネス Aqua Float Girls 古手川唯", "ToLOVEる ダークネス Aqua Float Girls ナナ・アスタ・デビルーク", "魔法少女まどか☆マギカ ぬーどるストッパー 暁美ほむら", "ケロロ軍曹 共鳴するでありまーす！ タママ二等兵", "ケロロ軍曹 共鳴するでありまーす！ クルル曹長", "ケロロ軍曹 共鳴するでありまーす！ ドロロ兵長", "呪術廻戦 フィギュア 七海建人"], "shops": ["トレジャーランド南港ＡＴＣ店", "結屋 新世界店"]}, {"id": 20, "year": 2026, "month": 8, "date": "2026-08-29", "display_date": "8月29日", "title": "初音ミク・ジョジョ・俺妹など", "count": 14, "cost": 19000, "figures": 14, "plushies": 0, "others": 0, "image_src": "IMG_4580.jpg", "items": ["ToLOVEる ダークネス Desktop Cute 古手川唯 ～ルームウェアver.～", "初音ミク Birthday 2026 ～Star Dreamy ver.～", "Re:ゼロから始める異世界生活 ESPRESTO エミリア", "俺の妹がこんなに可愛いわけがない。 ムチュート フィギュア 高坂桐乃", "初音ミク BANPRESTO EVOLVE Classical tuning くるみ割り人形", "ダンダダン GLITTER&GLAMOURS モモ", "僕のヒーローアカデミア GLITTER&GLAMOURS 葉隠透", "ジョジョの奇妙な冒険 ストーンオーシャン Nometria 空条徐倫 ×2", "初音ミク T-most フィギュア -NT-", "アイドルマスター シンデレラガールズ Nyaspiration 夢見りあむ", "アイドルマスター シンデレラガールズ Nyaspiration 辻野あかり", "ジョジョの奇妙な冒険 ストーンオーシャン Nometria エンリコ・P", "呪術廻戦 FIGURIZMα 祈本里香(リカ) 顕現"], "shops": ["トレジャーランド南港ＡＴＣ店", "結屋 新世界店"]}];
+    const shopOptions = ["回遊館 橿原店", "回遊館 西条店", "開放倉庫橿原店", "結屋 大和郡山店", "トレジャーランド南港ＡＴＣ店", "結屋 新世界店", "OTAICHI!! POP!! WORLD!! 大阪福島店"];
+    let currentRecordIndex = 0;
+    let toastTimeout = null;
+
+    // localStorageからカスタム店舗データを復元
+    const storedCustomShops = JSON.parse(localStorage.getItem('prize_custom_shops') || '{}');
+    
+    // 初期データのshopsをマージ
+    recordsData.forEach(r => {
+      if (storedCustomShops[r.id] !== undefined) {
+        r.shops = storedCustomShops[r.id];
+      } else if (!r.shops) {
+        r.shops = r.shop ? [r.shop] : [];
+      }
+    });
+
+    // 画面初期化
+    window.addEventListener('DOMContentLoaded', () => {
+      initShopSelectOptions();
+      refreshAllCardShopBadges();
+    });
+
+    function initShopSelectOptions() {
+      const sel1 = document.getElementById('modalShopSelect1');
+      const sel2 = document.getElementById('modalShopSelect2');
+      
+      shopOptions.forEach(opt => {
+        const o1 = document.createElement('option');
+        o1.value = opt;
+        o1.innerText = opt;
+        sel1.appendChild(o1);
+
+        const o2 = document.createElement('option');
+        o2.value = opt;
+        o2.innerText = opt;
+        sel2.appendChild(o2);
+      });
+    }
+
+    function refreshAllCardShopBadges() {
+      recordsData.forEach(r => {
+        updateCardShopBadge(r.id, r.shops || []);
+      });
+    }
+
+    function updateCardShopBadge(id, shops) {
+      const wrap = document.getElementById('card-shops-' + id);
+      const card = document.querySelector(`.record-card[data-id="${id}"]`);
+      if (card) {
+        card.dataset.shops = shops.join(',');
+      }
+      if (!wrap) return;
+      
+      if (shops && shops.length > 0) {
+        wrap.innerHTML = shops.map(s => `<span class="badge badge-shop">🏪 ${s}</span>`).join(' ');
+      } else {
+        wrap.innerHTML = '';
+      }
+    }
+
+    function openModal(id) {
+      const index = recordsData.findIndex(r => r.id === id);
+      if (index === -1) return;
+      currentRecordIndex = index;
+      renderModalContent(recordsData[index]);
+      document.getElementById('detailModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function renderModalContent(item) {
+      document.getElementById('modalImg').src = 'images/' + item.image_src;
+      document.getElementById('modalDate').innerText = item.display_date;
+      
+      // モーダルヘッダー店舗バッジ
+      const shopBadgesWrap = document.getElementById('modalShopBadges');
+      const shops = item.shops || [];
+      if (shops.length > 0) {
+        shopBadgesWrap.innerHTML = shops.map(s => `<span class="badge badge-shop">🏪 ${s}</span>`).join(' ');
+      } else {
+        shopBadgesWrap.innerHTML = '';
+      }
+
+      // プルダウンの初期値設定
+      document.getElementById('modalShopSelect1').value = shops[0] || '';
+      document.getElementById('modalShopSelect2').value = shops[1] || '';
+      document.getElementById('shopSaveStatus').classList.remove('show');
+      
+      document.getElementById('modalCost').innerText = item.cost.toLocaleString() + '円';
+      document.getElementById('modalCount').innerText = item.count + '点 獲得';
+      document.getElementById('modalTitle').innerText = item.title;
+      document.getElementById('modalFigures').innerText = item.figures + '点';
+      document.getElementById('modalPlushies').innerText = item.plushies + '点';
+      document.getElementById('modalOthers').innerText = item.others + '点';
+      
+      const unitCost = Math.round(item.cost / item.count);
+      document.getElementById('modalUnitCost').innerText = unitCost.toLocaleString() + '円';
+
+      const ul = document.getElementById('modalItemsUl');
+      ul.innerHTML = '';
+      if (item.items && item.items.length > 0) {
+        item.items.forEach(it => {
+          const li = document.createElement('li');
+          li.innerText = it;
+          ul.appendChild(li);
+        });
+      } else {
+        const li = document.createElement('li');
+        li.innerText = item.title;
+        ul.appendChild(li);
+      }
+    }
+
+    function onShopChange() {
+      const val1 = document.getElementById('modalShopSelect1').value.trim();
+      const val2 = document.getElementById('modalShopSelect2').value.trim();
+      
+      const currentItem = recordsData[currentRecordIndex];
+      const newShops = [];
+      if (val1) newShops.push(val1);
+      if (val2 && val2 !== val1) newShops.push(val2);
+      
+      currentItem.shops = newShops;
+      
+      // localStorageに保存
+      storedCustomShops[currentItem.id] = newShops;
+      localStorage.setItem('prize_custom_shops', JSON.stringify(storedCustomShops));
+
+      // UI反映
+      updateCardShopBadge(currentItem.id, newShops);
+      
+      const shopBadgesWrap = document.getElementById('modalShopBadges');
+      if (newShops.length > 0) {
+        shopBadgesWrap.innerHTML = newShops.map(s => `<span class="badge badge-shop">🏪 ${s}</span>`).join(' ');
+      } else {
+        shopBadgesWrap.innerHTML = '';
+      }
+
+      // 保存ステータス表示
+      const statusEl = document.getElementById('shopSaveStatus');
+      statusEl.classList.add('show');
+      setTimeout(() => statusEl.classList.remove('show'), 2000);
+
+      showToast(newShops.length > 0 ? `店舗を保存しました: ${newShops.join(' / ')}` : '店舗設定をクリアしました');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.innerText = '✓ ' + msg;
+      t.classList.add('show');
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        t.classList.remove('show');
+      }, 2500);
+    }
+
+    function closeModal() {
+      document.getElementById('detailModal').classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+
+    function closeModalOnBg(e) {
+      if (e.target.id === 'detailModal') {
+        closeModal();
+      }
+    }
+
+    function nextRecord(e) {
+      if (e) e.stopPropagation();
+      currentRecordIndex = (currentRecordIndex + 1) % recordsData.length;
+      renderModalContent(recordsData[currentRecordIndex]);
+    }
+
+    function prevRecord(e) {
+      if (e) e.stopPropagation();
+      currentRecordIndex = (currentRecordIndex - 1 + recordsData.length) % recordsData.length;
+      renderModalContent(recordsData[currentRecordIndex]);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      const modal = document.getElementById('detailModal');
+      if (modal.classList.contains('active')) {
+        if (e.key === 'Escape') closeModal();
+        if (e.key === 'ArrowRight') nextRecord();
+        if (e.key === 'ArrowLeft') prevRecord();
+      }
+      const exportModal = document.getElementById('exportModal');
+      if (exportModal.classList.contains('active')) {
+        if (e.key === 'Escape') closeExportModal();
+      }
+    });
+
+    function scrollToMonth(m) {
+      const el = document.getElementById('month-sec-' + m);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    let currentCategoryFilter = 'all';
+    let currentShopFilter = 'all';
+
+    function filterCategory(cat, btn) {
+      document.querySelectorAll('.filter-group .filter-btn').forEach(b => {
+        if (b.innerText.includes('すべて') || b.innerText.includes('フィギュア') || b.innerText.includes('お菓子')) {
+          b.classList.remove('active');
+        }
+      });
+      if (btn) btn.classList.add('active');
+      currentCategoryFilter = cat;
+      applyFilters();
+    }
+
+    function filterByShop(shopName) {
+      currentShopFilter = shopName;
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const cards = document.querySelectorAll('.record-card');
+      cards.forEach(c => {
+        let matchCat = true;
+        if (currentCategoryFilter === 'others') {
+          matchCat = (c.dataset.hasOthers === 'true');
+        }
+
+        let matchShop = true;
+        if (currentShopFilter !== 'all') {
+          const cardShops = (c.dataset.shops || '').split(',');
+          matchShop = cardShops.includes(currentShopFilter);
+        }
+
+        c.style.display = (matchCat && matchShop) ? 'flex' : 'none';
+      });
+    }
+
+    /* JSONエクスポート */
+    function openExportModal() {
+      const textarea = document.getElementById('exportTextarea');
+      textarea.value = JSON.stringify(recordsData, null, 2);
+      document.getElementById('exportModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeExportModal() {
+      document.getElementById('exportModal').classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+
+    function closeExportModalOnBg(e) {
+      if (e.target.id === 'exportModal') {
+        closeExportModal();
+      }
+    }
+
+    function copyExportJson() {
+      const textarea = document.getElementById('exportTextarea');
+      textarea.select();
+      navigator.clipboard.writeText(textarea.value).then(() => {
+        showToast('JSONデータをクリップボードにコピーしました！');
+      }).catch(() => {
+        document.execCommand('copy');
+        showToast('JSONデータをコピーしました！');
+      });
+    }
+  </script>
+</body>
+</html>
