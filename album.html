@@ -1669,9 +1669,12 @@
         return true;
       }
 
-      // 1. まず標準 fetch を試みる（PCブラウザ・高速対応）
+      // 1. まず標準 fetch を試みる（PCブラウザ・高速対応・Cookie干渉防止）
       try {
-        const res = await fetch(GAS_ENDPOINT_URL + '?t=' + Date.now());
+        const res = await fetch(GAS_ENDPOINT_URL + '?t=' + Date.now(), {
+          credentials: 'omit',
+          headers: { 'Accept': 'application/json' }
+        });
         if (res.ok) {
           const cloudData = await res.json();
           if (applyCloudData(cloudData)) return;
