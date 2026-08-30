@@ -892,7 +892,7 @@
           <p>写真と金額から自動更新された獲得アルバム＆詳細ダッシュボード</p>
         </div>
         <div class="header-actions">
-          <span id="cloudSyncBadge" class="btn btn-secondary" style="font-size: 11px; padding: 6px 12px; pointer-events: none; border-color: #cbd5e1; color: #0d9488; background: #f0fdf4;">☁️ Googleドライブ同期中...</span>
+          <button id="cloudSyncBadge" class="btn btn-secondary" onclick="fetchLatestCloudData(true)" style="font-size: 11px; padding: 6px 12px; border-color: #cbd5e1; color: #0d9488; background: #f0fdf4; cursor: pointer;" title="クリックでGoogleドライブの最新データと手動同期">☁️ Google同期中...</button>
           <a href="index.html" class="btn btn-secondary">🏠 カレンダーTOP</a>
           <a href="gravity.html" class="btn btn-secondary">⚖️ 重心情報</a>
           <button class="btn btn-secondary" onclick="openExportModal()">📤 店舗データを出力</button>
@@ -1620,17 +1620,21 @@
     window.addEventListener('DOMContentLoaded', () => {
       initShopSelectOptions();
       refreshAllCardShopBadges();
-      fetchLatestCloudData();
+      fetchLatestCloudData(false);
     });
 
     const GAS_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbxX6xd9qBmqgsuF6_hVIquOWqsVhTAvkYkI2pPkLdtWAdVPufa7s2-pXjQ6MjLCAORChQ/exec";
 
     // ☁️ クラウド（Googleドライブ）から最新データを取得してリアルタイム同期
-    function fetchLatestCloudData() {
+    function fetchLatestCloudData(isManual) {
       const badge = document.getElementById('cloudSyncBadge');
-      if (badge) badge.innerText = '☁️ 最新データ同期中...';
+      if (badge) {
+        badge.innerText = '☁️ 最新データ同期中...';
+        badge.style.color = '#0284c7';
+        badge.style.background = '#e0f2fe';
+      }
 
-      // JSONPで最新データを取得（CORSエラーを100%回避）
+      // JSONP コールバック定義
       window.onCloudRecordsLoaded = function(cloudData) {
         if (Array.isArray(cloudData) && cloudData.length > 0) {
           console.log('[GAS同期] クラウドから最新データ取得成功:', cloudData.length, '件');
@@ -1644,10 +1648,24 @@
           localStorage.setItem('prize_custom_shops', JSON.stringify(storedCustomShops));
           refreshAllCardShopBadges();
           
+          // 開いているモーダルがあれば反映
+          const modal = document.getElementById('detailModal');
+          if (modal && modal.classList.contains('active')) {
+            const currentItem = recordsData[currentRecordIndex];
+            if (currentItem) {
+              renderModalContent(currentItem);
+            }
+          }
+
+          const now = new Date();
+          const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
           if (badge) {
-            badge.innerText = '✓ Googleドライブ同期済み';
+            badge.innerText = '✓ 同期済み (' + timeStr + ')';
             badge.style.color = '#047857';
             badge.style.background = '#dcfce7';
+          }
+          if (isManual) {
+            showToast('✓ Googleドライブから最新データを取得しました！');
           }
         }
       };
@@ -1655,9 +1673,9 @@
       const script = document.createElement('script');
       script.src = GAS_ENDPOINT_URL + '?callback=onCloudRecordsLoaded&t=' + Date.now();
       script.onerror = function() {
-        console.warn('[GAS同期] クラウド最新データの取得に失敗 (オフラインまたは設定待機)');
+        console.warn('[GAS同期] クラウド最新データの取得に失敗');
         if (badge) {
-          badge.innerText = '✓ ローカル保存中';
+          badge.innerText = '⚠️ オフライン';
           badge.style.color = '#64748b';
           badge.style.background = '#f8fafc';
         }
@@ -1801,64 +1819,48 @@
       if (!GAS_ENDPOINT_URL) return;
       const badge = document.getElementById('cloudSyncBadge');
       if (badge) {
-        badge.innerText = '☁️ Googleドライブ同期中...';
+        badge.innerText = '☁️ Googleドライブ保存中...';
         badge.style.color = '#0284c7';
         badge.style.background = '#e0f2fe';
       }
 
-      // 1. fetch POST 送信
+      // クラウド保存完了コールバック
+      window.onCloudSaveCallback = function(res) {
+        console.log('[GAS同期] クラウド保存完了レスポンス:', res);
+        const now = new Date();
+        const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
+        if (badge) {
+          badge.innerText = '✓ 同期済み (' + timeStr + ')';
+          badge.style.color = '#047857';
+          badge.style.background = '#dcfce7';
+        }
+        showToast('✓ Googleドライブに同期保存しました！');
+      };
+
+      // 1. JSONP による保存送信（CORS制限・302リダイレクト変換を100%回避）
+      try {
+        const s = document.createElement('script');
+        s.src = GAS_ENDPOINT_URL + '?action=save&data=' + encodeURIComponent(JSON.stringify(data)) + '&callback=onCloudSaveCallback&t=' + Date.now();
+        s.onerror = function() {
+          console.warn('[GAS同期 JSONP保存エラー]');
+        };
+        document.body.appendChild(s);
+      } catch (e) {
+        console.warn(e);
+      }
+
+      // 2. fetch POST 送信（バックアップ）
       try {
         fetch(GAS_ENDPOINT_URL, {
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(data)
-        }).then(() => {
-          console.log('[GAS同期] fetch POST送信完了');
-          if (badge) {
-            badge.innerText = '✓ Googleドライブ同期済み';
-            badge.style.color = '#047857';
-            badge.style.background = '#dcfce7';
-          }
-          showToast('✓ Googleドライブに同期保存しました！');
         }).catch(err => {
           console.warn('[GAS同期 fetch警告]', err);
         });
       } catch (e) {
         console.warn(e);
-      }
-
-      // 2. 隠しformによる確実なバックグラウンドPOST送信（モバイルSafari 302リダイレクト対策）
-      try {
-        let iframe = document.getElementById('gas_hidden_iframe');
-        if (!iframe) {
-          iframe = document.createElement('iframe');
-          iframe.id = 'gas_hidden_iframe';
-          iframe.name = 'gas_hidden_iframe';
-          iframe.style.display = 'none';
-          document.body.appendChild(iframe);
-        }
-        
-        let form = document.getElementById('gas_sync_form');
-        if (form) form.remove();
-        
-        form = document.createElement('form');
-        form.id = 'gas_sync_form';
-        form.method = 'POST';
-        form.action = GAS_ENDPOINT_URL;
-        form.target = 'gas_hidden_iframe';
-        form.style.display = 'none';
-        
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'postData';
-        input.value = JSON.stringify(data);
-        form.appendChild(input);
-        
-        document.body.appendChild(form);
-        form.submit();
-      } catch (formErr) {
-        console.warn('[GAS form同期警告]', formErr);
       }
     }
 
