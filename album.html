@@ -891,13 +891,13 @@
           </h1>
           <p>写真と金額から自動更新された獲得アルバム＆詳細ダッシュボード</p>
         </div>
-        <div class="header-actions">
-          <button class="btn btn-primary" onclick="openAddRecordModal()" style="background: linear-gradient(135deg, #0284c7, #2563eb); color: white; border: none; font-weight: 700; box-shadow: 0 4px 12px rgba(37,99,235,0.25);">➕ 新規記録を追加</button>
-          <button id="cloudSyncBadge" class="btn btn-secondary" onclick="fetchLatestCloudData(true)" style="font-size: 11px; padding: 6px 12px; border-color: #cbd5e1; color: #0d9488; background: #f0fdf4; cursor: pointer;" title="クリックでGoogleドライブの最新データと手動同期">☁️ Google同期中...</button>
+        <div class="header-actions" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <button type="button" class="btn btn-primary" onclick="openAddRecordModal()" style="background: linear-gradient(135deg, #0284c7, #2563eb); color: white; border: none; font-weight: 800; padding: 8px 16px; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(37,99,235,0.25); display: inline-flex; align-items: center; gap: 6px; z-index: 10;">➕ 新規記録を追加</button>
+          <button type="button" id="cloudSyncBadge" class="btn btn-secondary" onclick="fetchLatestCloudData(true)" style="font-size: 11px; padding: 6px 12px; border-color: #cbd5e1; color: #047857; background: #dcfce7; cursor: pointer;" title="クリックでGoogleドライブの最新データと手動同期">✓ Google同期済み</button>
           <a href="index.html" class="btn btn-secondary">🏠 カレンダーTOP</a>
           <a href="gravity.html" class="btn btn-secondary">⚖️ 重心情報</a>
-          <button class="btn btn-secondary" onclick="openExportModal()">📤 店舗データを出力</button>
-          <button class="btn btn-secondary" onclick="window.print()">🖨️ 印刷 / PDF保存</button>
+          <button type="button" class="btn btn-secondary" onclick="openExportModal()">📤 店舗データを出力</button>
+          <button type="button" class="btn btn-secondary" onclick="window.print()">🖨️ 印刷 / PDF保存</button>
         </div>
       </div>
     </div>
@@ -2014,29 +2014,47 @@
 
     // 新規獲得記録モーダル操作
     function openAddRecordModal() {
-      // 今日の日付をセット
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('newRecordDate').value = today;
-      
-      // 店舗セレクトの初期化
-      const sel1 = document.getElementById('newShopSelect1');
-      const sel2 = document.getElementById('newShopSelect2');
-      sel1.innerHTML = '<option value="">（選択してください）</option>';
-      sel2.innerHTML = '<option value="">（なし）</option>';
-      shopOptions.forEach(opt => {
-        const o1 = document.createElement('option');
-        o1.value = opt;
-        o1.innerText = opt;
-        sel1.appendChild(o1);
+      try {
+        // 今日の日付をセット
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        const d = String(now.getDate()).padStart(2, '0');
+        const today = `${y}-${m}-${d}`;
+        const dateInput = document.getElementById('newRecordDate');
+        if (dateInput) dateInput.value = today;
+        
+        // 店舗セレクトの初期化
+        const sel1 = document.getElementById('newShopSelect1');
+        const sel2 = document.getElementById('newShopSelect2');
+        if (sel1 && sel2) {
+          sel1.innerHTML = '<option value="">（選択してください）</option>';
+          sel2.innerHTML = '<option value="">（なし）</option>';
+          if (Array.isArray(shopOptions)) {
+            shopOptions.forEach(opt => {
+              const o1 = document.createElement('option');
+              o1.value = opt;
+              o1.innerText = opt;
+              sel1.appendChild(o1);
 
-        const o2 = document.createElement('option');
-        o2.value = opt;
-        o2.innerText = opt;
-        sel2.appendChild(o2);
-      });
+              const o2 = document.createElement('option');
+              o2.value = opt;
+              o2.innerText = opt;
+              sel2.appendChild(o2);
+            });
+          }
+        }
 
-      document.getElementById('addRecordModal').classList.add('active');
-      document.body.style.overflow = 'hidden';
+        const modal = document.getElementById('addRecordModal');
+        if (modal) {
+          modal.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+      } catch (err) {
+        console.error('[新規モーダルオープンエラー]', err);
+        const modal = document.getElementById('addRecordModal');
+        if (modal) modal.classList.add('active');
+      }
     }
 
     function closeAddRecordModal() {
