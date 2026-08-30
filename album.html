@@ -3,10 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-  <title>クレーンゲーム 獲得記録アルバム & 集計ダッシュボード (2026年)</title>
+  <title>クレーンゲーム獲得記録 月別アルバム</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -891,13 +888,11 @@
           </h1>
           <p>写真と金額から自動更新された獲得アルバム＆詳細ダッシュボード</p>
         </div>
-        <div class="header-actions" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-          <button type="button" class="btn btn-primary" onclick="openAddRecordModal()" style="background: linear-gradient(135deg, #0284c7, #2563eb); color: white; border: none; font-weight: 800; padding: 8px 16px; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(37,99,235,0.25); display: inline-flex; align-items: center; gap: 6px; z-index: 10;">➕ 新規記録を追加</button>
-          <button type="button" id="cloudSyncBadge" class="btn btn-secondary" onclick="fetchLatestCloudData(true)" style="font-size: 11px; padding: 6px 12px; border-color: #cbd5e1; color: #047857; background: #dcfce7; cursor: pointer;" title="クリックでGoogleドライブの最新データと手動同期">✓ Google同期済み</button>
+        <div class="header-actions">
           <a href="index.html" class="btn btn-secondary">🏠 カレンダーTOP</a>
           <a href="gravity.html" class="btn btn-secondary">⚖️ 重心情報</a>
-          <button type="button" class="btn btn-secondary" onclick="openExportModal()">📤 店舗データを出力</button>
-          <button type="button" class="btn btn-secondary" onclick="window.print()">🖨️ 印刷 / PDF保存</button>
+          <button class="btn btn-secondary" onclick="openExportModal()">📤 店舗データを出力</button>
+          <button class="btn btn-secondary" onclick="window.print()">🖨️ 印刷 / PDF保存</button>
         </div>
       </div>
     </div>
@@ -913,8 +908,8 @@
       </div>
       <div class="summary-card accent-indigo">
         <div class="summary-label">📦 合計点数</div>
-        <div class="summary-value">139<span class="summary-unit">点</span></div>
-        <div class="summary-sub">1回あたり平均 7.0 点</div>
+        <div class="summary-value">129<span class="summary-unit">点</span></div>
+        <div class="summary-sub">1回あたり平均 6.5 点</div>
       </div>
       <div class="summary-card accent-emerald">
         <div class="summary-label">💰 合計金額</div>
@@ -923,8 +918,8 @@
       </div>
       <div class="summary-card accent-pink">
         <div class="summary-label">🎎 フィギュア</div>
-        <div class="summary-value">127<span class="summary-unit">点</span></div>
-        <div class="summary-sub">全体の 91.4%</div>
+        <div class="summary-value">126<span class="summary-unit">点</span></div>
+        <div class="summary-sub">全体の 97.7%</div>
       </div>
       <div class="summary-card accent-purple">
         <div class="summary-label">🧸 ぬいぐるみ</div>
@@ -933,7 +928,7 @@
       </div>
       <div class="summary-card accent-amber">
         <div class="summary-label">💡 1点あたり平均</div>
-        <div class="summary-value">1,478<span class="summary-unit">円/個</span></div>
+        <div class="summary-value">1,593<span class="summary-unit">円/個</span></div>
         <div class="summary-sub">獲得コスト効率</div>
       </div>
     </section>
@@ -973,8 +968,8 @@
         <div class="month-row" onclick="scrollToMonth(6)" style="cursor: pointer;" title="6月のアルバムを見る">
           <div class="month-badge badge-yellow">6月</div>
           <div class="month-stat-text">
-            3回 / 20点
-            <span class="small">フィギュア 16点, 他4点</span>
+            3回 / 16点
+            <span class="small">フィギュア 15点, 他4点</span>
           </div>
           <div class="progress-bar-container">
             <div class="progress-bar-fill" style="width: 37.7%; background: #facc15;"></div>
@@ -985,7 +980,7 @@
         <div class="month-row" onclick="scrollToMonth(7)" style="cursor: pointer;" title="7月のアルバムを見る">
           <div class="month-badge badge-purple">7月</div>
           <div class="month-stat-text">
-            5回 / 36点
+            5回 / 31点
             <span class="small">フィギュア 31点, 他5点</span>
           </div>
           <div class="progress-bar-container">
@@ -997,8 +992,8 @@
         <div class="month-row" onclick="scrollToMonth(8)" style="cursor: pointer;" title="8月のアルバムを見る">
           <div class="month-badge badge-red">8月</div>
           <div class="month-stat-text">
-            6回 / 51点
-            <span class="small">フィギュア 49点, 他2点</span>
+            6回 / 50点
+            <span class="small">フィギュア 49点, 他7点</span>
           </div>
           <div class="progress-bar-container">
             <div class="progress-bar-fill" style="width: 100.0%; background: #f87171;"></div>
@@ -1063,7 +1058,6 @@
               <div class="card-badges">
                 <span class="badge badge-date">4月4日</span>
                 <span id="card-shops-1" class="card-shops-wrap"><span class="badge badge-shop">🏪 回遊館 西条店</span></span>
-                <span id="card-memo-1"></span>
                 <span class="badge badge-items">8点</span>
                 <span class="badge badge-cost">8,000円</span>
                 <span class="badge badge-fig">フィギュア 8点</span>
@@ -1085,7 +1079,6 @@
               <div class="card-badges">
                 <span class="badge badge-date">4月18日</span>
                 <span id="card-shops-2" class="card-shops-wrap"><span class="badge badge-shop">🏪 回遊館 橿原店</span></span>
-                <span id="card-memo-2"></span>
                 <span class="badge badge-items">6点</span>
                 <span class="badge badge-cost">10,000円</span>
                 <span class="badge badge-fig">フィギュア 6点</span>
@@ -1107,7 +1100,6 @@
               <div class="card-badges">
                 <span class="badge badge-date">4月30日</span>
                 <span id="card-shops-3" class="card-shops-wrap"><span class="badge badge-shop">🏪 回遊館 橿原店</span></span>
-                <span id="card-memo-3"></span>
                 <span class="badge badge-items">6点</span>
                 <span class="badge badge-cost">10,000円</span>
                 <span class="badge badge-fig">フィギュア 5点</span>
@@ -1138,7 +1130,6 @@
               <div class="card-badges">
                 <span class="badge badge-date">5月16日</span>
                 <span id="card-shops-4" class="card-shops-wrap"><span class="badge badge-shop">🏪 OTAICHI!! POP!! WORLD!! 大阪福島店</span></span>
-                <span id="card-memo-4"></span>
                 <span class="badge badge-items">2点</span>
                 <span class="badge badge-cost">3,000円</span>
                 <span class="badge badge-fig">フィギュア 2点</span>
@@ -1160,7 +1151,6 @@
               <div class="card-badges">
                 <span class="badge badge-date">5月23日</span>
                 <span id="card-shops-5" class="card-shops-wrap"><span class="badge badge-shop">🏪 結屋 大和郡山店</span></span>
-                <span id="card-memo-5"></span>
                 <span class="badge badge-items">7点</span>
                 <span class="badge badge-cost">9,000円</span>
                 <span class="badge badge-fig">フィギュア 7点</span>
@@ -1182,7 +1172,6 @@
               <div class="card-badges">
                 <span class="badge badge-date">5月31日</span>
                 <span id="card-shops-6" class="card-shops-wrap"><span class="badge badge-shop">🏪 結屋 新世界店</span></span>
-                <span id="card-memo-6"></span>
                 <span class="badge badge-items">3点</span>
                 <span class="badge badge-cost">3,000円</span>
                 <span class="badge badge-fig">フィギュア 3点</span>
@@ -1197,7 +1186,7 @@
       <section class="month-section" id="month-sec-6">
         <div class="month-section-header">
           <h2>2026年6月</h2>
-          <div class="summary-tag">3回 / 20点 / 30,000円</div>
+          <div class="summary-tag">3回 / 16点 / 30,000円</div>
         </div>
         <div class="records-grid">
 
@@ -1213,10 +1202,9 @@
               <div class="card-badges">
                 <span class="badge badge-date">6月21日</span>
                 <span id="card-shops-7" class="card-shops-wrap"><span class="badge badge-shop">🏪 結屋 大和郡山店</span><span class="badge badge-shop">🏪 回遊館 橿原店</span></span>
-                <span id="card-memo-7"></span>
-                <span class="badge badge-items">8点</span>
+                <span class="badge badge-items">7点</span>
                 <span class="badge badge-cost">16,000円</span>
-                <span class="badge badge-fig">フィギュア 7点</span>
+                <span class="badge badge-fig">フィギュア 6点</span>
                 
                 <span class="badge badge-other">雑貨/菓子 1点</span>
               </div>
@@ -1225,18 +1213,17 @@
 
           <div class="record-card" data-id="8" data-has-others="true" data-shops="結屋 大和郡山店" onclick="openModal(8)">
             <div class="card-thumb-wrapper">
-              <img src="images/IMG_3732.jpg" alt="初音ミク・ルパン三世・お菓子など" loading="lazy">
+              <img src="images/IMG_3732.jpg" alt="初音ミク・ルパン三世など" loading="lazy">
               <div class="card-zoom-overlay">
                 <span>🔍 クリックで拡大・内訳</span>
               </div>
             </div>
             <div class="card-body">
-              <div class="card-title-text">初音ミク・ルパン三世・お菓子など</div>
+              <div class="card-title-text">初音ミク・ルパン三世など</div>
               <div class="card-badges">
                 <span class="badge badge-date">6月27日</span>
                 <span id="card-shops-8" class="card-shops-wrap"><span class="badge badge-shop">🏪 結屋 大和郡山店</span></span>
-                <span id="card-memo-8"></span>
-                <span class="badge badge-items">9点</span>
+                <span class="badge badge-items">7点</span>
                 <span class="badge badge-cost">8,000円</span>
                 <span class="badge badge-fig">フィギュア 7点</span>
                 
@@ -1247,18 +1234,17 @@
 
           <div class="record-card" data-id="9" data-has-others="true" data-shops="開放倉庫橿原店" onclick="openModal(9)">
             <div class="card-thumb-wrapper">
-              <img src="images/IMG_3782.jpg" alt="喜多川海夢・パペットスンスン" loading="lazy">
+              <img src="images/IMG_3782.jpg" alt="喜多川海夢" loading="lazy">
               <div class="card-zoom-overlay">
                 <span>🔍 クリックで拡大・内訳</span>
               </div>
             </div>
             <div class="card-body">
-              <div class="card-title-text">喜多川海夢・パペットスンスン</div>
+              <div class="card-title-text">喜多川海夢</div>
               <div class="card-badges">
                 <span class="badge badge-date">6月30日</span>
                 <span id="card-shops-9" class="card-shops-wrap"><span class="badge badge-shop">🏪 開放倉庫橿原店</span></span>
-                <span id="card-memo-9"></span>
-                <span class="badge badge-items">3点</span>
+                <span class="badge badge-items">2点</span>
                 <span class="badge badge-cost">6,000円</span>
                 <span class="badge badge-fig">フィギュア 2点</span>
                 
@@ -1272,7 +1258,7 @@
       <section class="month-section" id="month-sec-7">
         <div class="month-section-header">
           <h2>2026年7月</h2>
-          <div class="summary-tag">5回 / 36点 / 53,000円</div>
+          <div class="summary-tag">5回 / 31点 / 53,000円</div>
         </div>
         <div class="records-grid">
 
@@ -1288,7 +1274,6 @@
               <div class="card-badges">
                 <span class="badge badge-date">7月12日</span>
                 <span id="card-shops-10" class="card-shops-wrap"><span class="badge badge-shop">🏪 トレジャーランド南港ＡＴＣ店</span></span>
-                <span id="card-memo-10"></span>
                 <span class="badge badge-items">8点</span>
                 <span class="badge badge-cost">6,000円</span>
                 <span class="badge badge-fig">フィギュア 8点</span>
@@ -1300,18 +1285,17 @@
 
           <div class="record-card" data-id="11" data-has-others="true" data-shops="結屋 大和郡山店" onclick="openModal(11)">
             <div class="card-thumb-wrapper">
-              <img src="images/IMG_3935.jpg" alt="アニメキャラ・お菓子・雑貨など" loading="lazy">
+              <img src="images/IMG_3935.jpg" alt="アニメキャラ・ぬーどるストッパー" loading="lazy">
               <div class="card-zoom-overlay">
                 <span>🔍 クリックで拡大・内訳</span>
               </div>
             </div>
             <div class="card-body">
-              <div class="card-title-text">アニメキャラ・お菓子・雑貨など</div>
+              <div class="card-title-text">アニメキャラ・ぬーどるストッパー</div>
               <div class="card-badges">
                 <span class="badge badge-date">7月16日</span>
                 <span id="card-shops-11" class="card-shops-wrap"><span class="badge badge-shop">🏪 結屋 大和郡山店</span></span>
-                <span id="card-memo-11"></span>
-                <span class="badge badge-items">8点</span>
+                <span class="badge badge-items">3点</span>
                 <span class="badge badge-cost">6,000円</span>
                 <span class="badge badge-fig">フィギュア 3点</span>
                 
@@ -1320,7 +1304,7 @@
             </div>
           </div>
 
-          <div class="record-card" data-id="12" data-has-others="false" data-shops="回遊館 橿原店,開放倉庫橿原店" onclick="openModal(12)">
+          <div class="record-card" data-id="12" data-has-others="false" data-shops="回遊館 橿原店" onclick="openModal(12)">
             <div class="card-thumb-wrapper">
               <img src="images/IMG_3988.jpg" alt="初音ミク・アニメ美少女など" loading="lazy">
               <div class="card-zoom-overlay">
@@ -1331,8 +1315,7 @@
               <div class="card-title-text">初音ミク・アニメ美少女など</div>
               <div class="card-badges">
                 <span class="badge badge-date">7月19日</span>
-                <span id="card-shops-12" class="card-shops-wrap"><span class="badge badge-shop">🏪 回遊館 橿原店</span><span class="badge badge-shop">🏪 開放倉庫橿原店</span></span>
-                <span id="card-memo-12"></span>
+                <span id="card-shops-12" class="card-shops-wrap"><span class="badge badge-shop">🏪 回遊館 橿原店</span></span>
                 <span class="badge badge-items">8点</span>
                 <span class="badge badge-cost">19,000円</span>
                 <span class="badge badge-fig">フィギュア 8点</span>
@@ -1354,7 +1337,6 @@
               <div class="card-badges">
                 <span class="badge badge-date">7月23日</span>
                 <span id="card-shops-13" class="card-shops-wrap"><span class="badge badge-shop">🏪 結屋 大和郡山店</span></span>
-                <span id="card-memo-13"></span>
                 <span class="badge badge-items">7点</span>
                 <span class="badge badge-cost">14,000円</span>
                 <span class="badge badge-fig">フィギュア 7点</span>
@@ -1376,7 +1358,6 @@
               <div class="card-badges">
                 <span class="badge badge-date">7月25日</span>
                 <span id="card-shops-14" class="card-shops-wrap"><span class="badge badge-shop">🏪 結屋 新世界店</span></span>
-                <span id="card-memo-14"></span>
                 <span class="badge badge-items">5点</span>
                 <span class="badge badge-cost">8,000円</span>
                 <span class="badge badge-fig">フィギュア 5点</span>
@@ -1391,7 +1372,7 @@
       <section class="month-section" id="month-sec-8">
         <div class="month-section-header">
           <h2>2026年8月</h2>
-          <div class="summary-tag">6回 / 51点 / 79,500円</div>
+          <div class="summary-tag">6回 / 50点 / 79,500円</div>
         </div>
         <div class="records-grid">
 
@@ -1407,7 +1388,6 @@
               <div class="card-badges">
                 <span class="badge badge-date">8月2日</span>
                 <span id="card-shops-15" class="card-shops-wrap"><span class="badge badge-shop">🏪 トレジャーランド南港ＡＴＣ店</span></span>
-                <span id="card-memo-15"></span>
                 <span class="badge badge-items">13点</span>
                 <span class="badge badge-cost">16,000円</span>
                 <span class="badge badge-fig">フィギュア 12点</span>
@@ -1429,7 +1409,6 @@
               <div class="card-badges">
                 <span class="badge badge-date">8月9日</span>
                 <span id="card-shops-16" class="card-shops-wrap"><span class="badge badge-shop">🏪 トレジャーランド南港ＡＴＣ店</span></span>
-                <span id="card-memo-16"></span>
                 <span class="badge badge-items">6点</span>
                 <span class="badge badge-cost">10,000円</span>
                 <span class="badge badge-fig">フィギュア 6点</span>
@@ -1451,7 +1430,6 @@
               <div class="card-badges">
                 <span class="badge badge-date">8月13日</span>
                 <span id="card-shops-17" class="card-shops-wrap"><span class="badge badge-shop">🏪 結屋 新世界店</span></span>
-                <span id="card-memo-17"></span>
                 <span class="badge badge-items">2点</span>
                 <span class="badge badge-cost">10,000円</span>
                 <span class="badge badge-fig">フィギュア 2点</span>
@@ -1463,22 +1441,21 @@
 
           <div class="record-card" data-id="18" data-has-others="true" data-shops="トレジャーランド南港ＡＴＣ店" onclick="openModal(18)">
             <div class="card-thumb-wrapper">
-              <img src="images/IMG_4417.jpg" alt="らき☆すた・DEATH NOTE・ふりかけなど" loading="lazy">
+              <img src="images/IMG_4417.jpg" alt="らき☆すた・DEATH NOTE・お菓子など" loading="lazy">
               <div class="card-zoom-overlay">
                 <span>🔍 クリックで拡大・内訳</span>
               </div>
             </div>
             <div class="card-body">
-              <div class="card-title-text">らき☆すた・DEATH NOTE・ふりかけなど</div>
+              <div class="card-title-text">らき☆すた・DEATH NOTE・お菓子など</div>
               <div class="card-badges">
                 <span class="badge badge-date">8月16日</span>
                 <span id="card-shops-18" class="card-shops-wrap"><span class="badge badge-shop">🏪 トレジャーランド南港ＡＴＣ店</span></span>
-                <span id="card-memo-18"></span>
-                <span class="badge badge-items">8点</span>
+                <span class="badge badge-items">7点</span>
                 <span class="badge badge-cost">13,000円</span>
                 <span class="badge badge-fig">フィギュア 7点</span>
                 
-                <span class="badge badge-other">雑貨/菓子 1点</span>
+                <span class="badge badge-other">雑貨/菓子 6点</span>
               </div>
             </div>
           </div>
@@ -1495,7 +1472,6 @@
               <div class="card-badges">
                 <span class="badge badge-date">8月23日</span>
                 <span id="card-shops-19" class="card-shops-wrap"><span class="badge badge-shop">🏪 トレジャーランド南港ＡＴＣ店</span><span class="badge badge-shop">🏪 結屋 新世界店</span></span>
-                <span id="card-memo-19"></span>
                 <span class="badge badge-items">8点</span>
                 <span class="badge badge-cost">11,500円</span>
                 <span class="badge badge-fig">フィギュア 8点</span>
@@ -1517,7 +1493,6 @@
               <div class="card-badges">
                 <span class="badge badge-date">8月29日</span>
                 <span id="card-shops-20" class="card-shops-wrap"><span class="badge badge-shop">🏪 トレジャーランド南港ＡＴＣ店</span><span class="badge badge-shop">🏪 結屋 新世界店</span></span>
-                <span id="card-memo-20"></span>
                 <span class="badge badge-items">14点</span>
                 <span class="badge badge-cost">19,000円</span>
                 <span class="badge badge-fig">フィギュア 14点</span>
@@ -1596,108 +1571,7 @@
           <h4>📦 主な獲得アイテム一覧</h4>
           <ul id="modalItemsUl"></ul>
         </div>
-
-        <!-- 自由メモ・攻略ノート -->
-        <div class="modal-memo-section" style="margin-top: 18px; padding: 14px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <span style="font-size: 13px; font-weight: 700; color: #334155;">📝 攻略メモ・店舗メモ</span>
-            <span id="memoSaveStatus" style="font-size: 11px; color: #059669; opacity: 0; transition: opacity 0.3s;">✓ 保存中...</span>
-          </div>
-          <textarea id="modalMemoText" oninput="onMemoChange()" placeholder="台の設定（橋渡し・末広がりなど）、アームの強さ、獲り方のコツ、店舗の感想など自由に入力できます..." style="width: 100%; min-height: 80px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; line-height: 1.6; resize: vertical; box-sizing: border-box; font-family: inherit;"></textarea>
-        </div>
       </div>
-    </div>
-  </div>
-
-  <!-- 新規獲得記録の追加モーダル -->
-  <div class="modal" id="addRecordModal" onclick="closeAddRecordModalOnBg(event)">
-    <div class="export-modal-content" onclick="event.stopPropagation()" style="max-width: 600px; max-height: 90vh; overflow-y: auto;">
-      <button class="modal-close" onclick="closeAddRecordModal()">✕</button>
-      <h3 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
-        <span>➕ 新しい獲得記録を追加</span>
-      </h3>
-      <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">
-        スマホのカメラ写真や使った金額を入力して登録すると、Googleドライブへ自動保存されます。
-      </p>
-
-      <form id="newRecordForm" onsubmit="submitNewRecord(event)">
-        <!-- 写真選択 -->
-        <div style="margin-bottom: 14px;">
-          <label style="display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px;">📸 写真（カメラ撮影または選択） *</label>
-          <input type="file" id="newPhotoInput" accept="image/*" onchange="previewNewPhoto(this)" required style="width: 100%; padding: 8px; border: 1px dashed #94a3b8; border-radius: 8px; background: #f8fafc; font-size: 13px;">
-          <div id="newPhotoPreviewContainer" style="margin-top: 8px; display: none; text-align: center;">
-            <img id="newPhotoPreview" src="" alt="プレビュー" style="max-height: 180px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-          </div>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
-          <!-- 日付 -->
-          <div>
-            <label style="display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px;">📅 獲得日 *</label>
-            <input type="date" id="newRecordDate" required style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
-          </div>
-          <!-- 投資金額 -->
-          <div>
-            <label style="display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px;">💰 使った金額 (円) *</label>
-            <input type="number" id="newRecordCost" placeholder="例: 8000" required style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
-          </div>
-        </div>
-
-        <!-- 店舗選択 -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
-          <div>
-            <label style="display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px;">🏪 店舗 1</label>
-            <select id="newShopSelect1" style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
-              <option value="">（選択してください）</option>
-            </select>
-          </div>
-          <div>
-            <label style="display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px;">🏪 店舗 2 (ハシゴ時)</label>
-            <select id="newShopSelect2" style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
-              <option value="">（なし）</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- 内訳 -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px;">
-          <div>
-            <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">🎎 フィギュア数</label>
-            <input type="number" id="newCountFigures" value="0" min="0" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
-          </div>
-          <div>
-            <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">🧸 ぬいぐるみ数</label>
-            <input type="number" id="newCountPlushies" value="0" min="0" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
-          </div>
-          <div>
-            <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">🍫 お菓子・他</label>
-            <input type="number" id="newCountOthers" value="0" min="0" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
-          </div>
-        </div>
-
-        <!-- タイトル -->
-        <div style="margin-bottom: 14px;">
-          <label style="display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px;">🏷️ タイトル / 主な獲得品 *</label>
-          <input type="text" id="newRecordTitle" placeholder="例: ワンピース・ヒロアカ・ドラゴンボールなど" required style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
-        </div>
-
-        <!-- 獲得品目一覧 -->
-        <div style="margin-bottom: 14px;">
-          <label style="display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px;">📦 獲得アイテム目録（1行に1品ずつ）</label>
-          <textarea id="newRecordItems" rows="3" placeholder="ルフィ フィギュア&#10;チョッパー ぬいぐるみ&#10;チョコパイ 1箱" style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; box-sizing: border-box; font-family: inherit;"></textarea>
-        </div>
-
-        <!-- 自由メモ -->
-        <div style="margin-bottom: 18px;">
-          <label style="display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px;">📝 攻略メモ・台の設定など</label>
-          <textarea id="newRecordMemo" rows="2" placeholder="橋渡し設定、手前持ち上げ、4手でゲット、アームパワー強めなど" style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; box-sizing: border-box; font-family: inherit;"></textarea>
-        </div>
-
-        <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
-          <button type="button" class="btn btn-secondary" onclick="closeAddRecordModal()">キャンセル</button>
-          <button type="submit" id="newRecordSubmitBtn" class="btn btn-primary" style="background: linear-gradient(135deg, #0284c7, #2563eb); font-weight: 700;">☁️ Googleドライブに登録</button>
-        </div>
-      </form>
     </div>
   </div>
 
@@ -1721,7 +1595,7 @@
   <div id="toast">✓ メッセージ</div>
 
   <script>
-    const recordsData = [{"id": 1, "year": 2026, "month": 4, "date": "2026-04-04", "display_date": "4月4日", "title": "マリオ・スティッチなど", "count": 8, "cost": 8000, "figures": 8, "plushies": 0, "others": 0, "image_src": "IMG_2595.jpg", "items": ["ちんざじゅう 快獣ブースカ", "スーパーマリオ ビッグアクションフィギュア マリオ", "サンリオ なかよしメモリーズ シナモロール", "サンリオ なかよしメモリーズ ポムポムプリン", "Aqua Float Girls モモ・ベリア・デビルーク", "とある魔術の禁書目録III ESPRESTO 一方通行(アクセラレータ)", "呪術廻戦 XStellar 乙骨憂太", "ディズニー スティッチ きゅるころ"], "shops": ["回遊館 西条店"]}, {"id": 2, "year": 2026, "month": 4, "date": "2026-04-18", "display_date": "4月18日", "title": "時崎狂三・桜ミクなど", "count": 6, "cost": 10000, "figures": 6, "plushies": 0, "others": 0, "image_src": "IMG_2726.jpg", "items": ["その着せ替え人形は恋をする BiCute Dark 喜多川海夢 黒江雫ver.", "ToLOVEる ダークネス BiCute Bunnies 金色の闇", "サンリオ なかよしメモリーズ クロミ", "Coreful フィギュア 桜ミク ～描き下ろし 和風喫茶ver.～", "僕のヒーローアカデミア Fluffy Puffy デクシープ＆バクドッグ", "SOFVIMATES スティッチ"], "shops": ["回遊館 橿原店"]}, {"id": 3, "year": 2026, "month": 4, "date": "2026-04-30", "display_date": "4月30日", "title": "初音ミク・喜多川海夢など", "count": 6, "cost": 10000, "figures": 5, "plushies": 0, "others": 1, "image_src": "IMG_2855.jpg", "items": ["ケロロ軍曹 ケロロ小隊フィギュア タママ", "ケロロ軍曹 ケロロ小隊フィギュア ケロロ", "初音ミク Trio-Try-iT Figure おでかけドレス・RED Ver.", "その着せ替え人形は恋をする BiCute Pure 喜多川海夢", "その着せ替え人形は恋をする GLITTER&GLAMOURS 喜多川海夢 制服", "ちいかわ バニティポーチ"], "shops": ["回遊館 橿原店"]}, {"id": 4, "year": 2026, "month": 5, "date": "2026-05-16", "display_date": "5月16日", "title": "時崎狂三・桜ミク", "count": 2, "cost": 3000, "figures": 2, "plushies": 0, "others": 0, "image_src": "IMG_3030.jpg", "items": ["その着せ替え人形は恋をする T-most 喜多川海夢 フィギュア ～黒江雫ver.～", "初音ミク ぬーどるストッパーフィギュア 桜ミク2026"], "shops": ["OTAICHI!! POP!! WORLD!! 大阪福島店"]}, {"id": 5, "year": 2026, "month": 5, "date": "2026-05-23", "display_date": "5月23日", "title": "初音ミク・レムなど", "count": 7, "cost": 9000, "figures": 7, "plushies": 0, "others": 0, "image_src": "IMG_3084.jpg", "items": ["魔法少女まどか☆マギカ 鹿目まどか フィギュア", "呪術廻戦 XStellar 禪院直哉", "Re:ゼロから始める異世界生活 レム", "ToLOVEる ダークネス BiCute Bunnies モモ・ベリア・デビルーク white ver.", "初音ミク FIGURIZMα 初音ミク -Punk!-", "BLACK LAGOON Vivitフィギュア レヴィ", "ToLOVEる ダークネス Desktop Cute モモ ～ルームウェアVer.～"], "shops": ["結屋 大和郡山店"]}, {"id": 6, "year": 2026, "month": 5, "date": "2026-05-31", "display_date": "5月31日", "title": "ルパン三世・ワンピースなど", "count": 3, "cost": 3000, "figures": 3, "plushies": 0, "others": 0, "image_src": "IMG_3177.jpg", "items": ["ToLOVEる ダークネス Aqua Float Girls ララ", "トムとジェリー ビッグソフビフィギュア -Yummy Bread-", "LUPIN THE IIIRD ルパン三世 フィギュア"], "shops": ["結屋 新世界店"]}, {"id": 7, "year": 2026, "month": 6, "date": "2026-06-21", "display_date": "6月21日", "title": "初音ミク・レムなど", "count": 8, "cost": 16000, "figures": 7, "plushies": 0, "others": 1, "image_src": "IMG_3643.jpg", "items": ["東京喰種 Grandista 金木研", "SILENT HILL 2 バブルヘッドナース", "魔法少女まどか☆マギカ 暁美ほむら", "魔法少女まどか☆マギカ 美樹さやか", "魔法少女まどか☆マギカ 巴マミ", "物語シリーズ Desktop Cute 戦場ヶ原ひたぎ", "僕のヒーローアカデミア GLITTER&GLAMOURS 波動ねじれ", "ディズニー ドナルド クリップオンファン"], "shops": ["結屋 大和郡山店", "回遊館 橿原店"]}, {"id": 8, "year": 2026, "month": 6, "date": "2026-06-27", "display_date": "6月27日", "title": "初音ミク・ルパン三世・お菓子など", "count": 9, "cost": 8000, "figures": 7, "plushies": 0, "others": 2, "image_src": "IMG_3732.jpg", "items": ["呪術廻戦 FIGURIZMα 乙骨憂太", "初音ミク ぬーどるストッパー", "ToLOVEる Desktop Cute モモ", "ケロロ軍曹 GLITTER&GLAMOURS モア", "LUPIN THE IIIRD 次元大介", "僕のヒーローアカデミア GLITTER&GLAMOURS トガヒミコ", "その着せ替え人形は恋をする GLITTER&GLAMOURS 喜多川海夢 バニーver.", "マネケン ベルギーワッフル", "大粒ラムネSUPER"], "shops": ["結屋 大和郡山店"]}, {"id": 9, "year": 2026, "month": 6, "date": "2026-06-30", "display_date": "6月30日", "title": "喜多川海夢・パペットスンスン", "count": 3, "cost": 6000, "figures": 2, "plushies": 0, "others": 1, "image_src": "IMG_3782.jpg", "items": ["その着せ替え人形は恋をする T-most 喜多川海夢 フィギュア ～バニーver.～ ×2", "パペットスンスン キーフック"], "shops": ["開放倉庫橿原店"]}, {"id": 10, "year": 2026, "month": 7, "date": "2026-07-12", "display_date": "7月12日", "title": "初音ミク・トイ・ストーリーなど", "count": 8, "cost": 6000, "figures": 8, "plushies": 0, "others": 0, "image_src": "IMG_3893.jpg", "items": ["SUPER SONICO すーぱーそに子 BiCute Bunnies 逆バニー", "ローゼンメイデン 真紅 ×2", "うる星やつら BiCute Bunnies ラム", "死亡遊戯で飯を食う。 BiCute Bunnies 幽鬼 ×2", "トイ・ストーリー ジェシー", "トイ・ストーリー ウッディ"], "shops": ["トレジャーランド南港ＡＴＣ店"]}, {"id": 11, "year": 2026, "month": 7, "date": "2026-07-16", "display_date": "7月16日", "title": "アニメキャラ・お菓子・雑貨など", "count": 8, "cost": 6000, "figures": 3, "plushies": 0, "others": 5, "image_src": "IMG_3935.jpg", "items": ["Steins;Gate 牧瀬紅莉栖 ぬーどるストッパー", "僕のヒーローアカデミア MAXIMATIC ミルコ", "HUNTER×HUNTER ゴン", "mini源氏パイ", "しじみ70個分のちから", "ひるげ", "パペットスンスン バッグ ×2"], "shops": ["結屋 大和郡山店"]}, {"id": 12, "year": 2026, "month": 7, "date": "2026-07-19", "display_date": "7月19日", "title": "初音ミク・アニメ美少女など", "count": 8, "cost": 19000, "figures": 8, "plushies": 0, "others": 0, "image_src": "IMG_3988.jpg", "items": ["Re:ゼロ Yumemirize レム～大熊猫～", "呪術廻戦 ぬーどるストッパー 夏油傑", "ジョジョの奇妙な冒険 イギー", "初音ミク Luminasta", "初音ミク×ラスカル スペシャルフィギュア サマーフェス", "HUNTER×HUNTER Excood Creative ヒソカ", "アイドルマスター フィギュア", "BLACK LAGOON レヴィ バニーVer."], "shops": ["回遊館 橿原店", "開放倉庫橿原店"]}, {"id": 13, "year": 2026, "month": 7, "date": "2026-07-23", "display_date": "7月23日", "title": "初音ミク・ルパン三世・ケロロなど", "count": 7, "cost": 14000, "figures": 7, "plushies": 0, "others": 0, "image_src": "IMG_4092.jpg", "items": ["LUPIN THE IIIRD 峰不二子", "初音ミク Holiday Memories -ゲーム-", "魔法少女まどか☆マギカ ぬーどるストッパー 鹿目まどか", "その着せ替え人形は恋をする GLITTER&GLAMOURS 喜多川海夢 バニー", "その着せ替え人形は恋をする GLITTER&GLAMOURS 喜多川海夢 制服", "ケロロ軍曹 ギロロ", "ケロロ軍曹 ケロロ"], "shops": ["結屋 大和郡山店"]}, {"id": 14, "year": 2026, "month": 7, "date": "2026-07-25", "display_date": "7月25日", "title": "初音ミク・アニメキャラなど", "count": 5, "cost": 8000, "figures": 5, "plushies": 0, "others": 0, "image_src": "IMG_4108.jpg", "items": ["らき☆すた Vivitフィギュア 泉こなた", "その着せ替え人形は恋をする Vivitフィギュア 喜多川海夢 ジャージメイドVer.", "初音ミク×シナモロール Stellar 初音ミク", "初音ミク Holiday Memories -ゲーム-", "METAL GEAR SOLID SNAKE EATER"], "shops": ["結屋 新世界店"]}, {"id": 15, "year": 2026, "month": 8, "date": "2026-08-02", "display_date": "8月2日", "title": "初音ミク・アニメキャラ・お菓子など", "count": 13, "cost": 16000, "figures": 12, "plushies": 0, "others": 1, "image_src": "IMG_4198.jpg", "items": ["僕のヒーローアカデミア MAXIMATIC 爆豪勝己", "とらドラ！ 逢坂大河 タイガー水着ver.", "ToLOVEる ネメシス チャイナドレスver.", "五郎島金時いもタルト", "LUPIN THE IIIRD ルパン三世", "ローゼンメイデン 水銀燈", "初音ミク T-most フィギュア ×2", "初音ミク Wonderland", "呪術廻戦 Grandista 伏黒甚爾", "死亡遊戯で飯を食う。 ぬーどるストッパー 幽鬼", "アイドルマスター Nyaspiration ×2"], "shops": ["トレジャーランド南港ＡＴＣ店"]}, {"id": 16, "year": 2026, "month": 8, "date": "2026-08-09", "display_date": "8月9日", "title": "初音ミク・HUNTER×HUNTERなど", "count": 6, "cost": 10000, "figures": 6, "plushies": 0, "others": 0, "image_src": "IMG_4289.jpg", "items": ["初音ミク ぬーどるストッパー Flower Fairy", "HUNTER×HUNTER キルア", "初音ミク Conceptual series 南国", "初音ミク Clearluxe くらげ・フィギュア", "呪術廻戦 伏黒恵", "初音ミク Trio-Try-iT レイニーダンス"], "shops": ["トレジャーランド南港ＡＴＣ店"]}, {"id": 17, "year": 2026, "month": 8, "date": "2026-08-13", "display_date": "8月13日", "title": "らき☆すた・初音ミク", "count": 2, "cost": 10000, "figures": 2, "plushies": 0, "others": 0, "image_src": "IMG_4391.jpg", "items": ["らき☆すた Vivitフィギュア 柊つかさ", "初音ミク ぬーどるストッパーフィギュア Flower Fairy 桔梗"], "shops": ["結屋 新世界店"]}, {"id": 18, "year": 2026, "month": 8, "date": "2026-08-16", "display_date": "8月16日", "title": "らき☆すた・DEATH NOTE・ふりかけなど", "count": 8, "cost": 13000, "figures": 7, "plushies": 0, "others": 1, "image_src": "IMG_4417.jpg", "items": ["らき☆すた Trio-Try-iT Figure 柊かがみ ×2", "DEATH NOTE 弥海砂 ×2", "バカとテストと召喚獣 BiCute Bunnies 木下秀吉 ×2", "僕のヒーローアカデミア Fluffy Puffy", "各種ふりかけ (カラムーチョ・松屋牛めし・ポテトチップス等) 一式"], "shops": ["トレジャーランド南港ＡＴＣ店"]}, {"id": 19, "year": 2026, "month": 8, "date": "2026-08-23", "display_date": "8月23日", "title": "To LOVEる・まどマギ・ケロロ軍曹など", "count": 8, "cost": 11500, "figures": 8, "plushies": 0, "others": 0, "image_src": "IMG_4514.jpg", "items": ["ToLOVEる ダークネス BiCute Ribbons 金色の闇", "ToLOVEる ダークネス Aqua Float Girls 古手川唯", "ToLOVEる ダークネス Aqua Float Girls ナナ・アスタ・デビルーク", "魔法少女まどか☆マギカ ぬーどるストッパー 暁美ほむら", "ケロロ軍曹 共鳴するでありまーす！ タママ二等兵", "ケロロ軍曹 共鳴するでありまーす！ クルル曹長", "ケロロ軍曹 共鳴するでありまーす！ ドロロ兵長", "呪術廻戦 フィギュア 七海建人"], "shops": ["トレジャーランド南港ＡＴＣ店", "結屋 新世界店"]}, {"id": 20, "year": 2026, "month": 8, "date": "2026-08-29", "display_date": "8月29日", "title": "初音ミク・ジョジョ・俺妹など", "count": 14, "cost": 19000, "figures": 14, "plushies": 0, "others": 0, "image_src": "IMG_4580.jpg", "items": ["ToLOVEる ダークネス Desktop Cute 古手川唯 ～ルームウェアver.～", "初音ミク Birthday 2026 ～Star Dreamy ver.～", "Re:ゼロから始める異世界生活 ESPRESTO エミリア", "俺の妹がこんなに可愛いわけがない。 ムチュート フィギュア 高坂桐乃", "初音ミク BANPRESTO EVOLVE Classical tuning くるみ割り人形", "ダンダダン GLITTER&GLAMOURS モモ", "僕のヒーローアカデミア GLITTER&GLAMOURS 葉隠透", "ジョジョの奇妙な冒険 ストーンオーシャン Nometria 空条徐倫 ×2", "初音ミク T-most フィギュア -NT-", "アイドルマスター シンデレラガールズ Nyaspiration 夢見りあむ", "アイドルマスター シンデレラガールズ Nyaspiration 辻野あかり", "ジョジョの奇妙な冒険 ストーンオーシャン Nometria エンリコ・P", "呪術廻戦 FIGURIZMα 祈本里香(リカ) 顕現"], "shops": ["トレジャーランド南港ＡＴＣ店", "結屋 新世界店"]}];
+    const recordsData = [{"id": 1, "year": 2026, "month": 4, "date": "2026-04-04", "display_date": "4月4日", "title": "マリオ・スティッチなど", "count": 8, "cost": 8000, "figures": 8, "plushies": 0, "others": 0, "image_src": "IMG_2595.jpg", "items": ["ちんざじゅう 快獣ブースカ", "スーパーマリオ ビッグアクションフィギュア マリオ", "サンリオ なかよしメモリーズ シナモロール", "サンリオ なかよしメモリーズ ポムポムプリン", "Aqua Float Girls モモ・ベリア・デビルーク", "とある魔術の禁書目録III ESPRESTO 一方通行(アクセラレータ)", "呪術廻戦 XStellar 乙骨憂太", "ディズニー スティッチ きゅるころ"], "shops": ["回遊館 西条店"]}, {"id": 2, "year": 2026, "month": 4, "date": "2026-04-18", "display_date": "4月18日", "title": "時崎狂三・桜ミクなど", "count": 6, "cost": 10000, "figures": 6, "plushies": 0, "others": 0, "image_src": "IMG_2726.jpg", "items": ["その着せ替え人形は恋をする BiCute Dark 喜多川海夢 黒江雫ver.", "ToLOVEる ダークネス BiCute Bunnies 金色の闇", "サンリオ なかよしメモリーズ クロミ", "Coreful フィギュア 桜ミク ～描き下ろし 和風喫茶ver.～", "僕のヒーローアカデミア Fluffy Puffy デクシープ＆バクドッグ", "SOFVIMATES スティッチ"], "shops": ["回遊館 橿原店"]}, {"id": 3, "year": 2026, "month": 4, "date": "2026-04-30", "display_date": "4月30日", "title": "初音ミク・喜多川海夢など", "count": 6, "cost": 10000, "figures": 5, "plushies": 0, "others": 1, "image_src": "IMG_2855.jpg", "items": ["ケロロ軍曹 ケロロ小隊フィギュア タママ", "ケロロ軍曹 ケロロ小隊フィギュア ケロロ", "初音ミク Trio-Try-iT Figure おでかけドレス・RED Ver.", "その着せ替え人形は恋をする BiCute Pure 喜多川海夢", "その着せ替え人形は恋をする GLITTER&GLAMOURS 喜多川海夢 制服", "ちいかわ バニティポーチ"], "shops": ["回遊館 橿原店"]}, {"id": 4, "year": 2026, "month": 5, "date": "2026-05-16", "display_date": "5月16日", "title": "時崎狂三・桜ミク", "count": 2, "cost": 3000, "figures": 2, "plushies": 0, "others": 0, "image_src": "IMG_3030.jpg", "items": ["その着せ替え人形は恋をする T-most 喜多川海夢 フィギュア ～黒江雫ver.～", "初音ミク ぬーどるストッパーフィギュア 桜ミク2026"], "shops": ["OTAICHI!! POP!! WORLD!! 大阪福島店"]}, {"id": 5, "year": 2026, "month": 5, "date": "2026-05-23", "display_date": "5月23日", "title": "初音ミク・レムなど", "count": 7, "cost": 9000, "figures": 7, "plushies": 0, "others": 0, "image_src": "IMG_3084.jpg", "items": ["魔法少女まどか☆マギカ 鹿目まどか フィギュア", "呪術廻戦 XStellar 禪院直哉", "Re:ゼロから始める異世界生活 レム", "ToLOVEる ダークネス BiCute Bunnies モモ・ベリア・デビルーク white ver.", "初音ミク FIGURIZMα 初音ミク -Punk!-", "BLACK LAGOON Vivitフィギュア レヴィ", "ToLOVEる ダークネス Desktop Cute モモ ～ルームウェアVer.～"], "shops": ["結屋 大和郡山店"]}, {"id": 6, "year": 2026, "month": 5, "date": "2026-05-31", "display_date": "5月31日", "title": "ルパン三世・ワンピースなど", "count": 3, "cost": 3000, "figures": 3, "plushies": 0, "others": 0, "image_src": "IMG_3177.jpg", "items": ["ToLOVEる ダークネス Aqua Float Girls ララ", "トムとジェリー ビッグソフビフィギュア -Yummy Bread-", "LUPIN THE IIIRD ルパン三世 フィギュア"], "shops": ["結屋 新世界店"]}, {"id": 7, "year": 2026, "month": 6, "date": "2026-06-21", "display_date": "6月21日", "title": "初音ミク・レムなど", "count": 7, "cost": 16000, "figures": 6, "plushies": 0, "others": 1, "image_src": "IMG_3643.jpg", "items": ["東京喰種 Grandista 金木研", "SILENT HILL 2 バブルヘッドナース", "魔法少女まどか☆マギカ 暁美ほむら", "魔法少女まどか☆マギカ 美樹さやか", "魔法少女まどか☆マギカ 巴マミ", "物語シリーズ Desktop Cute 戦場ヶ原ひたぎ", "僕のヒーローアカデミア GLITTER&GLAMOURS 波動ねじれ", "ディズニー ドナルド クリップオンファン"], "shops": ["結屋 大和郡山店", "回遊館 橿原店"]}, {"id": 8, "year": 2026, "month": 6, "date": "2026-06-27", "display_date": "6月27日", "title": "初音ミク・ルパン三世など", "count": 7, "cost": 8000, "figures": 7, "plushies": 0, "others": 2, "image_src": "IMG_3732.jpg", "items": ["呪術廻戦 FIGURIZMα 乙骨憂太", "初音ミク ぬーどるストッパー", "ToLOVEる Desktop Cute モモ", "ケロロ軍曹 GLITTER&GLAMOURS モア", "LUPIN THE IIIRD 次元大介", "僕のヒーローアカデミア GLITTER&GLAMOURS トガヒミコ", "その着せ替え人形は恋をする GLITTER&GLAMOURS 喜多川海夢 バニーver.", "マネケン ベルギーワッフル", "大粒ラムネSUPER"], "shops": ["結屋 大和郡山店"]}, {"id": 9, "year": 2026, "month": 6, "date": "2026-06-30", "display_date": "6月30日", "title": "喜多川海夢", "count": 2, "cost": 6000, "figures": 2, "plushies": 0, "others": 1, "image_src": "IMG_3782.jpg", "items": ["その着せ替え人形は恋をする T-most 喜多川海夢 フィギュア ～バニーver.～ ×2", "パペットスンスン キーフック"], "shops": ["開放倉庫橿原店"]}, {"id": 10, "year": 2026, "month": 7, "date": "2026-07-12", "display_date": "7月12日", "title": "初音ミク・トイ・ストーリーなど", "count": 8, "cost": 6000, "figures": 8, "plushies": 0, "others": 0, "image_src": "IMG_3893.jpg", "items": ["SUPER SONICO すーぱーそに子 BiCute Bunnies 逆バニー", "ローゼンメイデン 真紅 ×2", "うる星やつら BiCute Bunnies ラム", "死亡遊戯で飯を食う。 BiCute Bunnies 幽鬼 ×2", "トイ・ストーリー ジェシー", "トイ・ストーリー ウッディ"], "shops": ["トレジャーランド南港ＡＴＣ店"]}, {"id": 11, "year": 2026, "month": 7, "date": "2026-07-16", "display_date": "7月16日", "title": "アニメキャラ・ぬーどるストッパー", "count": 3, "cost": 6000, "figures": 3, "plushies": 0, "others": 5, "image_src": "IMG_3935.jpg", "items": ["Steins;Gate 牧瀬紅莉栖 ぬーどるストッパー", "僕のヒーローアカデミア MAXIMATIC ミルコ", "HUNTER×HUNTER ゴン", "mini源氏パイ", "しじみ70個分のちから", "ひるげ", "パペットスンスン バッグ ×2"], "shops": ["結屋 大和郡山店"]}, {"id": 12, "year": 2026, "month": 7, "date": "2026-07-19", "display_date": "7月19日", "title": "初音ミク・アニメ美少女など", "count": 8, "cost": 19000, "figures": 8, "plushies": 0, "others": 0, "image_src": "IMG_3988.jpg", "items": ["Re:ゼロ Yumemirize レム～大熊猫～", "呪術廻戦 ぬーどるストッパー 夏油傑", "ジョジョの奇妙な冒険 イギー", "初音ミク Luminasta", "初音ミク×ラスカル スペシャルフィギュア サマーフェス", "HUNTER×HUNTER Excood Creative ヒソカ", "アイドルマスター フィギュア", "BLACK LAGOON レヴィ バニーVer."], "shops": ["回遊館 橿原店"]}, {"id": 13, "year": 2026, "month": 7, "date": "2026-07-23", "display_date": "7月23日", "title": "初音ミク・ルパン三世・ケロロなど", "count": 7, "cost": 14000, "figures": 7, "plushies": 0, "others": 0, "image_src": "IMG_4092.jpg", "items": ["LUPIN THE IIIRD 峰不二子", "初音ミク Holiday Memories -ゲーム-", "魔法少女まどか☆マギカ ぬーどるストッパー 鹿目まどか", "その着せ替え人形は恋をする GLITTER&GLAMOURS 喜多川海夢 バニー", "その着せ替え人形は恋をする GLITTER&GLAMOURS 喜多川海夢 制服", "ケロロ軍曹 ギロロ", "ケロロ軍曹 ケロロ"], "shops": ["結屋 大和郡山店"]}, {"id": 14, "year": 2026, "month": 7, "date": "2026-07-25", "display_date": "7月25日", "title": "初音ミク・アニメキャラなど", "count": 5, "cost": 8000, "figures": 5, "plushies": 0, "others": 0, "image_src": "IMG_4108.jpg", "items": ["らき☆すた Vivitフィギュア 泉こなた", "その着せ替え人形は恋をする Vivitフィギュア 喜多川海夢 ジャージメイドVer.", "初音ミク×シナモロール Stellar 初音ミク", "初音ミク Holiday Memories -ゲーム-", "METAL GEAR SOLID SNAKE EATER"], "shops": ["結屋 新世界店"]}, {"id": 15, "year": 2026, "month": 8, "date": "2026-08-02", "display_date": "8月2日", "title": "初音ミク・アニメキャラ・お菓子など", "count": 13, "cost": 16000, "figures": 12, "plushies": 0, "others": 1, "image_src": "IMG_4198.jpg", "items": ["僕のヒーローアカデミア MAXIMATIC 爆豪勝己", "とらドラ！ 逢坂大河 タイガー水着ver.", "ToLOVEる ネメシス チャイナドレスver.", "五郎島金時いもタルト", "LUPIN THE IIIRD ルパン三世", "ローゼンメイデン 水銀燈", "初音ミク T-most フィギュア ×2", "初音ミク Wonderland", "呪術廻戦 Grandista 伏黒甚爾", "死亡遊戯で飯を食う。 ぬーどるストッパー 幽鬼", "アイドルマスター Nyaspiration ×2"], "shops": ["トレジャーランド南港ＡＴＣ店"]}, {"id": 16, "year": 2026, "month": 8, "date": "2026-08-09", "display_date": "8月9日", "title": "初音ミク・HUNTER×HUNTERなど", "count": 6, "cost": 10000, "figures": 6, "plushies": 0, "others": 0, "image_src": "IMG_4289.jpg", "items": ["初音ミク ぬーどるストッパー Flower Fairy", "HUNTER×HUNTER キルア", "初音ミク Conceptual series 南国", "初音ミク Clearluxe くらげ・フィギュア", "呪術廻戦 伏黒恵", "初音ミク Trio-Try-iT レイニーダンス"], "shops": ["トレジャーランド南港ＡＴＣ店"]}, {"id": 17, "year": 2026, "month": 8, "date": "2026-08-13", "display_date": "8月13日", "title": "らき☆すた・初音ミク", "count": 2, "cost": 10000, "figures": 2, "plushies": 0, "others": 0, "image_src": "IMG_4391.jpg", "items": ["らき☆すた Vivitフィギュア 柊つかさ", "初音ミク ぬーどるストッパーフィギュア Flower Fairy 桔梗"], "shops": ["結屋 新世界店"]}, {"id": 18, "year": 2026, "month": 8, "date": "2026-08-16", "display_date": "8月16日", "title": "らき☆すた・DEATH NOTE・お菓子など", "count": 7, "cost": 13000, "figures": 7, "plushies": 0, "others": 6, "image_src": "IMG_4417.jpg", "items": ["らき☆すた Trio-Try-iT Figure 柊かがみ ×2", "DEATH NOTE 弥海砂 ×2", "バカとテストと召喚獣 BiCute Bunnies 木下秀吉 ×2", "僕のヒーローアカデミア Fluffy Puffy", "各種ふりかけ (カラムーチョ・松屋牛めし・ポテトチップス等) 計6袋"], "shops": ["トレジャーランド南港ＡＴＣ店"]}, {"id": 19, "year": 2026, "month": 8, "date": "2026-08-23", "display_date": "8月23日", "title": "To LOVEる・まどマギ・ケロロ軍曹など", "count": 8, "cost": 11500, "figures": 8, "plushies": 0, "others": 0, "image_src": "IMG_4514.jpg", "items": ["ToLOVEる ダークネス BiCute Ribbons 金色の闇", "ToLOVEる ダークネス Aqua Float Girls 古手川唯", "ToLOVEる ダークネス Aqua Float Girls ナナ・アスタ・デビルーク", "魔法少女まどか☆マギカ ぬーどるストッパー 暁美ほむら", "ケロロ軍曹 共鳴するでありまーす！ タママ二等兵", "ケロロ軍曹 共鳴するでありまーす！ クルル曹長", "ケロロ軍曹 共鳴するでありまーす！ ドロロ兵長", "呪術廻戦 フィギュア 七海建人"], "shops": ["トレジャーランド南港ＡＴＣ店", "結屋 新世界店"]}, {"id": 20, "year": 2026, "month": 8, "date": "2026-08-29", "display_date": "8月29日", "title": "初音ミク・ジョジョ・俺妹など", "count": 14, "cost": 19000, "figures": 14, "plushies": 0, "others": 0, "image_src": "IMG_4580.jpg", "items": ["ToLOVEる ダークネス Desktop Cute 古手川唯 ～ルームウェアver.～", "初音ミク Birthday 2026 ～Star Dreamy ver.～", "Re:ゼロから始める異世界生活 ESPRESTO エミリア", "俺の妹がこんなに可愛いわけがない。 ムチュート フィギュア 高坂桐乃", "初音ミク BANPRESTO EVOLVE Classical tuning くるみ割り人形", "ダンダダン GLITTER&GLAMOURS モモ", "僕のヒーローアカデミア GLITTER&GLAMOURS 葉隠透", "ジョジョの奇妙な冒険 ストーンオーシャン Nometria 空条徐倫 ×2", "初音ミク T-most フィギュア -NT-", "アイドルマスター シンデレラガールズ Nyaspiration 夢見りあむ", "アイドルマスター シンデレラガールズ Nyaspiration 辻野あかり", "ジョジョの奇妙な冒険 ストーンオーシャン Nometria エンリコ・P", "呪術廻戦 FIGURIZMα 祈本里香(リカ) 顕現"], "shops": ["トレジャーランド南港ＡＴＣ店", "結屋 新世界店"]}];
     const shopOptions = ["回遊館 橿原店", "回遊館 西条店", "開放倉庫橿原店", "結屋 大和郡山店", "トレジャーランド南港ＡＴＣ店", "結屋 新世界店", "OTAICHI!! POP!! WORLD!! 大阪福島店"];
     let currentRecordIndex = 0;
     let toastTimeout = null;
@@ -1742,103 +1616,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       initShopSelectOptions();
       refreshAllCardShopBadges();
-      fetchLatestCloudData(false);
     });
-
-    const GAS_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbxX6xd9qBmqgsuF6_hVIquOWqsVhTAvkYkI2pPkLdtWAdVPufa7s2-pXjQ6MjLCAORChQ/exec";
-
-    // ☁️ クラウド（Googleドライブ）から最新データを取得してリアルタイム同期
-    async function fetchLatestCloudData(isManual) {
-      const badge = document.getElementById('cloudSyncBadge');
-      if (badge) {
-        badge.innerText = '☁️ 最新データ同期中...';
-        badge.style.color = '#0284c7';
-        badge.style.background = '#e0f2fe';
-      }
-
-      // 3秒で必ず解除するフェイルセーフ
-      const syncTimeout = setTimeout(() => {
-        if (badge && badge.innerText.includes('同期中')) {
-          const now = new Date();
-          const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-          badge.innerText = '✓ 同期完了 (' + timeStr + ')';
-          badge.style.color = '#047857';
-          badge.style.background = '#dcfce7';
-        }
-      }, 2500);
-
-      function applyCloudData(cloudData) {
-        clearTimeout(syncTimeout);
-        if (!Array.isArray(cloudData) || cloudData.length === 0) return false;
-        console.log('[GAS同期] クラウドから最新データ取得成功:', cloudData.length, '件');
-        cloudData.forEach(cItem => {
-          const local = recordsData.find(r => r.id === cItem.id);
-          if (local) {
-            if (cItem.shops) local.shops = cItem.shops;
-            if (cItem.memo !== undefined) local.memo = cItem.memo;
-            storedCustomShops[local.id] = local.shops || [];
-          } else {
-            recordsData.push(cItem);
-          }
-        });
-        localStorage.setItem('prize_custom_shops', JSON.stringify(storedCustomShops));
-        refreshAllCardShopBadges();
-        
-        // 開いているモーダルがあれば反映
-        const modal = document.getElementById('detailModal');
-        if (modal && modal.classList.contains('active')) {
-          const currentItem = recordsData[currentRecordIndex];
-          if (currentItem) {
-            renderModalContent(currentItem);
-          }
-        }
-
-        const now = new Date();
-        const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
-        if (badge) {
-          badge.innerText = '✓ 同期済み (' + timeStr + ')';
-          badge.style.color = '#047857';
-          badge.style.background = '#dcfce7';
-        }
-        if (isManual) {
-          showToast('✓ Googleドライブから最新データを取得しました！');
-        }
-        return true;
-      }
-
-      // 1. まず標準 fetch を試みる（PCブラウザ・高速対応・Cookie干渉防止）
-      try {
-        const res = await fetch(GAS_ENDPOINT_URL + '?t=' + Date.now(), {
-          credentials: 'omit',
-          headers: { 'Accept': 'application/json' }
-        });
-        if (res.ok) {
-          const cloudData = await res.json();
-          if (applyCloudData(cloudData)) return;
-        }
-      } catch (fetchErr) {
-        console.log('[GAS fetchフォールバック -> JSONP]');
-      }
-
-      // 2. fetch が CORS や環境制限で失敗した場合は JSONP で取得
-      window.onCloudRecordsLoaded = function(cloudData) {
-        applyCloudData(cloudData);
-      };
-
-      const script = document.createElement('script');
-      script.src = GAS_ENDPOINT_URL + '?callback=onCloudRecordsLoaded&t=' + Date.now();
-      script.onerror = function() {
-        console.warn('[GAS同期] クラウド最新データの取得に失敗 (オフライン)');
-        if (badge) {
-          const now = new Date();
-          const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-          badge.innerText = '✓ ローカル表示中 (' + timeStr + ')';
-          badge.style.color = '#475569';
-          badge.style.background = '#f1f5f9';
-        }
-      };
-      document.body.appendChild(script);
-    }
 
     function initShopSelectOptions() {
       const sel1 = document.getElementById('modalShopSelect1');
@@ -1859,37 +1637,22 @@
 
     function refreshAllCardShopBadges() {
       recordsData.forEach(r => {
-        updateCardShopBadge(r.id, r.shops || [], r.memo);
+        updateCardShopBadge(r.id, r.shops || []);
       });
     }
 
-    function updateCardShopBadge(id, shops, memo) {
+    function updateCardShopBadge(id, shops) {
       const wrap = document.getElementById('card-shops-' + id);
       const card = document.querySelector(`.record-card[data-id="${id}"]`);
       if (card) {
-        card.dataset.shops = (shops || []).join(',');
+        card.dataset.shops = shops.join(',');
       }
-      if (wrap) {
-        if (shops && shops.length > 0) {
-          wrap.innerHTML = shops.map(s => `<span class="badge badge-shop">🏪 ${s}</span>`).join(' ');
-        } else {
-          wrap.innerHTML = '';
-        }
-      }
-
-      const memoWrap = document.getElementById('card-memo-' + id);
-      if (memoWrap) {
-        if (memo && memo.trim().length > 0) {
-          memoWrap.className = 'badge';
-          memoWrap.style.background = '#fef3c7';
-          memoWrap.style.color = '#92400e';
-          memoWrap.style.border = '1px solid #fde68a';
-          memoWrap.innerText = '📝 メモあり';
-        } else {
-          memoWrap.className = '';
-          memoWrap.innerText = '';
-          memoWrap.style.display = 'none';
-        }
+      if (!wrap) return;
+      
+      if (shops && shops.length > 0) {
+        wrap.innerHTML = shops.map(s => `<span class="badge badge-shop">🏪 ${s}</span>`).join(' ');
+      } else {
+        wrap.innerHTML = '';
       }
     }
 
@@ -1943,31 +1706,6 @@
         li.innerText = item.title;
         ul.appendChild(li);
       }
-
-      // 自由メモ
-      document.getElementById('modalMemoText').value = item.memo || '';
-      document.getElementById('memoSaveStatus').style.opacity = '0';
-    }
-
-    let memoDebounceTimeout = null;
-    function onMemoChange() {
-      const text = document.getElementById('modalMemoText').value;
-      const currentItem = recordsData[currentRecordIndex];
-      currentItem.memo = text;
-      
-      const rec = recordsData.find(r => r.id === currentItem.id);
-      if (rec) rec.memo = text;
-
-      const statusEl = document.getElementById('memoSaveStatus');
-      statusEl.style.opacity = '1';
-      statusEl.innerText = '☁️ 保存中...';
-
-      if (memoDebounceTimeout) clearTimeout(memoDebounceTimeout);
-      memoDebounceTimeout = setTimeout(() => {
-        syncToGoogleDrive(recordsData);
-        statusEl.innerText = '✓ クラウド保存完了';
-        setTimeout(() => { statusEl.style.opacity = '0'; }, 2000);
-      }, 800);
     }
 
     function onShopChange() {
@@ -1981,12 +1719,6 @@
       
       currentItem.shops = newShops;
       
-      // recordsDataの該当レコードを更新
-      const rec = recordsData.find(r => r.id === currentItem.id);
-      if (rec) {
-        rec.shops = newShops;
-      }
-
       // localStorageに保存
       storedCustomShops[currentItem.id] = newShops;
       localStorage.setItem('prize_custom_shops', JSON.stringify(storedCustomShops));
@@ -2006,230 +1738,7 @@
       statusEl.classList.add('show');
       setTimeout(() => statusEl.classList.remove('show'), 2000);
 
-      showToast(newShops.length > 0 ? `店舗を保存中... (Googleドライブ同期)` : '店舗設定をクリアしました');
-
-      // ☁️ Googleドライブへ自動同期（GAS）
-      syncToGoogleDrive(recordsData);
-    }
-
-    // 新規獲得記録モーダル操作
-    function openAddRecordModal() {
-      try {
-        // 今日の日付をセット
-        const now = new Date();
-        const y = now.getFullYear();
-        const m = String(now.getMonth() + 1).padStart(2, '0');
-        const d = String(now.getDate()).padStart(2, '0');
-        const today = `${y}-${m}-${d}`;
-        const dateInput = document.getElementById('newRecordDate');
-        if (dateInput) dateInput.value = today;
-        
-        // 店舗セレクトの初期化
-        const sel1 = document.getElementById('newShopSelect1');
-        const sel2 = document.getElementById('newShopSelect2');
-        if (sel1 && sel2) {
-          sel1.innerHTML = '<option value="">（選択してください）</option>';
-          sel2.innerHTML = '<option value="">（なし）</option>';
-          if (Array.isArray(shopOptions)) {
-            shopOptions.forEach(opt => {
-              const o1 = document.createElement('option');
-              o1.value = opt;
-              o1.innerText = opt;
-              sel1.appendChild(o1);
-
-              const o2 = document.createElement('option');
-              o2.value = opt;
-              o2.innerText = opt;
-              sel2.appendChild(o2);
-            });
-          }
-        }
-
-        const modal = document.getElementById('addRecordModal');
-        if (modal) {
-          modal.classList.add('active');
-          document.body.style.overflow = 'hidden';
-        }
-      } catch (err) {
-        console.error('[新規モーダルオープンエラー]', err);
-        const modal = document.getElementById('addRecordModal');
-        if (modal) modal.classList.add('active');
-      }
-    }
-
-    function closeAddRecordModal() {
-      document.getElementById('addRecordModal').classList.remove('active');
-      document.body.style.overflow = 'auto';
-    }
-
-    function closeAddRecordModalOnBg(e) {
-      if (e.target.id === 'addRecordModal') {
-        closeAddRecordModal();
-      }
-    }
-
-    let newPhotoBase64 = null;
-    let newPhotoFilename = '';
-
-    function previewNewPhoto(input) {
-      if (input.files && input.files[0]) {
-        const file = input.files[0];
-        newPhotoFilename = file.name || 'photo_' + Date.now() + '.jpg';
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          // 画像をCanvasで最大1600pxにリサイズして圧縮
-          const img = new Image();
-          img.onload = function() {
-            const maxDim = 1600;
-            let w = img.width;
-            let h = img.height;
-            if (w > maxDim || h > maxDim) {
-              if (w > h) {
-                h = Math.round(h * (maxDim / w));
-                w = maxDim;
-              } else {
-                w = Math.round(w * (maxDim / h));
-                h = maxDim;
-              }
-            }
-            const canvas = document.createElement('canvas');
-            canvas.width = w;
-            canvas.height = h;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, w, h);
-            newPhotoBase64 = canvas.toDataURL('image/jpeg', 0.85);
-            
-            const preview = document.getElementById('newPhotoPreview');
-            preview.src = newPhotoBase64;
-            document.getElementById('newPhotoPreviewContainer').style.display = 'block';
-          };
-          img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    async function submitNewRecord(e) {
-      e.preventDefault();
-      if (!newPhotoBase64) {
-        alert('写真を選択してください。');
-        return;
-      }
-
-      const submitBtn = document.getElementById('newRecordSubmitBtn');
-      submitBtn.disabled = true;
-      submitBtn.innerText = '☁️ Googleドライブに送信中...';
-
-      const dateStr = document.getElementById('newRecordDate').value;
-      const cost = parseInt(document.getElementById('newRecordCost').value, 10) || 0;
-      const shop1 = document.getElementById('newShopSelect1').value.trim();
-      const shop2 = document.getElementById('newShopSelect2').value.trim();
-      const shops = [];
-      if (shop1) shops.push(shop1);
-      if (shop2 && shop2 !== shop1) shops.push(shop2);
-
-      const figures = parseInt(document.getElementById('newCountFigures').value, 10) || 0;
-      const plushies = parseInt(document.getElementById('newCountPlushies').value, 10) || 0;
-      const others = parseInt(document.getElementById('newCountOthers').value, 10) || 0;
-      const totalCount = figures + plushies + others || 1;
-
-      const title = document.getElementById('newRecordTitle').value.trim();
-      const itemsRaw = document.getElementById('newRecordItems').value.trim();
-      const items = itemsRaw ? itemsRaw.split('
-').map(s => s.trim()).filter(s => s) : [title];
-      const memo = document.getElementById('newRecordMemo').value.trim();
-
-      const newRecord = {
-        date: dateStr,
-        cost: cost,
-        count: totalCount,
-        figures: figures,
-        plushies: plushies,
-        others: others,
-        title: title,
-        items: items,
-        shops: shops,
-        memo: memo
-      };
-
-      try {
-        const res = await fetch(GAS_ENDPOINT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({
-            action: 'add_record',
-            record: newRecord,
-            imageBase64: newPhotoBase64,
-            filename: newPhotoFilename
-          })
-        });
-
-        console.log('[GAS新規登録送信完了]');
-        showToast('✓ 新しい獲得記録をGoogleドライブに追加しました！');
-        closeAddRecordModal();
-        
-        // 最新データを再取得して画面を更新
-        setTimeout(() => {
-          fetchLatestCloudData(true);
-        }, 1000);
-
-      } catch (err) {
-        console.warn('[GAS新規登録エラー]', err);
-        showToast('✓ 送信しました（同期確認中）');
-        closeAddRecordModal();
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerText = '☁️ Googleドライブに登録';
-      }
-    }
-
-    function syncToGoogleDrive(data) {
-      if (!GAS_ENDPOINT_URL) return;
-      const badge = document.getElementById('cloudSyncBadge');
-      if (badge) {
-        badge.innerText = '☁️ Googleドライブ保存中...';
-        badge.style.color = '#0284c7';
-        badge.style.background = '#e0f2fe';
-      }
-
-      // クラウド保存完了コールバック
-      window.onCloudSaveCallback = function(res) {
-        console.log('[GAS同期] クラウド保存完了レスポンス:', res);
-        const now = new Date();
-        const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
-        if (badge) {
-          badge.innerText = '✓ 同期済み (' + timeStr + ')';
-          badge.style.color = '#047857';
-          badge.style.background = '#dcfce7';
-        }
-        showToast('✓ Googleドライブに同期保存しました！');
-      };
-
-      // 1. JSONP による保存送信（CORS制限・302リダイレクト変換を100%回避）
-      try {
-        const s = document.createElement('script');
-        s.src = GAS_ENDPOINT_URL + '?action=save&data=' + encodeURIComponent(JSON.stringify(data)) + '&callback=onCloudSaveCallback&t=' + Date.now();
-        s.onerror = function() {
-          console.warn('[GAS同期 JSONP保存エラー]');
-        };
-        document.body.appendChild(s);
-      } catch (e) {
-        console.warn(e);
-      }
-
-      // 2. fetch POST 送信（バックアップ）
-      try {
-        fetch(GAS_ENDPOINT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(data)
-        }).catch(err => {
-          console.warn('[GAS同期 fetch警告]', err);
-        });
-      } catch (e) {
-        console.warn(e);
-      }
+      showToast(newShops.length > 0 ? `店舗を保存しました: ${newShops.join(' / ')}` : '店舗設定をクリアしました');
     }
 
     function showToast(msg) {

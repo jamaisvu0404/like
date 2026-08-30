@@ -637,61 +637,6 @@
         text-decoration: underline;
     }
 
-    /* ⭐ 欲しい！ボタン ＆ 狙いメモ */
-    .wish-star-btn {
-        position: absolute;
-        top: 4px;
-        right: 4px;
-        z-index: 5;
-        background: rgba(255, 255, 255, 0.9);
-        border: 1px solid #e2e8f0;
-        border-radius: 20px;
-        padding: 2px 7px;
-        font-size: 10px;
-        font-weight: 800;
-        cursor: pointer;
-        color: #94a3b8;
-        display: inline-flex;
-        align-items: center;
-        gap: 2px;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-        transition: all 0.15s ease;
-    }
-    .wish-star-btn:hover {
-        transform: scale(1.08);
-    }
-    .wish-star-btn.active {
-        background: #fef08a;
-        color: #854d0e;
-        border-color: #facc15;
-        box-shadow: 0 2px 8px rgba(234, 179, 8, 0.35);
-    }
-    .wish-memo-box {
-        margin-top: 4px;
-        padding: 4px 6px;
-        background: #fefce8;
-        border: 1px dashed #fde047;
-        border-radius: 6px;
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-    }
-    .wish-memo-input {
-        width: 100%;
-        border: 1px solid #facc15;
-        border-radius: 4px;
-        padding: 3px 5px;
-        font-size: 9.5px;
-        color: #713f12;
-        background: #ffffff;
-        outline: none;
-        box-sizing: border-box;
-    }
-    .wish-memo-input:focus {
-        border-color: #eab308;
-        box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.2);
-    }
-
     /* 該当なしメッセージ */
     .no-results {
         grid-column: 1 / -1;
@@ -775,7 +720,6 @@
                 <p class="subtitle">2026年 1月〜12月の全フィギュア情報を月をまたいで高速検索できます</p>
             </div>
             <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                <button id="wishSyncBadge" onclick="fetchLatestWishlist(true)" style="background: rgba(255,255,255,0.22); color: #ffffff; padding: 6px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 700; border: 1.5px solid rgba(255,255,255,0.45); cursor: pointer; backdrop-filter: blur(6px);" title="クリックでGoogleドライブの欲しい物リストと手動同期">☁️ 欲しい物同期中...</button>
                 <a href="gravity.html" style="display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.22); color: #ffffff; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 800; text-decoration: none; border: 1.5px solid rgba(255,255,255,0.45); backdrop-filter: blur(6px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: all 0.2s ease;">
                     ⚖ 重心情報データベース ↗
                 </a>
@@ -795,12 +739,6 @@
 
             <!-- クイックフィルター -->
             <div class="filter-row">
-                <div class="filter-group">
-                    <span class="filter-label">👀 表示切替:</span>
-                    <button type="button" class="filter-btn" id="showAllItemsBtn" onclick="showAllItems()" style="background: #e0f2fe; color: #0369a1; border-color: #bae6fd; font-weight: 800;">📦 全フィギュア一覧</button>
-                    <button type="button" class="filter-btn" id="filterWishlistBtn" style="background: #fef3c7; color: #92400e; border-color: #fde68a; font-weight: 800;" onclick="toggleWishlistFilter(this)">⭐ 欲しい物リスト (0)</button>
-                </div>
-
                 <div class="filter-group">
                     <span class="filter-label">🏷️ メーカー:</span>
                     <button type="button" class="filter-btn active" data-maker="" onclick="setMakerFilter('', this)">すべて</button>
@@ -983,13 +921,13 @@
                 </div>
             </a>
 
-            <a href="202609/calendar.html" class="month-card" style="border-color: #0284c7; background: #f0f9ff;">
+            <a href="202609/calendar.html" class="month-card">
                 <div class="card-top">
-                    <span class="year-tag" style="color: #0284c7; font-weight: 800;">2026年</span>
-                    <span class="item-count-badge" style="background: #0284c7; color: white;">168商品</span>
+                    <span class="year-tag">2026年</span>
+                    <span class="item-count-badge">128商品</span>
                 </div>
-                <div class="month-title" style="color: #0369a1;">9月</div>
-                <div class="card-footer" style="color: #0284c7;">
+                <div class="month-title">9月</div>
+                <div class="card-footer">
                     <span>カレンダーを開く</span>
                     <span>➔</span>
                 </div>
@@ -998,7 +936,7 @@
             <a href="202610/calendar.html" class="month-card">
                 <div class="card-top">
                     <span class="year-tag">2026年</span>
-                    <span class="item-count-badge">104商品</span>
+                    <span class="item-count-badge">98商品</span>
                 </div>
                 <div class="month-title">10月</div>
                 <div class="card-footer">
@@ -1010,7 +948,7 @@
             <a href="202611/calendar.html" class="month-card">
                 <div class="card-top">
                     <span class="year-tag">2026年</span>
-                    <span class="item-count-badge">88商品</span>
+                    <span class="item-count-badge">83商品</span>
                 </div>
                 <div class="month-title">11月</div>
                 <div class="card-footer">
@@ -1022,7 +960,7 @@
             <a href="202612/calendar.html" class="month-card">
                 <div class="card-top">
                     <span class="year-tag">2026年</span>
-                    <span class="item-count-badge">87商品</span>
+                    <span class="item-count-badge">12月</span>
                 </div>
                 <div class="month-title">12月</div>
                 <div class="card-footer">
@@ -1261,183 +1199,6 @@
             .replace(/[\s\-_・.:;!?,~〜]/g, '');
     }
 
-    const GAS_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbxX6xd9qBmqgsuF6_hVIquOWqsVhTAvkYkI2pPkLdtWAdVPufa7s2-pXjQ6MjLCAORChQ/exec";
-    let wishlistData = JSON.parse(localStorage.getItem('prize_wishlist_data') || '{}');
-    let isWishlistFilterActive = false;
-
-    // 画面初期化時に欲しい物リストをGoogleドライブから同期
-    window.addEventListener('DOMContentLoaded', () => {
-        updateWishlistCount();
-        fetchLatestWishlist(false);
-    });
-
-    // ☁️ Googleドライブから欲しい物リストを取得
-    async function fetchLatestWishlist(isManual) {
-        const badge = document.getElementById('wishSyncBadge');
-        if (badge) badge.innerText = '☁️ 欲しい物同期中...';
-
-        const syncTimeout = setTimeout(() => {
-            if (badge && badge.innerText.includes('同期中')) {
-                const now = new Date();
-                const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-                badge.innerText = '✓ 欲しい物同期済み (' + timeStr + ')';
-            }
-        }, 2500);
-
-        function applyWishlist(cloudWishlist) {
-            clearTimeout(syncTimeout);
-            if (!cloudWishlist || typeof cloudWishlist !== 'object') return false;
-            wishlistData = cloudWishlist;
-            localStorage.setItem('prize_wishlist_data', JSON.stringify(wishlistData));
-            updateWishlistCount();
-            if (isWishlistFilterActive || searchResultsGrid.classList.contains('show')) {
-                executeSearch();
-            }
-            if (badge) {
-                const now = new Date();
-                const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-                badge.innerText = '✓ 欲しい物同期済み (' + timeStr + ')';
-            }
-            if (isManual) {
-                showToast('✓ Googleドライブから欲しい物リストを取得しました！');
-            }
-            return true;
-        }
-
-        try {
-            const res = await fetch(GAS_ENDPOINT_URL + '?action=get_wishlist&t=' + Date.now(), {
-                credentials: 'omit',
-                headers: { 'Accept': 'application/json' }
-            });
-            if (res.ok) {
-                const data = await res.json();
-                if (applyWishlist(data)) return;
-            }
-        } catch (e) {
-            console.log('[GAS fetch get_wishlist フォールバック]');
-        }
-
-        // JSONP フォールバック
-        window.onWishlistLoaded = function(cloudData) {
-            applyWishlist(cloudData);
-        };
-        const script = document.createElement('script');
-        script.src = GAS_ENDPOINT_URL + '?action=get_wishlist&callback=onWishlistLoaded&t=' + Date.now();
-        document.body.appendChild(script);
-    }
-
-    // ☁️ Googleドライブへ欲しい物リストを保存
-    function syncWishlistToGoogleDrive() {
-        const badge = document.getElementById('wishSyncBadge');
-        if (badge) badge.innerText = '☁️ 欲しい物保存中...';
-
-        window.onWishlistSaved = function() {
-            if (badge) {
-                const now = new Date();
-                const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-                badge.innerText = '✓ 欲しい物同期済み (' + timeStr + ')';
-            }
-        };
-
-        // JSONP 保存
-        try {
-            const s = document.createElement('script');
-            s.src = GAS_ENDPOINT_URL + '?action=save_wishlist&data=' + encodeURIComponent(JSON.stringify(wishlistData)) + '&callback=onWishlistSaved&t=' + Date.now();
-            document.body.appendChild(s);
-        } catch (e) {}
-
-        // fetch POST 送信（バックアップ）
-        try {
-            fetch(GAS_ENDPOINT_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ action: 'save_wishlist', data: wishlistData })
-            });
-        } catch (e) {}
-    }
-
-    function updateWishlistCount() {
-        const count = Object.values(wishlistData).filter(w => w && w.wished).length;
-        const btn = document.getElementById('filterWishlistBtn');
-        if (btn) {
-            btn.innerText = `⭐ 欲しい物リスト (${count})`;
-        }
-    }
-
-    function toggleWish(itemKey, event) {
-        if (event) event.stopPropagation();
-        if (!wishlistData[itemKey]) {
-            wishlistData[itemKey] = { wished: true, memo: '' };
-        } else {
-            wishlistData[itemKey].wished = !wishlistData[itemKey].wished;
-        }
-        localStorage.setItem('prize_wishlist_data', JSON.stringify(wishlistData));
-        updateWishlistCount();
-        syncWishlistToGoogleDrive();
-
-        showToast(wishlistData[itemKey].wished ? '⭐ 欲しい物リストに追加しました' : '欲しい物リストから解除しました');
-        executeSearch();
-    }
-
-    let wishMemoDebounce = null;
-    function onWishMemoChange(itemKey, input, event) {
-        if (event) event.stopPropagation();
-        const val = input.value.trim();
-        if (!wishlistData[itemKey]) {
-            wishlistData[itemKey] = { wished: true, memo: val };
-        } else {
-            wishlistData[itemKey].memo = val;
-        }
-        localStorage.setItem('prize_wishlist_data', JSON.stringify(wishlistData));
-
-        if (wishMemoDebounce) clearTimeout(wishMemoDebounce);
-        wishMemoDebounce = setTimeout(() => {
-            syncWishlistToGoogleDrive();
-            showToast('✓ 狙いメモをGoogleドライブに保存しました');
-        }, 800);
-    }
-
-    let isShowAllActive = false;
-    function showAllItems() {
-        isShowAllActive = !isShowAllActive;
-        const btn = document.getElementById('showAllItemsBtn');
-        if (isShowAllActive) {
-            btn.classList.add('active');
-            btn.style.background = '#0284c7';
-            btn.style.color = '#ffffff';
-        } else {
-            btn.classList.remove('active');
-            btn.style.background = '#e0f2fe';
-            btn.style.color = '#0369a1';
-        }
-        executeSearch();
-    }
-
-    function selectMonthFromCard(monthVal) {
-        document.getElementById('monthFilterSelect').value = monthVal;
-        onMonthFilterChange(monthVal);
-        const searchSec = document.querySelector('.search-section');
-        if (searchSec) {
-            window.scrollTo({ top: searchSec.offsetTop - 15, behavior: 'smooth' });
-        }
-    }
-
-    function toggleWishlistFilter(btn) {
-        isWishlistFilterActive = !isWishlistFilterActive;
-        if (isWishlistFilterActive) {
-            btn.classList.add('active');
-            btn.style.background = '#eab308';
-            btn.style.color = '#ffffff';
-            btn.style.borderColor = '#ca8a04';
-        } else {
-            btn.classList.remove('active');
-            btn.style.background = '#fef3c7';
-            btn.style.color = '#92400e';
-            btn.style.borderColor = '#fde68a';
-        }
-        executeSearch();
-    }
-
     searchInput.addEventListener('input', () => {
         executeSearch();
     });
@@ -1450,7 +1211,7 @@
 
     function setMakerFilter(maker, btn) {
         selectedMaker = maker;
-        document.querySelectorAll('.filter-btn:not(#filterWishlistBtn)').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         if (btn) btn.classList.add('active');
         executeSearch();
     }
@@ -1464,13 +1225,6 @@
         searchInput.value = '';
         selectedMaker = '';
         selectedMonth = '';
-        isWishlistFilterActive = false;
-        const wBtn = document.getElementById('filterWishlistBtn');
-        if (wBtn) {
-            wBtn.classList.remove('active');
-            wBtn.style.background = '#fef3c7';
-            wBtn.style.color = '#92400e';
-        }
         document.getElementById('monthFilterSelect').value = '';
         document.querySelectorAll('.filter-btn').forEach((b, idx) => {
             if (idx === 0) b.classList.add('active');
@@ -1504,7 +1258,7 @@
         const rawQuery = searchInput.value.trim();
         searchClearBtn.style.display = rawQuery ? 'flex' : 'none';
 
-        const isFiltering = rawQuery.length > 0 || selectedMaker !== '' || selectedMonth !== '' || isWishlistFilterActive || isShowAllActive;
+        const isFiltering = rawQuery.length > 0 || selectedMaker !== '' || selectedMonth !== '';
 
         if (!isFiltering) {
             // 検索なし：月別カレンダー目次を表示
@@ -1529,14 +1283,6 @@
         const queryKeywords = rawQuery.split(/\s+/).filter(k => k.length > 0).map(k => normalizeText(k));
 
         const matchedItems = PRIZE_ITEMS.filter(item => {
-            const itemKey = item.month + '_' + item.title;
-            const wishObj = wishlistData[itemKey];
-
-            // 欲しい物フィルター
-            if (isWishlistFilterActive) {
-                if (!wishObj || !wishObj.wished) return false;
-            }
-
             // 月フィルター
             if (selectedMonth && item.month !== selectedMonth) {
                 return false;
@@ -1545,10 +1291,9 @@
             if (selectedMaker && !item.maker.includes(selectedMaker)) {
                 return false;
             }
-            // キーワード検索（タイトル、メルカリ検索名、メーカー、月名、狙いメモ）
+            // キーワード検索（タイトル、メルカリ検索名、メーカー、月名）
             if (queryKeywords.length > 0) {
-                const memoText = wishObj && wishObj.memo ? wishObj.memo : '';
-                const targetText = normalizeText(item.title + ' ' + item.mercari + ' ' + item.maker + ' ' + item.monthName + ' ' + item.date + ' ' + memoText);
+                const targetText = normalizeText(item.title + ' ' + item.mercari + ' ' + item.maker + ' ' + item.monthName + ' ' + item.date);
                 for (const kw of queryKeywords) {
                     if (!targetText.includes(kw)) {
                         return false;
@@ -1560,7 +1305,6 @@
 
         // ステータスバー更新
         let statusMsg = `🔍 検索結果: ${matchedItems.length}件`;
-        if (isWishlistFilterActive) statusMsg += ` [⭐ 欲しい物リスト]`;
         if (rawQuery) statusMsg += ` (キーワード: 「${escapeHtml(rawQuery)}」)`;
         if (selectedMaker) statusMsg += ` [メーカー: ${escapeHtml(selectedMaker)}]`;
         if (selectedMonth) {
@@ -1573,9 +1317,9 @@
         if (matchedItems.length === 0) {
             searchResultsGrid.innerHTML = `
                 <div class="no-results">
-                    <div class="no-results-icon">${isWishlistFilterActive ? '⭐' : '🔎'}</div>
-                    <p>${isWishlistFilterActive ? '欲しい物にチェックされた商品がありません。' : '該当する商品が見つかりませんでした。'}</p>
-                    <p style="font-size: 12px; margin-top: 4px; color: #94a3b8;">${isWishlistFilterActive ? 'フィギュアカードの右上にある「☆ 欲しい」ボタンを押して登録してください。' : '別のキーワードやメーカー・対象月でお試しください。'}</p>
+                    <div class="no-results-icon">🔎</div>
+                    <p>該当する商品が見つかりませんでした。</p>
+                    <p style="font-size: 12px; margin-top: 4px; color: #94a3b8;">別のキーワードやメーカー・対象月でお試しください。</p>
                 </div>
             `;
             return;
@@ -1584,11 +1328,6 @@
         // カードHTMLのレンダリング
         let html = '';
         for (const item of matchedItems) {
-            const itemKey = item.month + '_' + item.title;
-            const wishObj = wishlistData[itemKey];
-            const isWished = wishObj && wishObj.wished;
-            const wishMemo = (wishObj && wishObj.memo) ? wishObj.memo : '';
-
             const titleEsc = escapeHtml(item.title);
             const mercariEsc = escapeHtml(item.mercari);
             const makerEsc = escapeHtml(item.maker || 'メーカー未記載');
@@ -1598,22 +1337,9 @@
             const monthNameEsc = escapeHtml(item.monthName);
             const imgSrc = item.img ? item.img : 'https://via.placeholder.com/200?text=No+Image';
             const mercariJson = JSON.stringify(item.mercari);
-            const itemKeyJson = JSON.stringify(itemKey);
-
-            const starBtnText = isWished ? '★ 欲しい!' : '☆ 欲しい';
-            const starBtnClass = isWished ? 'wish-star-btn active' : 'wish-star-btn';
-
-            const memoBoxHtml = isWished ? `
-                <div class="wish-memo-box" onclick="event.stopPropagation();">
-                    <input type="text" class="wish-memo-input" placeholder="📝 狙いメモ (例: 回遊館 / 予算2000円)" value="${escapeHtml(wishMemo)}" oninput='onWishMemoChange(${itemKeyJson}, this, event)'>
-                </div>
-            ` : '';
 
             html += `
-                <div class="item-card" onclick='handleCardClick(this, ${mercariJson})' title="${titleEsc}" style="position: relative;">
-                    <button type="button" class="${starBtnClass}" onclick='toggleWish(${itemKeyJson}, event)' title="欲しい物リストに追加/解除">
-                        ${starBtnText}
-                    </button>
+                <div class="item-card" onclick='handleCardClick(this, ${mercariJson})' title="${titleEsc}">
                     <div class="item-date-badge">
                         <span class="badge-month">${monthNameEsc}</span>
                         <span>${dateEsc}</span>
@@ -1631,7 +1357,6 @@
                                 <span class="size-icon">📏</span>
                                 <span>${sizeEsc}</span>
                             </div>
-                            ${memoBoxHtml}
                             <a href="${item.calUrl}" class="item-cal-link" onclick="event.stopPropagation();">📅 カレンダーで見る ➔</a>
                         </div>
                     </div>

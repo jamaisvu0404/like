@@ -152,9 +152,9 @@
     "date": "2026-06-21",
     "display_date": "6月21日",
     "title": "初音ミク・レムなど",
-    "count": 8,
+    "count": 7,
     "cost": 16000,
-    "figures": 7,
+    "figures": 6,
     "plushies": 0,
     "others": 1,
     "image_src": "IMG_3643.jpg",
@@ -179,8 +179,8 @@
     "month": 6,
     "date": "2026-06-27",
     "display_date": "6月27日",
-    "title": "初音ミク・ルパン三世・お菓子など",
-    "count": 9,
+    "title": "初音ミク・ルパン三世など",
+    "count": 7,
     "cost": 8000,
     "figures": 7,
     "plushies": 0,
@@ -207,8 +207,8 @@
     "month": 6,
     "date": "2026-06-30",
     "display_date": "6月30日",
-    "title": "喜多川海夢・パペットスンスン",
-    "count": 3,
+    "title": "喜多川海夢",
+    "count": 2,
     "cost": 6000,
     "figures": 2,
     "plushies": 0,
@@ -253,8 +253,8 @@
     "month": 7,
     "date": "2026-07-16",
     "display_date": "7月16日",
-    "title": "アニメキャラ・お菓子・雑貨など",
-    "count": 8,
+    "title": "アニメキャラ・ぬーどるストッパー",
+    "count": 3,
     "cost": 6000,
     "figures": 3,
     "plushies": 0,
@@ -297,8 +297,7 @@
       "BLACK LAGOON レヴィ バニーVer."
     ],
     "shops": [
-      "回遊館 橿原店",
-      "開放倉庫橿原店"
+      "回遊館 橿原店"
     ]
   },
   {
@@ -433,19 +432,19 @@
     "month": 8,
     "date": "2026-08-16",
     "display_date": "8月16日",
-    "title": "らき☆すた・DEATH NOTE・ふりかけなど",
-    "count": 8,
+    "title": "らき☆すた・DEATH NOTE・お菓子など",
+    "count": 7,
     "cost": 13000,
     "figures": 7,
     "plushies": 0,
-    "others": 1,
+    "others": 6,
     "image_src": "IMG_4417.jpg",
     "items": [
       "らき☆すた Trio-Try-iT Figure 柊かがみ ×2",
       "DEATH NOTE 弥海砂 ×2",
       "バカとテストと召喚獣 BiCute Bunnies 木下秀吉 ×2",
       "僕のヒーローアカデミア Fluffy Puffy",
-      "各種ふりかけ (カラムーチョ・松屋牛めし・ポテトチップス等) 一式"
+      "各種ふりかけ (カラムーチョ・松屋牛めし・ポテトチップス等) 計6袋"
     ],
     "shops": [
       "トレジャーランド南港ＡＴＣ店"
