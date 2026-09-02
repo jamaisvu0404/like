@@ -12,6 +12,13 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from collections import defaultdict
 
+if sys.stdout.encoding != 'utf-8':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stderr.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
+
 # 作品名マッピング辞書
 SERIES_CLEAN_MAP = [
     (r'初音ミク|初音ミクシリーズ|ピアプロキャラクターズ|プロジェクトセカイ|プロセカ', '初音ミク'),
@@ -289,6 +296,21 @@ def main():
     output_dir = os.path.join(base_dir, target_month_str)
     os.makedirs(output_dir, exist_ok=True)
     
+    # --- 前回データの読み込み（差分検出用） ---
+    old_items_map = {}
+    search_data_path = os.path.join(base_dir, "search_data.json")
+    if not os.path.exists(search_data_path):
+        search_data_path = r"C:\Users\pande\prize-calendar\search_data.json"
+    if os.path.exists(search_data_path):
+        try:
+            with open(search_data_path, "r", encoding="utf-8") as f:
+                prev_all = json.load(f)
+                for it in prev_all:
+                    if it.get("month") == target_month_str:
+                        old_items_map[it.get("title")] = it
+        except Exception:
+            pass
+
     print(f"[{target_month_display}] Fetching HTML from {url}...")
     response = requests.get(url)
     response.raise_for_status()
@@ -879,61 +901,6 @@ def main():
         flex-shrink: 0;
     }}
 
-    /* ⭐ 欲しい！ボタン ＆ 狙いメモ */
-    .wish-star-btn {{
-        position: absolute;
-        top: 4px;
-        right: 4px;
-        z-index: 5;
-        background: rgba(255, 255, 255, 0.92);
-        border: 1px solid #e2e8f0;
-        border-radius: 20px;
-        padding: 2px 7px;
-        font-size: 10px;
-        font-weight: 800;
-        cursor: pointer;
-        color: #94a3b8;
-        display: inline-flex;
-        align-items: center;
-        gap: 2px;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-        transition: all 0.15s ease;
-    }}
-    .wish-star-btn:hover {{
-        transform: scale(1.08);
-    }}
-    .wish-star-btn.active {{
-        background: #fef08a;
-        color: #854d0e;
-        border-color: #facc15;
-        box-shadow: 0 2px 8px rgba(234, 179, 8, 0.35);
-    }}
-    .wish-memo-box {{
-        margin-top: 4px;
-        padding: 4px 6px;
-        background: #fefce8;
-        border: 1px dashed #fde047;
-        border-radius: 6px;
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-    }}
-    .wish-memo-input {{
-        width: 100%;
-        border: 1px solid #facc15;
-        border-radius: 4px;
-        padding: 3px 5px;
-        font-size: 9.5px;
-        color: #713f12;
-        background: #ffffff;
-        outline: none;
-        box-sizing: border-box;
-    }}
-    .wish-memo-input:focus {{
-        border-color: #eab308;
-        box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.2);
-    }}
-
     /* トースト通知 */
     #toast {{
         position: fixed;
@@ -991,12 +958,6 @@ def main():
         
         <!-- コントロールツールバー -->
         <div class="header-toolbar">
-            <div class="toolbar-group">
-                <span class="toolbar-label">⭐ 欲しい物:</span>
-                <button type="button" class="mode-btn" id="filterWishlistBtn" style="background: #fef3c7; color: #92400e; border: 1px solid #fde68a;" onclick="toggleWishlistOnly(this)">⭐ 欲しい物 (0)</button>
-                <button type="button" id="wishSyncBadge" onclick="fetchLatestWishlist(true)" style="background: rgba(255,255,255,0.22); color: #ffffff; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; border: 1px solid rgba(255,255,255,0.3); cursor: pointer;" title="クリックでGoogleドライブと手動同期">✓ 同期済み</button>
-            </div>
-
             <div class="toolbar-group">
                 <span class="toolbar-label">クリック:</span>
                 <div class="mode-btn-group">
@@ -1097,14 +1058,8 @@ def main():
             maker_escaped = html.escape(maker)
             size_escaped = html.escape(size)
             mercari_title_json = json.dumps(mercari_title)
-            item_key = f"{target_month_str}_{title}"
-            item_key_json = json.dumps(item_key)
-            
             html_content += f"""
-        <div class="item-card" data-key="{item_key}" onclick='handleCardClick(this, {mercari_title_json})' title="{title_escaped}">
-            <button type="button" class="wish-star-btn" data-key="{item_key}" onclick='toggleWish({item_key_json}, event)' title="欲しい物リストに追加/解除">
-                ☆ 欲しい
-            </button>
+        <div class="item-card" onclick='handleCardClick(this, {mercari_title_json})' title="{title_escaped}">
             <div class="img-wrap">
                 <img src="{img_src_data}" alt="{title_escaped}">
             </div>
@@ -1113,12 +1068,9 @@ def main():
                     <span class="maker-tag {maker_class}">{maker_escaped}</span>
                     <p class="item-name">{title_escaped}</p>
                 </div>
-                <div>
-                    <div class="item-size">
-                        <span class="size-icon">📏</span>
-                        <span>{size_escaped}</span>
-                    </div>
-                    <div class="wish-memo-container" data-key="{item_key}"></div>
+                <div class="item-size">
+                    <span class="size-icon">📏</span>
+                    <span>{size_escaped}</span>
                 </div>
             </div>
         </div>
@@ -1134,181 +1086,8 @@ def main():
 </div>
 
 <script>
-    const GAS_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbxX6xd9qBmqgsuF6_hVIquOWqsVhTAvkYkI2pPkLdtWAdVPufa7s2-pXjQ6MjLCAORChQ/exec";
-    let wishlistData = JSON.parse(localStorage.getItem('prize_wishlist_data') || '{{}}');
-    let isWishlistOnlyActive = false;
     let toastTimeout = null;
     let currentClickMode = localStorage.getItem('prize_calendar_mode') || 'mercari';
-
-    // 画面初期化
-    window.addEventListener('DOMContentLoaded', () => {{
-        renderWishlistState();
-        fetchLatestWishlist(false);
-    }});
-
-    // ☁️ Googleドライブから欲しい物リストを取得
-    async function fetchLatestWishlist(isManual) {{
-        const badge = document.getElementById('wishSyncBadge');
-        if (badge) badge.innerText = '☁️ 同期中...';
-
-        const syncTimeout = setTimeout(() => {{
-            if (badge && badge.innerText.includes('同期中')) {{
-                badge.innerText = '✓ 同期済み';
-            }}
-        }}, 2500);
-
-        function applyWishlist(cloudWishlist) {{
-            clearTimeout(syncTimeout);
-            if (!cloudWishlist || typeof cloudWishlist !== 'object') return false;
-            wishlistData = cloudWishlist;
-            localStorage.setItem('prize_wishlist_data', JSON.stringify(wishlistData));
-            renderWishlistState();
-            if (badge) badge.innerText = '✓ 同期済み';
-            if (isManual) showToast('✓ Googleドライブから欲しい物リストを取得しました！');
-            return true;
-        }}
-
-        try {{
-            const res = await fetch(GAS_ENDPOINT_URL + '?action=get_wishlist&t=' + Date.now(), {{
-                credentials: 'omit',
-                headers: {{ 'Accept': 'application/json' }}
-            }});
-            if (res.ok) {{
-                const data = await res.json();
-                if (applyWishlist(data)) return;
-            }}
-        }} catch (e) {{}}
-
-        window.onWishlistLoaded = function(cloudData) {{
-            applyWishlist(cloudData);
-        }};
-        const script = document.createElement('script');
-        script.src = GAS_ENDPOINT_URL + '?action=get_wishlist&callback=onWishlistLoaded&t=' + Date.now();
-        document.body.appendChild(script);
-    }}
-
-    // ☁️ Googleドライブへ保存
-    function syncWishlistToGoogleDrive() {{
-        const badge = document.getElementById('wishSyncBadge');
-        if (badge) badge.innerText = '☁️ 保存中...';
-
-        window.onWishlistSaved = function() {{
-            if (badge) badge.innerText = '✓ 同期済み';
-        }};
-
-        try {{
-            const s = document.createElement('script');
-            s.src = GAS_ENDPOINT_URL + '?action=save_wishlist&data=' + encodeURIComponent(JSON.stringify(wishlistData)) + '&callback=onWishlistSaved&t=' + Date.now();
-            document.body.appendChild(s);
-        }} catch (e) {{}}
-
-        try {{
-            fetch(GAS_ENDPOINT_URL, {{
-                method: 'POST',
-                headers: {{ 'Content-Type': 'text/plain;charset=utf-8' }},
-                body: JSON.stringify({{ action: 'save_wishlist', data: wishlistData }})
-            }});
-        }} catch (e) {{}}
-    }}
-
-    function renderWishlistState() {{
-        let count = 0;
-        document.querySelectorAll('.item-card').forEach(card => {{
-            const key = card.getAttribute('data-key');
-            const wishObj = wishlistData[key];
-            const isWished = wishObj && wishObj.wished;
-            const memo = (wishObj && wishObj.memo) ? wishObj.memo : '';
-
-            const btn = card.querySelector('.wish-star-btn');
-            const memoWrap = card.querySelector('.wish-memo-container');
-
-            if (isWished) {{
-                count++;
-                if (btn) {{
-                    btn.classList.add('active');
-                    btn.innerText = '★ 欲しい!';
-                }}
-                if (memoWrap) {{
-                    memoWrap.innerHTML = `
-                        <div class="wish-memo-box" onclick="event.stopPropagation();">
-                            <input type="text" class="wish-memo-input" placeholder="📝 狙いメモ (例: 橋渡し / 2000円)" value="${{escapeHtml(memo)}}" oninput='onWishMemoChange("${{key}}", this, event)'>
-                        </div>
-                    `;
-                }}
-                if (isWishlistOnlyActive) card.style.display = '';
-            }} else {{
-                if (btn) {{
-                    btn.classList.remove('active');
-                    btn.innerText = '☆ 欲しい';
-                }}
-                if (memoWrap) memoWrap.innerHTML = '';
-                if (isWishlistOnlyActive) card.style.display = 'none';
-                else card.style.display = '';
-            }}
-        }});
-
-        const filterBtn = document.getElementById('filterWishlistBtn');
-        if (filterBtn) {{
-            filterBtn.innerText = `⭐ 欲しい物 (${{count}})`;
-        }}
-    }}
-
-    function escapeHtml(str) {{
-        if (!str) return '';
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    }}
-
-    function toggleWish(itemKey, event) {{
-        if (event) event.stopPropagation();
-        if (!wishlistData[itemKey]) {{
-            wishlistData[itemKey] = {{ wished: true, memo: '' }};
-        }} else {{
-            wishlistData[itemKey].wished = !wishlistData[itemKey].wished;
-        }}
-        localStorage.setItem('prize_wishlist_data', JSON.stringify(wishlistData));
-        renderWishlistState();
-        syncWishlistToGoogleDrive();
-        showToast(wishlistData[itemKey].wished ? '⭐ 欲しい物リストに追加しました' : '欲しい物リストから解除しました');
-    }}
-
-    let wishMemoDebounce = null;
-    function onWishMemoChange(itemKey, input, event) {{
-        if (event) event.stopPropagation();
-        const val = input.value.trim();
-        if (!wishlistData[itemKey]) {{
-            wishlistData[itemKey] = {{ wished: true, memo: val }};
-        }} else {{
-            wishlistData[itemKey].memo = val;
-        }}
-        localStorage.setItem('prize_wishlist_data', JSON.stringify(wishlistData));
-
-        if (wishMemoDebounce) clearTimeout(wishMemoDebounce);
-        wishMemoDebounce = setTimeout(() => {{
-            syncWishlistToGoogleDrive();
-            showToast('✓ 狙いメモをGoogleドライブに保存しました');
-        }}, 800);
-    }}
-
-    function toggleWishlistOnly(btn) {{
-        isWishlistOnlyActive = !isWishlistOnlyActive;
-        if (isWishlistOnlyActive) {{
-            btn.classList.add('active');
-            btn.style.background = '#eab308';
-            btn.style.color = '#ffffff';
-            showToast('⭐ 欲しい物にチェックした商品のみ表示中');
-        }} else {{
-            btn.classList.remove('active');
-            btn.style.background = '#fef3c7';
-            btn.style.color = '#92400e';
-            showToast('全商品を表示します');
-        }}
-        renderWishlistState();
-    }}
 
     // ローカルストレージ復元
     const storedSuffix = localStorage.getItem('prize_calendar_suffix');
@@ -1500,6 +1279,54 @@ def main():
         f.write(html_content)
 
     print(f"成功: {target_month_display} のカレンダーHTMLと画像データを {output_dir} に出力しました。")
+
+    # --- 差分レポートの生成 ＆ 表示 ---
+    new_items_map = {row["商品名"]: row for row in data}
+    added_titles = [t for t in new_items_map if t not in old_items_map]
+    removed_titles = [t for t in old_items_map if t not in new_items_map]
+    modified_items = []
+    for t in new_items_map:
+        if t in old_items_map:
+            diffs = []
+            new_date = new_items_map[t].get("予定日", "").strip()
+            old_date = old_items_map[t].get("date", "").strip()
+            if new_date and old_date and new_date != old_date:
+                diffs.append(f"日程: {old_date} → {new_date}")
+            new_size = new_items_map[t].get("種類・サイズ", "").strip()
+            old_size = old_items_map[t].get("size", "").strip()
+            if new_size and old_size and new_size != old_size:
+                diffs.append(f"サイズ: {old_size} → {new_size}")
+            if diffs:
+                modified_items.append((t, diffs))
+
+    print("\n" + "="*50)
+    print(f"  📊 {target_month_display} 前回からの変更点レポート")
+    print("="*50)
+    if not old_items_map:
+        print(f"初回生成: 全 {len(new_items_map)} 件")
+    else:
+        print(f"旧件数: {len(old_items_map)} 件 → 新件数: {len(new_items_map)} 件")
+        print(f"\n■ 新規追加 ({len(added_titles)}件):")
+        if added_titles:
+            for t in added_titles:
+                print(f"  + [{new_items_map[t].get('予定日')}] {t}")
+        else:
+            print("  なし")
+
+        print(f"\n■ 削除 ({len(removed_titles)}件):")
+        if removed_titles:
+            for t in removed_titles:
+                print(f"  - [{old_items_map[t].get('date')}] {t}")
+        else:
+            print("  なし")
+
+        print(f"\n■ 日程・仕様の確定・変更 ({len(modified_items)}件):")
+        if modified_items:
+            for t, diffs in modified_items:
+                print(f"  * {t}\n    -> {', '.join(diffs)}")
+        else:
+            print("  なし")
+    print("="*50 + "\n")
 
     # --- 全月横断検索インデックスの自動更新 ---
     try:
