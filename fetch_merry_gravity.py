@@ -1291,7 +1291,7 @@ def generate_html(gravity_items, sync_info=None):
             <div style="background: #ecfdf5; border: 1.5px solid #a7f3d0; border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
                 <span style="font-size: 20px;">🤖</span>
                 <div style="font-size: 12.5px; color: #065f46; font-weight: 700;">
-                    毎日4回（8:00、13:00、18:00、22:00）クラウドが全自動で最新のX投稿を巡回・収集しています！
+                    毎朝（8:00）クラウドが全自動で最新のX投稿を巡回・収集しています！
                 </div>
             </div>
             <p style="margin-bottom: 14px;">
