@@ -1,7 +1,10 @@
 name: Update Prize Gravity Data
 
 on:
-  workflow_dispatch: # ボタンから手動実行
+  schedule:
+    # 毎朝日本時間 08:00 に全自動巡回・収集 (UTC 23:00)
+    - cron: '0 23 * * *'
+  workflow_dispatch: # 必要に応じて手動実行も可能
 
 jobs:
   update-gravity:
@@ -35,6 +38,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes in gravity data."
           else
-            git commit -m "🤖 最新X投稿を自動収集・更新"
+            git commit -m "🤖 毎朝自動巡回: 最新X投稿を収集・更新 [skip ci]"
             git push origin main
           fi
