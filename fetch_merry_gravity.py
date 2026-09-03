@@ -1288,6 +1288,12 @@ def generate_html(gravity_items, sync_info=None):
             <button type="button" onclick="closeFetchModal()" class="modal-close-btn" style="color: #fff; background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px;">&times;</button>
         </div>
         <div style="padding: 20px; line-height: 1.6; font-size: 13px; color: #334155;">
+            <div style="background: #ecfdf5; border: 1.5px solid #a7f3d0; border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 20px;">🤖</span>
+                <div style="font-size: 12.5px; color: #065f46; font-weight: 700;">
+                    毎日4回（8:00、13:00、18:00、22:00）クラウドが全自動で最新のX投稿を巡回・収集しています！
+                </div>
+            </div>
             <p style="margin-bottom: 14px;">
                 有志（Merry✩Anさん、831生活さん、あかりさん、もぐらクレーンさん）の最新ポストをクラウド上で収集・解析してデータベースを最新化します。
             </p>
@@ -1323,7 +1329,7 @@ def generate_html(gravity_items, sync_info=None):
 </div>
 
 <script>
-    const PRIZE_DATA = {items_json_str};
+    let PRIZE_DATA = [];
 
     let toastTimeout = null;
     let currentClickMode = localStorage.getItem('prize_gravity_mode') || 'detail';
