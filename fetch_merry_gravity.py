@@ -1079,6 +1079,52 @@ def generate_html(gravity_items, sync_info=None):
         line-height: 1.6;
         border: 1px solid #e2e8f0;
     }}
+    .refresh-btn {{
+        background: #15803d;
+        border: 1.5px solid #86efac;
+        color: #ffffff;
+        cursor: pointer;
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        transition: all 0.2s ease;
+    }}
+    .refresh-btn:hover {{
+        background: #16a34a;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    }}
+    .refresh-btn:active {{
+        transform: translateY(0);
+    }}
+    .action-btn-collect {{
+        background: #0284c7;
+        border: 1.5px solid #7dd3fc;
+        color: #ffffff;
+        cursor: pointer;
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        transition: all 0.2s ease;
+    }}
+    .action-btn-collect:hover {{
+        background: #0369a1;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    }}
+    .action-btn-collect:active {{
+        transform: translateY(0);
+    }}
 </style>
 </head>
 <body>
@@ -1094,10 +1140,21 @@ def generate_html(gravity_items, sync_info=None):
                 <a href="index.html" class="nav-top-btn" style="background: rgba(255,255,255,0.35); color: #ffffff;">
                     <span>🔍</span><span>全月検索</span>
                 </a>
+                <a href="https://jamaisvu0404.github.io/musubiya-prize/" target="_blank" rel="noopener" class="nav-top-btn" style="background: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.5);">
+                    <span>🎯</span><span>店舗別入荷（結屋） ↗</span>
+                </a>
                 <h1>プライズフィギュア 重心情報データベース (2026年)</h1>
             </div>
-            <div style="font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.9); text-align: right;">
-                収録: <b id="totalItemsCount" style="color: #fff; font-size: 14px;">{total_count}</b> 件 ({updated_time} 更新){diff_badge}
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
+                <div style="font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.9); text-align: right;">
+                    収録: <b id="totalItemsCount" style="color: #fff; font-size: 14px;">{total_count}</b> 件 <span id="updateTimeText">({updated_time} 更新)</span>{diff_badge}
+                </div>
+                <button type="button" onclick="openFetchModal()" class="action-btn-collect" title="クラウドで最新のX投稿を収集・解析します">
+                    <span>🚀</span><span>X最新ポスト収集</span>
+                </button>
+                <button type="button" id="refreshDataBtn" onclick="refreshGravityData()" class="refresh-btn" title="サーバーの最新データを再読み込みします">
+                    <span id="refreshBtnIcon">🔄</span><span id="refreshBtnText">最新データを再読込</span>
+                </button>
             </div>
         </div>
 
@@ -1216,6 +1273,42 @@ def generate_html(gravity_items, sync_info=None):
                 <a id="modalXLink" href="#" target="_blank" rel="noopener noreferrer" style="font-size: 12.5px; font-weight: 700; color: #0284c7; text-decoration: none; padding: 6px 14px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px;">
                     Xで元のポストを見る ↗
                 </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- X最新ポスト収集案内モーダル -->
+<div id="fetchModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 500px; border-radius: 14px; overflow: hidden;">
+        <div style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #fff; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 15px;">
+                <span>🚀</span><span>最新のX（Twitter）投稿をクラウド収集</span>
+            </div>
+            <button type="button" onclick="closeFetchModal()" class="modal-close-btn" style="color: #fff; background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px;">&times;</button>
+        </div>
+        <div style="padding: 20px; line-height: 1.6; font-size: 13px; color: #334155;">
+            <p style="margin-bottom: 14px;">
+                有志（Merry✩Anさん、831生活さん、あかりさん、もぐらクレーンさん）の最新ポストをクラウド上で収集・解析してデータベースを最新化します。
+            </p>
+            
+            <div style="background: #f0f9ff; border: 1.5px solid #bae6fd; border-radius: 10px; padding: 14px; margin-bottom: 18px;">
+                <div style="font-weight: 800; color: #0369a1; margin-bottom: 8px; font-size: 13.5px; display: flex; align-items: center; gap: 5px;">
+                    <span>📋</span><span>収集手順（2ステップ）</span>
+                </div>
+                <ol style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px;">
+                    <li>下の青いボタンを押して、GitHubの実行画面を開きます。</li>
+                    <li>画面右上の緑色の <b>「Run workflow」</b> ボタンを押すと、約1分で自動収集・解析が完了します！</li>
+                </ol>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+                <a href="https://github.com/jamaisvu0404/like/actions/workflows/update_gravity.yml" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: #0284c7; color: #ffffff; padding: 12px 18px; border-radius: 8px; text-decoration: none; font-weight: 800; font-size: 14px; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); transition: all 0.2s ease;">
+                    <span>▶</span><span>GitHubで収集を開始する (Run workflow) ↗</span>
+                </a>
+                <p style="font-size: 11.5px; color: #64748b; text-align: center; margin: 0;">
+                    ※収集完了後は、画面右上の「<b>🔄 最新データを再読込</b>」を押すだけで最新データがこの画面に反映されます。
+                </p>
             </div>
         </div>
     </div>
@@ -1542,6 +1635,69 @@ def generate_html(gravity_items, sync_info=None):
             filterAndRender();
         }});
     }});
+
+    // 重心データの再取得・画面更新関数
+    async function refreshGravityData() {{
+        const btn = document.getElementById('refreshDataBtn');
+        const icon = document.getElementById('refreshBtnIcon');
+        const text = document.getElementById('refreshBtnText');
+        
+        if (btn) btn.disabled = true;
+        if (icon) {{
+            icon.style.display = 'inline-block';
+            icon.style.animation = 'spin 0.8s linear infinite';
+        }}
+        if (text) text.textContent = 'データ取得中...';
+        showToast('🔄 最新の重心データを取得しています...');
+
+        try {{
+            const res = await fetch(`gravity_data.json?t=${{Date.now()}}`);
+            if (!res.ok) throw new Error(`HTTP error! status: ${{res.status}}`);
+            const freshData = await res.json();
+            
+            if (Array.isArray(freshData) && freshData.length > 0) {{
+                PRIZE_DATA = freshData;
+                
+                const animes = [...new Set(PRIZE_DATA.map(i => i.anime_title).filter(Boolean))].sort((a,b) => a.localeCompare(b, 'ja'));
+                animeSelect.innerHTML = '<option value="">すべての作品</option>' + animes.map(a => `<option value="${{escapeHtml(a)}}">${{escapeHtml(a)}}</option>`).join('');
+                if (currentAnime) animeSelect.value = currentAnime;
+
+                const countElem = document.getElementById('totalItemsCount');
+                if (countElem) countElem.textContent = PRIZE_DATA.length;
+                const timeElem = document.getElementById('updateTimeText');
+                const nowStr = new Date().toLocaleString('ja-JP', {{ month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }});
+                if (timeElem) timeElem.textContent = `(${{nowStr}} 再取得済)`;
+
+                filterAndRender();
+                showToast(`✅ 最新の重心データを読み込みました！（全${{PRIZE_DATA.length}}件）`);
+            }} else {{
+                throw new Error('データ形式が不正です');
+            }}
+        }} catch (err) {{
+            console.error('Failed to fetch fresh gravity data:', err);
+            showToast('⚠️ データの取得に失敗しました。時間をおいてお試しください。');
+        }} finally {{
+            if (icon) icon.style.animation = '';
+            if (text) text.textContent = '最新データを再読込';
+            if (btn) btn.disabled = false;
+        }}
+    }}
+
+    // X最新ポスト収集モーダルの開閉関数
+    function openFetchModal() {{
+        const modal = document.getElementById('fetchModal');
+        if (modal) modal.classList.add('open');
+    }}
+    function closeFetchModal() {{
+        const modal = document.getElementById('fetchModal');
+        if (modal) modal.classList.remove('open');
+    }}
+    const fetchModalElem = document.getElementById('fetchModal');
+    if (fetchModalElem) {{
+        fetchModalElem.addEventListener('click', (e) => {{
+            if (e.target === fetchModalElem) closeFetchModal();
+        }});
+    }}
 
     filterAndRender();
 </script>
