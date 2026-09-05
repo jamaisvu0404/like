@@ -7,7 +7,248 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js">
+    // --- 新規獲得記録（AI解析付き）管理ロジック ---
+    const WORKER_BASE_URL = 'https://prize-gravity-worker.prize-gravity-worker.workers.dev';
+    let currentUploadBase64 = '';
+
+    function openNewRecordModal() {
+      const modal = document.getElementById('newRecordModal');
+      if (!modal) return;
+      modal.classList.add('active');
+
+      // 今日の日付を初期セット
+      const today = new Date().toISOString().split('T')[0];
+      const dateInput = document.getElementById('newRecDate');
+      if (dateInput && !dateInput.value) dateInput.value = today;
+
+      // 店舗セレクトの初期化
+      initNewRecordShopSelects();
+    }
+
+    function closeNewRecordModal() {
+      const modal = document.getElementById('newRecordModal');
+      if (modal) modal.classList.remove('active');
+    }
+
+    function closeNewRecordModalOnBg(e) {
+      if (e.target.id === 'newRecordModal') closeNewRecordModal();
+    }
+
+    function initNewRecordShopSelects() {
+      const s1 = document.getElementById('newRecShop1');
+      const s2 = document.getElementById('newRecShop2');
+      if (!s1 || !s2) return;
+      s1.innerHTML = '<option value="">（未選択）</option>';
+      s2.innerHTML = '<option value="">（なし）</option>';
+      shopOptions.forEach(shop => {
+        const o1 = document.createElement('option');
+        o1.value = shop;
+        o1.innerText = shop;
+        s1.appendChild(o1);
+        const o2 = document.createElement('option');
+        o2.value = shop;
+        o2.innerText = shop;
+        s2.appendChild(o2);
+      });
+    }
+
+    async function onNewRecordPhotoSelected(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const previewWrap = document.getElementById('photoPreviewWrap');
+      const previewImg = document.getElementById('photoPreviewImg');
+      const aiBar = document.getElementById('aiAnalyzingBar');
+      const aiText = document.getElementById('aiStatusText');
+
+      // 1. 画像プレビュー表示
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const fullDataUrl = e.target.result;
+        previewImg.src = fullDataUrl;
+        previewWrap.style.display = 'block';
+
+        // 2. ブラウザ内で軽量化（AI推論用に最大800pxに縮小）
+        const compressedB64 = await resizeImageToDataUrl(fullDataUrl, 1280, 1280, 0.88);
+        currentUploadBase64 = compressedB64;
+
+        // 3. Workers AI に自動解析リクエスト
+        if (aiBar) aiBar.classList.add('active');
+        if (aiText) aiText.textContent = '🤖 AIが写真を解析中（商品名・個数を抽出中）...';
+
+        try {
+          const res = await fetch(`${WORKER_BASE_URL}/api/album-ai-analyze`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image_base64: compressedB64 })
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success && data.analysis) {
+              const an = data.analysis;
+              if (an.title && !document.getElementById('newRecTitle').value) {
+                document.getElementById('newRecTitle').value = an.title;
+              }
+              if (an.figures !== undefined) document.getElementById('newRecFigures').value = an.figures;
+              if (an.plushies !== undefined) document.getElementById('newRecPlushies').value = an.plushies;
+              if (an.others !== undefined) document.getElementById('newRecOthers').value = an.others;
+
+              if (Array.isArray(an.items) && an.items.length > 0) {
+                document.getElementById('newRecItems').value = an.items.join('\n');
+              }
+              if (aiText) aiText.textContent = '✨ AIによる自動推測が完了しました！内容を確認・調整してください。';
+            }
+          } else {
+            if (aiText) aiText.textContent = '💡 写真を設定しました。手動で内容を入力してください。';
+          }
+        } catch (err) {
+          console.warn('AI解析エラー:', err);
+          if (aiText) aiText.textContent = '💡 写真を設定しました。手動で内容を入力してください。';
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function resizeImageToDataUrl(dataUrl, maxW, maxH, quality) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          let w = img.width;
+          let h = img.height;
+          if (w > maxW || h > maxH) {
+            if (w > h) {
+              h = Math.round((h * maxW) / w);
+              w = maxW;
+            } else {
+              w = Math.round((w * maxH) / h);
+              h = maxH;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.src = dataUrl;
+      });
+    }
+
+    async function onSubmitNewRecord(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmitNewRecord');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = '☁️ クラウドへ登録中...';
+      }
+
+      const title = document.getElementById('newRecTitle').value.trim();
+      const date = document.getElementById('newRecDate').value;
+      const cost = parseInt(document.getElementById('newRecCost').value, 10) || 0;
+      const figures = parseInt(document.getElementById('newRecFigures').value, 10) || 0;
+      const plushies = parseInt(document.getElementById('newRecPlushies').value, 10) || 0;
+      const others = parseInt(document.getElementById('newRecOthers').value, 10) || 0;
+      const memo = document.getElementById('newRecMemo').value.trim();
+
+      const s1 = document.getElementById('newRecShop1').value;
+      const s2 = document.getElementById('newRecShop2').value;
+      const shops = [];
+      if (s1) shops.push(s1);
+      if (s2 && s2 !== s1) shops.push(s2);
+
+      const rawItems = document.getElementById('newRecItems').value.split('\n');
+      const items = rawItems.map(s => s.trim()).filter(Boolean);
+
+      try {
+        const payload = {
+          title,
+          date,
+          cost,
+          figures,
+          plushies,
+          others,
+          shops,
+          memo,
+          items,
+          image_base64: currentUploadBase64
+        };
+
+        const res = await fetch(`${WORKER_BASE_URL}/api/album-new-record`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.record) {
+            const newRec = data.record;
+            // image_src を Worker 画像URLへ差し替え
+            if (newRec.image_src) {
+              newRec.image_src = `${WORKER_BASE_URL}/api/album-image?name=${newRec.image_src}`;
+            }
+
+            // recordsData の先頭に挿入
+            recordsData.unshift(newRec);
+
+            // 画面のアルバムとKPIを即時再描画
+            renderAlbums();
+            showToast('🎉 クラウドに新規獲得記録を登録しました！');
+            closeNewRecordModal();
+
+            // フォームのリセット
+            document.getElementById('newRecordForm').reset();
+            currentUploadBase64 = '';
+            document.getElementById('photoPreviewWrap').style.display = 'none';
+            document.getElementById('aiAnalyzingBar').classList.remove('active');
+          } else {
+            alert('登録に失敗しました: ' + (data.error || '不明なエラー'));
+          }
+        } else {
+          alert('サーバー通信エラー: ' + res.status);
+        }
+      } catch (err) {
+        console.error('新規記録エラー:', err);
+        alert('エラーが発生しました: ' + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = '☁️ クラウドに登録する';
+        }
+      }
+    }
+
+    // クラウド上に登録された追加レコードを自動マージして表示
+    async function loadCloudNewRecords() {
+      try {
+        const res = await fetch(`${WORKER_BASE_URL}/api/album-new-records?t=${Date.now()}`);
+        if (res.ok) {
+          const cloudRecords = await res.json();
+          if (Array.isArray(cloudRecords) && cloudRecords.length > 0) {
+            // 重複排除しながら recordsData の先頭にマージ
+            const existingIds = new Set(recordsData.map(r => r.id));
+            cloudRecords.forEach(rec => {
+              if (!existingIds.has(rec.id)) {
+                if (rec.image_src && !rec.image_src.startsWith('http')) {
+                  rec.image_src = `${WORKER_BASE_URL}/api/album-image?name=${rec.image_src}`;
+                }
+                recordsData.unshift(rec);
+              }
+            });
+            // 日付降順でソートして再描画
+            recordsData.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+            renderAlbums();
+          }
+        }
+      } catch (err) {
+        console.warn('クラウド新規レコードの読み込みをスキップ:', err);
+      }
+    }
+
+</script>
   <style>
     :root {
       --bg-main: #f8fafc;
@@ -249,29 +490,9 @@
       align-items: center;
     }
 
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .legend-dot-bar {
-      width: 12px;
-      height: 12px;
-      background: #0284c7;
-      border-radius: 3px;
-    }
-
-    .legend-dot-line {
-      width: 14px;
-      height: 3px;
-      background: #e11d48;
-      border-radius: 2px;
-    }
-
     .chart-wrapper {
       position: relative;
-      height: 270px;
+      height: 230px;
       width: 100%;
     }
 
@@ -408,29 +629,59 @@
     }
 
     .month-title-text {
-      font-size: 20px;
+      font-size: 30px;
       font-weight: 800;
       color: #0f172a;
+      letter-spacing: -0.5px;
     }
 
     .month-year-badge {
-      font-size: 12px;
+      font-size: 15px;
       font-weight: 700;
       color: var(--text-muted);
     }
 
     .month-stats-chips {
       display: flex;
-      gap: 8px;
+      gap: 12px;
       align-items: center;
       flex-wrap: wrap;
     }
 
     .stat-chip {
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 11.5px;
-      font-weight: 700;
+      padding: 8px 18px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 800;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* カード内メモ直接表示ボックス */
+    .card-memo-box {
+      margin-top: 10px;
+      padding: 9px 12px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #166534;
+      line-height: 1.5;
+      word-break: break-word;
+      white-space: pre-wrap;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+    .card-memo-box .memo-icon {
+      flex-shrink: 0;
+      font-size: 14px;
+    }
+    .card-memo-box .memo-text {
+      flex: 1;
     }
 
     /* レコードカードグリッド */
@@ -538,6 +789,7 @@
     .badge-cost { background: var(--cost-bg); color: var(--cost-color); font-family: 'Outfit', sans-serif; }
     .badge-fig { background: var(--figure-bg); color: var(--figure-color); }
     .badge-other { background: var(--other-bg); color: var(--other-color); }
+    .badge-memo { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; font-size: 10.5px; }
 
     /* モーダル */
     .modal {
@@ -782,9 +1034,453 @@
       border-radius: 8px;
       background: #f8fafc;
       margin: 12px 0 16px;
-      resize: vertical;
     }
-  </style>
+
+    /* 店舗管理UI（洗練されたライトモードデザイン） */
+    .btn-shop-manage {
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: 1.5px solid #cbd5e1;
+      background: #ffffff;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .btn-shop-manage:hover {
+      background: #f0f9ff;
+      border-color: #0284c7;
+      color: #0284c7;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15);
+    }
+
+    .shop-manage-modal-content {
+      background: #ffffff !important;
+      color: #0f172a !important;
+      border-radius: 16px;
+      max-width: 560px;
+      width: 100%;
+      padding: 28px;
+      box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05);
+      position: relative;
+      animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .shop-modal-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .shop-modal-icon-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      background: #e0f2fe;
+      color: #0284c7;
+      border-radius: 12px;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .shop-modal-title {
+      font-size: 19px;
+      font-weight: 800;
+      color: #0f172a !important;
+      margin: 0;
+      line-height: 1.3;
+    }
+    .shop-modal-desc {
+      font-size: 13px;
+      color: #64748b !important;
+      margin: 4px 0 18px;
+      line-height: 1.5;
+    }
+    .shop-add-form {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      background: #f8fafc;
+      padding: 8px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+    }
+    .shop-add-input {
+      flex: 1;
+      padding: 10px 14px;
+      font-size: 13.5px;
+      background: #ffffff;
+      color: #0f172a;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .shop-add-input:focus {
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+      background: #ffffff;
+    }
+    .shop-add-btn {
+      padding: 10px 18px;
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+      transition: all 0.2s;
+    }
+    .shop-add-btn:hover {
+      background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+    }
+    .shop-list-scroll {
+      max-height: 320px;
+      overflow-y: auto;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 8px;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .shop-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      transition: all 0.15s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .shop-item-row:hover {
+      background: #f0f9ff !important;
+      border-color: #bae6fd;
+      transform: translateX(2px);
+      box-shadow: 0 3px 8px rgba(2, 132, 199, 0.08);
+    }
+    .shop-item-name {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #0f172a !important;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .shop-item-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .shop-item-count {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #0369a1;
+      background: #e0f2fe;
+      border: 1px solid #bae6fd;
+      padding: 3px 9px;
+      border-radius: 12px;
+    }
+    .shop-item-count.empty {
+      color: #94a3b8;
+      background: #f1f5f9;
+      border-color: #e2e8f0;
+      font-weight: 500;
+    }
+    .shop-del-btn {
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      color: #e11d48;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s;
+    }
+    .shop-del-btn:hover {
+      background: #e11d48;
+      border-color: #e11d48;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(225, 29, 72, 0.25);
+    }
+  
+    /* 新規獲得記録モーダル */
+    .btn-new-record {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff !important;
+      font-weight: 800;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .btn-new-record:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(2, 132, 199, 0.45);
+      background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+    }
+    .new-record-modal-content {
+      background: #ffffff !important;
+      color: #0f172a !important;
+      border-radius: 16px;
+      max-width: 640px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 28px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      position: relative;
+      animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .photo-upload-zone {
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      background: #f8fafc;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 16px;
+    }
+    .photo-upload-zone:hover {
+      border-color: #0284c7;
+      background: #f0f9ff;
+    }
+    .photo-preview-wrap {
+      display: none;
+      position: relative;
+      margin-bottom: 16px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1.5px solid #e2e8f0;
+      background: #0f172a;
+      max-height: 260px;
+      text-align: center;
+    }
+    .photo-preview-wrap img {
+      max-height: 260px;
+      width: auto;
+      margin: 0 auto;
+      display: block;
+      object-fit: contain;
+    }
+    .ai-analyzing-bar {
+      display: none;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #1d4ed8;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      align-items: center;
+      gap: 8px;
+    }
+    .ai-analyzing-bar.active {
+      display: flex;
+    }
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+    .form-group {
+      margin-bottom: 14px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 5px;
+    }
+    .form-control {
+      width: 100%;
+      padding: 9px 12px;
+      font-size: 13px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      background: #ffffff;
+      color: #0f172a;
+      outline: none;
+      box-sizing: border-box;
+      transition: all 0.2s;
+    }
+    .form-control:focus {
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    }
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2.5px solid #bfdbfe;
+      border-top-color: #1d4ed8;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+
+    /* --- ゴミ箱・削除履歴モーダル ＆ Gemini Flash 設定 --- */
+    .btn-trash-history {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      background: #fff1f2;
+      border: 1.5px solid #fecdd3;
+      color: #e11d48 !important;
+      font-weight: 700;
+      font-size: 12.5px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-trash-history:hover {
+      background: #ffe4e6;
+      border-color: #fda4af;
+      transform: translateY(-1px);
+    }
+    .trash-count-badge {
+      background: #e11d48;
+      color: #ffffff;
+      padding: 1px 7px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .trash-modal-content {
+      background: #ffffff !important;
+      color: #0f172a !important;
+      border-radius: 20px !important;
+      max-width: 720px !important;
+      width: 95% !important;
+      max-height: 85vh !important;
+      overflow-y: auto !important;
+      padding: 26px !important;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35) !important;
+      position: relative !important;
+      margin: auto !important;
+      animation: modalPop 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      border: 1px solid #e2e8f0 !important;
+    }
+    .trash-item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 10px;
+      transition: all 0.2s;
+    }
+    .trash-item-row:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+    .trash-thumb {
+      width: 58px;
+      height: 58px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #e2e8f0;
+      border: 1px solid #cbd5e1;
+      flex-shrink: 0;
+    }
+    .btn-restore-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 13px;
+      border-radius: 8px;
+      background: #ecfdf5;
+      border: 1.5px solid #a7f3d0;
+      color: #059669;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-restore-item:hover {
+      background: #d1fae5;
+      border-color: #34d399;
+      transform: scale(1.04);
+    }
+    .btn-perm-delete-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: #64748b;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-perm-delete-item:hover {
+      background: #fee2e2;
+      border-color: #fca5a5;
+      color: #ef4444;
+    }
+    .gemini-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1d4ed8;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .gemini-status-badge:hover {
+      background: #dbeafe;
+    }
+
+</style>
 </head>
 <body>
 
@@ -800,10 +1496,15 @@
           <p>写真と金額から自動更新された獲得アルバム＆詳細ダッシュボード</p>
         </div>
         <div class="header-actions">
+          <button type="button" class="btn-new-record" onclick="openNewRecordModal()">📷 新規獲得を記録</button>
+
+          <button type="button" class="btn-trash-history" id="btnTrashHistory" onclick="openTrashModal()" title="削除した記録の確認・復元">
+            <span>🗑️</span><span>削除履歴</span>
+            <span class="trash-count-badge" id="trashCountBadge">0</span>
+          </button>
+    
           <a href="index.html" class="btn btn-secondary">🏠 カレンダーTOP</a>
           <a href="gravity.html" class="btn btn-secondary">⚖️ 重心情報</a>
-          <button class="btn btn-secondary" onclick="openExportModal()">📤 店舗データを出力</button>
-          <button class="btn btn-secondary" onclick="window.print()">🖨️ 印刷 / PDF保存</button>
         </div>
       </div>
     </div>
@@ -839,16 +1540,12 @@
       </div>
     </section>
 
-    <!-- 月別使用金額＆獲得点数グラフ -->
+    <!-- 月別使用金額グラフ -->
     <section class="chart-section">
       <div class="chart-header">
         <div class="chart-title">
-          <span>📊 月別使用金額 & 獲得点数 推移グラフ</span>
-          <span style="font-size: 11.5px; font-weight: 600; color: var(--text-muted);">（グラフクリックで該当月のアルバムへジャンプ）</span>
-        </div>
-        <div class="chart-legend-custom">
-          <div class="legend-item"><span class="legend-dot-bar"></span> <span>使用金額（円）</span></div>
-          <div class="legend-item"><span class="legend-dot-line"></span> <span>獲得点数（点）</span></div>
+          <span>📊 月別使用金額 推移グラフ</span>
+          <span style="font-size: 11.5px; font-weight: 600; color: var(--text-muted);">（バーをクリックで該当月のアルバムへジャンプ）</span>
         </div>
       </div>
       <div class="chart-wrapper">
@@ -877,6 +1574,7 @@
           <option value="">すべての店舗（全7店舗）</option>
           <option value="OTAICHI!! POP!! WORLD!! 大阪福島店">OTAICHI!! POP!! WORLD!! 大阪福島店</option><option value="トレジャーランド南港ＡＴＣ店">トレジャーランド南港ＡＴＣ店</option><option value="回遊館 橿原店">回遊館 橿原店</option><option value="回遊館 西条店">回遊館 西条店</option><option value="結屋 大和郡山店">結屋 大和郡山店</option><option value="結屋 新世界店">結屋 新世界店</option><option value="開放倉庫橿原店">開放倉庫橿原店</option>
         </select>
+        <button type="button" class="btn-shop-manage" onclick="openShopManageModal()" title="店舗の追加・削除・一覧管理">⚙️ 店舗管理</button>
       </div>
     </section>
 
@@ -1372,7 +2070,10 @@
 
         <!-- 店舗編集 -->
         <div class="modal-shop-editor">
-          <div style="font-size: 12.5px; font-weight: 700; color: #0f766e; margin-bottom: 6px;">🏪 獲得店舗（最大2店舗まで選択）</div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <div style="font-size: 12.5px; font-weight: 700; color: #0f766e;">🏪 獲得店舗（最大2店舗まで選択）</div>
+            <button type="button" onclick="openShopManageModal()" style="background: none; border: 1px dashed #0f766e; color: #0f766e; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.15s;" onmouseover="this.style.background='#f0fdfa'" onmouseout="this.style.background='none'">⚙️ 店舗を追加・削除</button>
+          </div>
           <div class="shop-selects-row">
             <div class="shop-select-box">
               <select id="modalShopSelect1" onchange="onShopChange()"></select>
@@ -1381,6 +2082,17 @@
               <select id="modalShopSelect2" onchange="onShopChange()"></select>
             </div>
           </div>
+        </div>
+
+        <!-- メモ編集 -->
+        <div class="modal-memo-editor" style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 10px 12px; margin-top: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <div style="font-size: 12.5px; font-weight: 700; color: #0284c7; display: flex; align-items: center; gap: 4px;">
+              <span>📝</span><span>獲得メモ・台の設定（自動保存）</span>
+            </div>
+            <span id="saveStatusIndicator" style="font-size: 11px; font-weight: 600; color: #64748b;">☁️ クラウド同期対応</span>
+          </div>
+          <textarea id="modalMemoInput" oninput="onMemoChange()" placeholder="例: 橋渡し設定、手前持ち上げ、5手で獲得、アームパワー強め、など" style="width: 100%; min-height: 60px; padding: 8px 10px; font-size: 12.5px; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; color: #0f172a; resize: vertical; box-sizing: border-box; font-family: inherit; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#0284c7'" onblur="this.style.borderColor='#cbd5e1'"></textarea>
         </div>
 
         <div class="modal-stats">
@@ -1406,6 +2118,15 @@
           <h4>獲得品目一覧</h4>
           <ul id="modalItemsUl"></ul>
         </div>
+
+        <!-- 削除アクションエリア -->
+        <div style="margin-top: 22px; padding-top: 14px; border-top: 1.5px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+          <button type="button" onclick="deleteCurrentRecord()" style="background: #fff1f2; border: 1.5px solid #fecdd3; color: #e11d48; padding: 7px 15px; border-radius: 8px; font-size: 12.5px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;" onmouseover="this.style.background='#ffe4e6'" onmouseout="this.style.background='#fff1f2'">
+            <span>🗑️</span><span>この記録を削除</span>
+          </button>
+          <span style="font-size: 11px; color: #94a3b8;">※削除しても「削除履歴」からいつでも元に戻せます</span>
+        </div>
+    
       </div>
     </div>
   </div>
@@ -1427,73 +2148,366 @@
     </div>
   </div>
 
+
+  <!-- 新規獲得記録モーダル（AI解析付き） -->
+
+  <!-- ゴミ箱・削除履歴モーダル -->
+  <div id="trashModal" class="modal" onclick="closeTrashModalOnBg(event)">
+    <div class="trash-modal-content">
+      <button class="modal-close" onclick="closeTrashModal()">✕</button>
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1.5px solid #e2e8f0;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="font-size: 24px; background: #fff1f2; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 12px; border: 1px solid #fecdd3;">🗑️</div>
+          <div>
+            <h3 style="font-size: 17px; font-weight: 800; color: #0f172a; margin: 0;">獲得アルバム 削除履歴・ゴミ箱</h3>
+            <p style="font-size: 12px; color: #64748b; margin: 2px 0 0 0;">削除された記録はいつでもここから元のアルバムへ復元できます</p>
+          </div>
+        </div>
+        <button type="button" class="btn-restore-item" onclick="restoreAllTrash()" style="font-size: 12px; padding: 7px 14px;">
+          <span>↩️</span><span>すべて復元</span>
+        </button>
+      </div>
+
+      <div id="trashListContainer" style="max-height: 55vh; overflow-y: auto; padding-right: 4px;">
+        <div style="text-align: center; padding: 36px 20px; color: #64748b; background: #f8fafc; border-radius: 12px; border: 1.5px dashed #cbd5e1;">
+          <div style="font-size: 28px; margin-bottom: 6px;">✨</div>
+          <div style="font-weight: 700; color: #0f172a;">ゴミ箱は空です</div>
+          <div style="font-size: 12px; margin-top: 4px;">削除された記録はありません。</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px; padding-top: 14px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end;">
+        <button type="button" class="btn btn-secondary" onclick="closeTrashModal()">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gemini APIキー設定モーダル -->
+  <div id="geminiKeyModal" class="modal" onclick="closeGeminiKeyModalOnBg(event)">
+    <div class="shop-manage-modal-content" style="max-width: 520px;">
+      <button class="modal-close" onclick="closeGeminiKeyModal()">✕</button>
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1.5px solid #e2e8f0;">
+        <div style="font-size: 24px; background: #eff6ff; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 12px; border: 1px solid #bfdbfe;">🔑</div>
+        <div>
+          <h3 style="font-size: 17px; font-weight: 800; color: #0f172a; margin: 0;">Google Gemini 2.0 Flash 設定</h3>
+          <p style="font-size: 12px; color: #64748b; margin: 2px 0 0 0;">世界最高峰の画像認識・OCRでプライズ景品を自動判別</p>
+        </div>
+      </div>
+      
+      <div style="font-size: 13px; color: #334155; line-height: 1.6; margin-bottom: 16px;">
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #0284c7; font-weight: 700; text-decoration: underline;">
+          Google AI Studio ↗
+        </a> で無料発行できる APIキーを入力すると、Cloudflare Worker に安全に保存され、超高精度な自動解析が有効になります。
+      </div>
+
+      <div style="margin-bottom: 18px;">
+        <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Gemini API Key (AIzaSy...):</label>
+        <input type="password" id="inputGeminiApiKey" placeholder="AIzaSy..." style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 13.5px; box-sizing: border-box;">
+        <div id="geminiCurrentStatus" style="font-size: 11.5px; color: #64748b; margin-top: 6px;">確認中...</div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" class="btn btn-secondary" onclick="closeGeminiKeyModal()">キャンセル</button>
+        <button type="button" class="btn btn-primary" onclick="saveGeminiApiKey()">💾 キーを保存</button>
+      </div>
+    </div>
+  </div>
+
+
+    <div id="newRecordModal" class="modal" onclick="closeNewRecordModalOnBg(event)">
+    <div class="new-record-modal-content">
+      <button class="modal-close" onclick="closeNewRecordModal()">✕</button>
+      
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+        <div style="font-size: 24px; background: #e0f2fe; width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">📷</div>
+        <div style="flex: 1;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 0;">新規獲得の記録（AI自動解析）</h3>
+            <button type="button" id="aiModelBadge" class="gemini-status-badge" onclick="openGeminiKeyModal()" title="Gemini Flash 設定" style="padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;">
+              ✨ Gemini 2.0 Flash
+            </button>
+          </div>
+          <p style="font-size: 12px; color: #64748b; margin: 2px 0 0;">写真を選ぶと、Gemini Flashが箱の文字・キャラ名を自動抽出します。</p>
+        </div>
+      </div>
+
+      <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 14px 0 16px;" />
+
+      <!-- 写真選択エリア -->
+      <div class="photo-upload-zone" onclick="document.getElementById('newRecordPhotoInput').click()">
+        <input type="file" id="newRecordPhotoInput" accept="image/*" style="display: none;" onchange="onNewRecordPhotoSelected(event)" />
+        <div style="font-size: 28px; margin-bottom: 4px;">📸</div>
+        <div style="font-weight: 700; color: #0284c7; font-size: 14px;">写真を選択またはカメラで撮影</div>
+        <div style="font-size: 11.5px; color: #94a3b8; margin-top: 2px;">JPG / PNG / WebP（自動で高画質最適化されます）</div>
+      </div>
+
+      <!-- プレビュー -->
+      <div id="photoPreviewWrap" class="photo-preview-wrap">
+        <img id="photoPreviewImg" src="" alt="プレビュー" />
+      </div>
+
+      <!-- AI解析ステータスバー -->
+      <div id="aiAnalyzingBar" class="ai-analyzing-bar">
+        <div class="spinner"></div>
+        <span id="aiStatusText">🤖 AIが写真を解析中（商品名・点数を自動抽出中）...</span>
+      </div>
+
+      <!-- 入力フォーム -->
+      <form id="newRecordForm" onsubmit="onSubmitNewRecord(event)">
+        <div class="form-group">
+          <label>🏷️ 獲得タイトル案（代表作名・キャラ名など）</label>
+          <input type="text" id="newRecTitle" class="form-control" placeholder="例: 初音ミク・呪術廻戦など" required />
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label>📅 獲得日</label>
+            <input type="date" id="newRecDate" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label>💰 使用金額（円）</label>
+            <input type="number" id="newRecCost" class="form-control" placeholder="例: 12000" min="0" step="100" required />
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label>🏪 獲得店舗 1</label>
+            <select id="newRecShop1" class="form-control">
+              <option value="">（未選択）</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>🏪 獲得店舗 2（複数店舗の場合）</label>
+            <select id="newRecShop2" class="form-control">
+              <option value="">（なし）</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>📦 獲得点数の内訳</label>
+          <div class="form-grid-3">
+            <div>
+              <span style="font-size: 11px; color: #64748b; font-weight: 600;">フィギュア</span>
+              <input type="number" id="newRecFigures" class="form-control" value="1" min="0" />
+            </div>
+            <div>
+              <span style="font-size: 11px; color: #64748b; font-weight: 600;">ぬいぐるみ</span>
+              <input type="number" id="newRecPlushies" class="form-control" value="0" min="0" />
+            </div>
+            <div>
+              <span style="font-size: 11px; color: #64748b; font-weight: 600;">その他・雑貨</span>
+              <input type="number" id="newRecOthers" class="form-control" value="0" min="0" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>📋 獲得品目一覧（1行に1商品名）</label>
+          <textarea id="newRecItems" class="form-control" rows="5" placeholder="例:
+初音ミク ぬーどるストッパーフィギュア
+呪術廻戦 虎杖悠仁 フィギュア"></textarea>
+          <div style="font-size: 11px; color: #94a3b8; margin-top: 3px;">※AIが写真から読み取った品目がセットされます。自由に加筆・修正してください。</div>
+        </div>
+
+        <div class="form-group">
+          <label>📝 獲得メモ・台の設定（任意）</label>
+          <input type="text" id="newRecMemo" class="form-control" placeholder="例: アームパワー強め、橋渡し5手で獲得" />
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button type="button" class="btn btn-secondary" onclick="closeNewRecordModal()">キャンセル</button>
+          <button type="submit" id="btnSubmitNewRecord" class="btn-new-record" style="font-size: 14px; padding: 9px 22px;">☁️ クラウドに登録する</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 店舗リスト管理モーダル -->
+  <div id="shopManageModal" class="modal" onclick="closeShopManageModalOnBg(event)">
+    <div class="shop-manage-modal-content">
+      <button class="modal-close" onclick="closeShopManageModal()">✕</button>
+      <div class="shop-modal-header">
+        <div class="shop-modal-icon-badge">🏪</div>
+        <div>
+          <h3 class="shop-modal-title">店舗リストの管理</h3>
+          <p class="shop-modal-desc">よく行く店舗を追加したり、不要な店舗を削除できます（Cloudflare KV クラウド自動同期）。</p>
+        </div>
+      </div>
+
+      <!-- 新規追加入力フォーム -->
+      <form class="shop-add-form" onsubmit="onAddShopSubmit(event)">
+        <input type="text" id="newShopInput" class="shop-add-input" placeholder="新しい店舗名を入力（例: GiGO 難波店）" autocomplete="off" />
+        <button type="submit" class="shop-add-btn">➕ 店舗を追加</button>
+      </form>
+
+      <!-- 登録店舗一覧 -->
+      <div style="font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+        <span>登録中の店舗（全 <span id="shopCountSpan" style="color: #0284c7; font-weight: 800;">0</span> 件）</span>
+        <span id="shopSaveIndicator" style="font-size: 11.5px; font-weight: 700; color: #16a34a; background: #dcfce7; padding: 2px 8px; border-radius: 12px;">☁️ クラウド自動同期</span>
+      </div>
+      <div id="shopManageList" class="shop-list-scroll">
+        <!-- JSで動的生成 -->
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+        <button type="button" class="btn btn-secondary" onclick="closeShopManageModal()" style="padding: 8px 20px; font-weight: 700;">閉じる</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast">✓ メッセージ</div>
 
   <script>
     const recordsData = [{"id": 20, "year": 2026, "month": 8, "date": "2026-08-29", "display_date": "8月29日", "title": "初音ミク・ジョジョ・俺妹など", "count": 14, "cost": 19000, "figures": 14, "plushies": 0, "others": 0, "image_src": "IMG_4580.jpg", "items": ["ToLOVEる ダークネス Desktop Cute 古手川唯 ～ルームウェアver.～", "初音ミク Birthday 2026 ～Star Dreamy ver.～", "Re:ゼロから始める異世界生活 ESPRESTO エミリア", "俺の妹がこんなに可愛いわけがない。 ムチュート フィギュア 高坂桐乃", "初音ミク BANPRESTO EVOLVE Classical tuning くるみ割り人形", "ダンダダン GLITTER&GLAMOURS モモ", "僕のヒーローアカデミア GLITTER&GLAMOURS 葉隠透", "ジョジョの奇妙な冒険 ストーンオーシャン Nometria 空条徐倫 ×2", "初音ミク T-most フィギュア -NT-", "アイドルマスター シンデレラガールズ Nyaspiration 夢見りあむ", "アイドルマスター シンデレラガールズ Nyaspiration 辻野あかり", "ジョジョの奇妙な冒険 ストーンオーシャン Nometria エンリコ・P", "呪術廻戦 FIGURIZMα 祈本里香(リカ) 顕現"], "shops": ["トレジャーランド南港ＡＴＣ店", "結屋 新世界店"]}, {"id": 19, "year": 2026, "month": 8, "date": "2026-08-23", "display_date": "8月23日", "title": "To LOVEる・まどマギ・ケロロ軍曹など", "count": 8, "cost": 11500, "figures": 8, "plushies": 0, "others": 0, "image_src": "IMG_4514.jpg", "items": ["ToLOVEる ダークネス BiCute Ribbons 金色の闇", "ToLOVEる ダークネス Aqua Float Girls 古手川唯", "ToLOVEる ダークネス Aqua Float Girls ナナ・アスタ・デビルーク", "魔法少女まどか☆マギカ ぬーどるストッパー 暁美ほむら", "ケロロ軍曹 共鳴するでありまーす！ タママ二等兵", "ケロロ軍曹 共鳴するでありまーす！ クルル曹長", "ケロロ軍曹 共鳴するでありまーす！ ドロロ兵長", "呪術廻戦 フィギュア 七海建人"], "shops": ["開放倉庫橿原店", "OTAICHI!! POP!! WORLD!! 大阪福島店"]}, {"id": 18, "year": 2026, "month": 8, "date": "2026-08-16", "display_date": "8月16日", "title": "らき☆すた・DEATH NOTE・ふりかけなど", "count": 8, "cost": 13000, "figures": 7, "plushies": 0, "others": 1, "image_src": "IMG_4417.jpg", "items": ["らき☆すた Trio-Try-iT Figure 柊かがみ ×2", "DEATH NOTE 弥海砂 ×2", "バカとテストと召喚獣 BiCute Bunnies 木下秀吉 ×2", "僕のヒーローアカデミア Fluffy Puffy", "各種ふりかけ (カラムーチョ・松屋牛めし・ポテトチップス等) 一式"], "shops": ["トレジャーランド南港ＡＴＣ店"]}, {"id": 17, "year": 2026, "month": 8, "date": "2026-08-13", "display_date": "8月13日", "title": "らき☆すた・初音ミク", "count": 2, "cost": 10000, "figures": 2, "plushies": 0, "others": 0, "image_src": "IMG_4391.jpg", "items": ["らき☆すた Vivitフィギュア 柊つかさ", "初音ミク ぬーどるストッパーフィギュア Flower Fairy 桔梗"], "shops": ["結屋 新世界店"]}, {"id": 16, "year": 2026, "month": 8, "date": "2026-08-09", "display_date": "8月9日", "title": "初音ミク・HUNTER×HUNTERなど", "count": 6, "cost": 10000, "figures": 6, "plushies": 0, "others": 0, "image_src": "IMG_4289.jpg", "items": ["初音ミク ぬーどるストッパー Flower Fairy", "HUNTER×HUNTER キルア", "初音ミク Conceptual series 南国", "初音ミク Clearluxe くらげ・フィギュア", "呪術廻戦 伏黒恵", "初音ミク Trio-Try-iT レイニーダンス"], "shops": ["トレジャーランド南港ＡＴＣ店"]}, {"id": 15, "year": 2026, "month": 8, "date": "2026-08-02", "display_date": "8月2日", "title": "初音ミク・アニメキャラ・お菓子など", "count": 13, "cost": 16000, "figures": 12, "plushies": 0, "others": 1, "image_src": "IMG_4198.jpg", "items": ["僕のヒーローアカデミア MAXIMATIC 爆豪勝己", "とらドラ！ 逢坂大河 タイガー水着ver.", "ToLOVEる ネメシス チャイナドレスver.", "五郎島金時いもタルト", "LUPIN THE IIIRD ルパン三世", "ローゼンメイデン 水銀燈", "初音ミク T-most フィギュア ×2", "初音ミク Wonderland", "呪術廻戦 Grandista 伏黒甚爾", "死亡遊戯で飯を食う。 ぬーどるストッパー 幽鬼", "アイドルマスター Nyaspiration ×2"], "shops": ["トレジャーランド南港ＡＴＣ店"]}, {"id": 14, "year": 2026, "month": 7, "date": "2026-07-25", "display_date": "7月25日", "title": "初音ミク・アニメキャラなど", "count": 5, "cost": 8000, "figures": 5, "plushies": 0, "others": 0, "image_src": "IMG_4108.jpg", "items": ["らき☆すた Vivitフィギュア 泉こなた", "その着せ替え人形は恋をする Vivitフィギュア 喜多川海夢 ジャージメイドVer.", "初音ミク×シナモロール Stellar 初音ミク", "初音ミク Holiday Memories -ゲーム-", "METAL GEAR SOLID SNAKE EATER"], "shops": ["結屋 新世界店"]}, {"id": 13, "year": 2026, "month": 7, "date": "2026-07-23", "display_date": "7月23日", "title": "初音ミク・ルパン三世・ケロロなど", "count": 7, "cost": 14000, "figures": 7, "plushies": 0, "others": 0, "image_src": "IMG_4092.jpg", "items": ["LUPIN THE IIIRD 峰不二子", "初音ミク Holiday Memories -ゲーム-", "魔法少女まどか☆マギカ ぬーどるストッパー 鹿目まどか", "その着せ替え人形は恋をする GLITTER&GLAMOURS 喜多川海夢 バニー", "その着せ替え人形は恋をする GLITTER&GLAMOURS 喜多川海夢 制服", "ケロロ軍曹 ギロロ", "ケロロ軍曹 ケロロ"], "shops": ["結屋 大和郡山店"]}, {"id": 12, "year": 2026, "month": 7, "date": "2026-07-19", "display_date": "7月19日", "title": "初音ミク・アニメ美少女など", "count": 8, "cost": 19000, "figures": 8, "plushies": 0, "others": 0, "image_src": "IMG_3988.jpg", "items": ["Re:ゼロ Yumemirize レム～大熊猫～", "呪術廻戦 ぬーどるストッパー 夏油傑", "ジョジョの奇妙な冒険 イギー", "初音ミク Luminasta", "初音ミク×ラスカル スペシャルフィギュア サマーフェス", "HUNTER×HUNTER Excood Creative ヒソカ", "アイドルマスター フィギュア", "BLACK LAGOON レヴィ バニーVer."], "shops": ["回遊館 橿原店", "開放倉庫橿原店"]}, {"id": 11, "year": 2026, "month": 7, "date": "2026-07-16", "display_date": "7月16日", "title": "アニメキャラ・お菓子・雑貨など", "count": 8, "cost": 6000, "figures": 3, "plushies": 0, "others": 5, "image_src": "IMG_3935.jpg", "items": ["Steins;Gate 牧瀬紅莉栖 ぬーどるストッパー", "僕のヒーローアカデミア MAXIMATIC ミルコ", "HUNTER×HUNTER ゴン", "mini源氏パイ", "しじみ70個分のちから", "ひるげ", "パペットスンスン バッグ ×2"], "shops": ["結屋 大和郡山店"]}, {"id": 10, "year": 2026, "month": 7, "date": "2026-07-12", "display_date": "7月12日", "title": "初音ミク・トイ・ストーリーなど", "count": 8, "cost": 6000, "figures": 8, "plushies": 0, "others": 0, "image_src": "IMG_3893.jpg", "items": ["SUPER SONICO すーぱーそに子 BiCute Bunnies 逆バニー", "ローゼンメイデン 真紅 ×2", "うる星やつら BiCute Bunnies ラム", "死亡遊戯で飯を食う。 BiCute Bunnies 幽鬼 ×2", "トイ・ストーリー ジェシー", "トイ・ストーリー ウッディ"], "shops": ["トレジャーランド南港ＡＴＣ店"]}, {"id": 9, "year": 2026, "month": 6, "date": "2026-06-30", "display_date": "6月30日", "title": "喜多川海夢・パペットスンスン", "count": 3, "cost": 6000, "figures": 2, "plushies": 0, "others": 1, "image_src": "IMG_3782.jpg", "items": ["その着せ替え人形は恋をする T-most 喜多川海夢 フィギュア ～バニーver.～ ×2", "パペットスンスン キーフック"], "shops": ["開放倉庫橿原店"]}, {"id": 8, "year": 2026, "month": 6, "date": "2026-06-27", "display_date": "6月27日", "title": "初音ミク・ルパン三世・お菓子など", "count": 9, "cost": 8000, "figures": 7, "plushies": 0, "others": 2, "image_src": "IMG_3732.jpg", "items": ["呪術廻戦 FIGURIZMα 乙骨憂太", "初音ミク ぬーどるストッパー", "ToLOVEる Desktop Cute モモ", "ケロロ軍曹 GLITTER&GLAMOURS モア", "LUPIN THE IIIRD 次元大介", "僕のヒーローアカデミア GLITTER&GLAMOURS トガヒミコ", "その着せ替え人形は恋をする GLITTER&GLAMOURS 喜多川海夢 バニーver.", "マネケン ベルギーワッフル", "大粒ラムネSUPER"], "shops": ["結屋 大和郡山店"]}, {"id": 7, "year": 2026, "month": 6, "date": "2026-06-21", "display_date": "6月21日", "title": "初音ミク・レムなど", "count": 8, "cost": 16000, "figures": 7, "plushies": 0, "others": 1, "image_src": "IMG_3643.jpg", "items": ["東京喰種 Grandista 金木研", "SILENT HILL 2 バブルヘッドナース", "魔法少女まどか☆マギカ 暁美ほむら", "魔法少女まどか☆マギカ 美樹さやか", "魔法少女まどか☆マギカ 巴マミ", "物語シリーズ Desktop Cute 戦場ヶ原ひたぎ", "僕のヒーローアカデミア GLITTER&GLAMOURS 波動ねじれ", "ディズニー ドナルド クリップオンファン"], "shops": ["結屋 大和郡山店", "回遊館 橿原店"]}, {"id": 6, "year": 2026, "month": 5, "date": "2026-05-31", "display_date": "5月31日", "title": "ルパン三世・ワンピースなど", "count": 3, "cost": 3000, "figures": 3, "plushies": 0, "others": 0, "image_src": "IMG_3177.jpg", "items": ["ToLOVEる ダークネス Aqua Float Girls ララ", "トムとジェリー ビッグソフビフィギュア -Yummy Bread-", "LUPIN THE IIIRD ルパン三世 フィギュア"], "shops": ["結屋 新世界店"]}, {"id": 5, "year": 2026, "month": 5, "date": "2026-05-23", "display_date": "5月23日", "title": "初音ミク・レムなど", "count": 7, "cost": 9000, "figures": 7, "plushies": 0, "others": 0, "image_src": "IMG_3084.jpg", "items": ["魔法少女まどか☆マギカ 鹿目まどか フィギュア", "呪術廻戦 XStellar 禪院直哉", "Re:ゼロから始める異世界生活 レム", "ToLOVEる ダークネス BiCute Bunnies モモ・ベリア・デビルーク white ver.", "初音ミク FIGURIZMα 初音ミク -Punk!-", "BLACK LAGOON Vivitフィギュア レヴィ", "ToLOVEる ダークネス Desktop Cute モモ ～ルームウェアVer.～"], "shops": ["結屋 大和郡山店"]}, {"id": 4, "year": 2026, "month": 5, "date": "2026-05-16", "display_date": "5月16日", "title": "時崎狂三・桜ミク", "count": 2, "cost": 3000, "figures": 2, "plushies": 0, "others": 0, "image_src": "IMG_3030.jpg", "items": ["その着せ替え人形は恋をする T-most 喜多川海夢 フィギュア ～黒江雫ver.～", "初音ミク ぬーどるストッパーフィギュア 桜ミク2026"], "shops": ["OTAICHI!! POP!! WORLD!! 大阪福島店"]}, {"id": 3, "year": 2026, "month": 4, "date": "2026-04-30", "display_date": "4月30日", "title": "初音ミク・喜多川海夢など", "count": 6, "cost": 10000, "figures": 5, "plushies": 0, "others": 1, "image_src": "IMG_2855.jpg", "items": ["ケロロ軍曹 ケロロ小隊フィギュア タママ", "ケロロ軍曹 ケロロ小隊フィギュア ケロロ", "初音ミク Trio-Try-iT Figure おでかけドレス・RED Ver.", "その着せ替え人形は恋をする BiCute Pure 喜多川海夢", "その着せ替え人形は恋をする GLITTER&GLAMOURS 喜多川海夢 制服", "ちいかわ バニティポーチ"], "shops": ["回遊館 橿原店"]}, {"id": 2, "year": 2026, "month": 4, "date": "2026-04-18", "display_date": "4月18日", "title": "時崎狂三・桜ミクなど", "count": 6, "cost": 10000, "figures": 6, "plushies": 0, "others": 0, "image_src": "IMG_2726.jpg", "items": ["その着せ替え人形は恋をする BiCute Dark 喜多川海夢 黒江雫ver.", "ToLOVEる ダークネス BiCute Bunnies 金色の闇", "サンリオ なかよしメモリーズ クロミ", "Coreful フィギュア 桜ミク ～描き下ろし 和風喫茶ver.～", "僕のヒーローアカデミア Fluffy Puffy デクシープ＆バクドッグ", "SOFVIMATES スティッチ"], "shops": ["回遊館 橿原店"]}, {"id": 1, "year": 2026, "month": 4, "date": "2026-04-04", "display_date": "4月4日", "title": "マリオ・スティッチなど", "count": 8, "cost": 8000, "figures": 8, "plushies": 0, "others": 0, "image_src": "IMG_2595.jpg", "items": ["ちんざじゅう 快獣ブースカ", "スーパーマリオ ビッグアクションフィギュア マリオ", "サンリオ なかよしメモリーズ シナモロール", "サンリオ なかよしメモリーズ ポムポムプリン", "Aqua Float Girls モモ・ベリア・デビルーク", "とある魔術の禁書目録III ESPRESTO 一方通行(アクセラレータ)", "呪術廻戦 XStellar 乙骨憂太", "ディズニー スティッチ きゅるころ"], "shops": ["回遊館 西条店"]}];
-    const shopOptions = ["OTAICHI!! POP!! WORLD!! 大阪福島店", "トレジャーランド南港ＡＴＣ店", "回遊館 橿原店", "回遊館 西条店", "結屋 大和郡山店", "結屋 新世界店", "開放倉庫橿原店"];
+    let shopOptions = ["OTAICHI!! POP!! WORLD!! 大阪福島店", "トレジャーランド南港ＡＴＣ店", "回遊館 橿原店", "回遊館 西条店", "結屋 大和郡山店", "結屋 新世界店", "開放倉庫橿原店"];
     const chartData = [{"month_key": "2026-04", "label": "4月", "year": "2026年", "cost": 28000, "count": 20, "figures": 19, "records": 3}, {"month_key": "2026-05", "label": "5月", "year": "2026年", "cost": 15000, "count": 12, "figures": 12, "records": 3}, {"month_key": "2026-06", "label": "6月", "year": "2026年", "cost": 30000, "count": 20, "figures": 16, "records": 3}, {"month_key": "2026-07", "label": "7月", "year": "2026年", "cost": 53000, "count": 36, "figures": 31, "records": 5}, {"month_key": "2026-08", "label": "8月", "year": "2026年", "cost": 79500, "count": 51, "figures": 49, "records": 6}];
     let currentRecordIndex = 0;
     let toastTimeout = null;
+    let memoDebounceTimeout = null;
+    const WORKER_API_BASE = 'https://prize-gravity-worker.prize-gravity-worker.workers.dev';
 
-    const storedCustomShops = JSON.parse(localStorage.getItem('prize_custom_shops') || '{}');
-    recordsData.forEach(r => {
-      if (storedCustomShops[r.id] !== undefined) {
-        r.shops = storedCustomShops[r.id];
-      } else if (!r.shops) {
-        r.shops = r.shop ? [r.shop] : [];
+    // ローカルストレージ（バックアップ）から初期ロード
+    let storedAlbumData = { records: {}, shops_list: [] };
+    try {
+      const saved = localStorage.getItem('prize_custom_album_data');
+      if (saved) {
+        storedAlbumData = JSON.parse(saved);
+        if (storedAlbumData.shops_list && Array.isArray(storedAlbumData.shops_list) && storedAlbumData.shops_list.length > 0) {
+          shopOptions = storedAlbumData.shops_list;
+        }
+      } else {
+        // 旧キー（prize_custom_shops）からの移行対応
+        const oldShops = JSON.parse(localStorage.getItem('prize_custom_shops') || '{}');
+        for (const [id, sh] of Object.entries(oldShops)) {
+          storedAlbumData.records[id] = { shops: sh, memo: '' };
+        }
       }
+    } catch (_) {}
+
+    if (!storedAlbumData.records) storedAlbumData.records = {};
+    if (!storedAlbumData.shops_list) storedAlbumData.shops_list = shopOptions;
+
+    // 初期マージ
+    recordsData.forEach(r => {
+      const rec = storedAlbumData.records[r.id];
+      if (rec) {
+        if (rec.shops !== undefined) r.shops = rec.shops;
+        if (rec.memo !== undefined) r.memo = rec.memo;
+      }
+      if (!r.shops) r.shops = r.shop ? [r.shop] : [];
+      if (!r.memo) r.memo = '';
     });
 
     window.addEventListener('DOMContentLoaded', () => {
+      loadCloudNewRecords();
       initShopSelectOptions();
+      renderShopFilterSelect();
       refreshAllCardShopBadges();
       initMonthlyChart();
+      fetchCloudAlbumData(); // クラウドから最新の店舗＆メモを同期
     });
+
+    // Cloudflare Workerから最新データを非同期同期
+    async function fetchCloudAlbumData() {
+      try {
+        const res = await fetch(`${WORKER_API_BASE}/api/album-data?t=${Date.now()}`);
+        if (!res.ok) return;
+        const cloudData = await res.json();
+        if (cloudData) {
+          // クラウドから店舗マスターリストの同期
+          if (cloudData.shops_list && Array.isArray(cloudData.shops_list) && cloudData.shops_list.length > 0) {
+            shopOptions = cloudData.shops_list;
+            storedAlbumData.shops_list = shopOptions;
+            localStorage.setItem('prize_custom_album_data', JSON.stringify(storedAlbumData));
+            initShopSelectOptions();
+            renderShopFilterSelect();
+            renderShopManageList();
+          }
+
+          if (cloudData.records) {
+            let updated = false;
+            for (const [id, rec] of Object.entries(cloudData.records)) {
+              const item = recordsData.find(r => String(r.id) === String(id));
+              if (item) {
+                if (rec.shops) item.shops = rec.shops;
+                if (rec.memo !== undefined) item.memo = rec.memo;
+                storedAlbumData.records[id] = {
+                  shops: item.shops || [],
+                  memo: item.memo || ''
+                };
+                updated = true;
+              }
+            }
+            if (updated) {
+              localStorage.setItem('prize_custom_album_data', JSON.stringify(storedAlbumData));
+              refreshAllCardShopBadges();
+              // モーダルが開いていれば反映
+              const modal = document.getElementById('detailModal');
+              if (modal && modal.classList.contains('active')) {
+                renderModalContent(recordsData[currentRecordIndex]);
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('fetchCloudAlbumData failed:', err);
+      }
+    }
 
     function initMonthlyChart() {
       const ctx = document.getElementById('monthlyCostChart');
       if (!ctx || typeof Chart === 'undefined') return;
 
-      const labels = chartData.map(d => d.label);
-      const costs = chartData.map(d => d.cost);
-      const counts = chartData.map(d => d.count);
+      // 最新月（8月）が上に来るように並び替え
+      const reversed = chartData.slice().reverse();
+      const labels = reversed.map(d => d.label);
+      const costs = reversed.map(d => d.cost);
+      const maxCost = Math.max(...costs);
+
+      // バーの横（右側）に直接金額を表示するプラグイン
+      const barValuePlugin = {
+        id: 'barValuePlugin',
+        afterDatasetsDraw(chart) {
+          const { ctx } = chart;
+          const meta = chart.getDatasetMeta(0);
+          if (!meta || !meta.data) return;
+
+          ctx.save();
+          ctx.font = "800 13px 'Outfit', sans-serif";
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = '#0284c7';
+
+          meta.data.forEach((bar, index) => {
+            const val = costs[index];
+            const text = '¥' + Number(val).toLocaleString();
+            ctx.fillText(text, bar.x + 8, bar.y);
+          });
+          ctx.restore();
+        }
+      };
 
       new Chart(ctx, {
+        type: 'bar',
+        plugins: [barValuePlugin],
         data: {
           labels: labels,
           datasets: [
             {
-              type: 'bar',
-              label: '使用金額 (円)',
+              label: '使用金額',
               data: costs,
               backgroundColor: 'rgba(2, 132, 199, 0.85)',
-              hoverBackgroundColor: '#0369a1',
+              hoverBackgroundColor: '#0284c7',
               borderRadius: 6,
               borderSkipped: false,
-              yAxisID: 'yCost',
-              order: 2,
-              barPercentage: 0.5
-            },
-            {
-              type: 'line',
-              label: '獲得点数 (点)',
-              data: counts,
-              borderColor: '#e11d48',
-              backgroundColor: '#e11d48',
-              pointBackgroundColor: '#ffffff',
-              pointBorderColor: '#e11d48',
-              pointBorderWidth: 2.5,
-              pointRadius: 5,
-              pointHoverRadius: 7,
-              borderWidth: 3,
-              tension: 0.3,
-              yAxisID: 'yCount',
-              order: 1
+              barPercentage: 0.58,
+              categoryPercentage: 0.75
             }
           ]
         },
         options: {
+          indexAxis: 'y',
           responsive: true,
           maintainAspectRatio: false,
           interaction: {
@@ -1510,80 +2524,53 @@
               titleFont: { size: 13, weight: 'bold', family: "'Noto Sans JP', sans-serif" },
               bodyColor: '#e2e8f0',
               bodyFont: { size: 12, family: "'Outfit', 'Noto Sans JP', sans-serif" },
-              padding: 12,
+              padding: 10,
               cornerRadius: 8,
-              boxPadding: 4,
               callbacks: {
+                title: function(items) {
+                  return items[0].label + ' の使用金額';
+                },
                 label: function(context) {
-                  if (context.dataset.yAxisID === 'yCost') {
-                    return ' 💰 使用金額: ' + context.parsed.y.toLocaleString() + ' 円';
-                  } else {
-                    const item = chartData[context.dataIndex];
-                    return ' 📦 獲得点数: ' + context.parsed.y + ' 点 (フィギュア ' + item.figures + '点 / ' + item.records + '回)';
-                  }
+                  const item = reversed[context.dataIndex];
+                  return ' 💰 使用金額: ¥' + context.parsed.x.toLocaleString() + ' (獲得 ' + item.count + '点)';
                 }
               }
             }
           },
           scales: {
-            x: {
+            y: {
               grid: {
                 display: false
               },
               ticks: {
-                font: { size: 13, weight: '700', family: "'Noto Sans JP', sans-serif" },
-                color: '#334155'
+                font: { size: 15, weight: '800', family: "'Noto Sans JP', sans-serif" },
+                color: '#0f172a'
               }
             },
-            yCost: {
+            x: {
               type: 'linear',
-              position: 'left',
+              position: 'bottom',
+              suggestedMax: Math.ceil((maxCost * 1.18) / 10000) * 10000,
               grid: {
-                color: '#f1f5f9'
+                color: '#f8fafc'
               },
               ticks: {
-                color: '#0284c7',
-                font: { size: 11.5, weight: '600', family: "'Outfit', sans-serif" },
+                color: '#94a3b8',
+                font: { size: 11, weight: '600', family: "'Outfit', sans-serif" },
                 callback: function(val) {
                   return '¥' + val.toLocaleString();
                 }
-              },
-              title: {
-                display: true,
-                text: '使用金額 (円)',
-                color: '#0284c7',
-                font: { size: 12, weight: '700' }
-              }
-            },
-            yCount: {
-              type: 'linear',
-              position: 'right',
-              grid: {
-                display: false
-              },
-              ticks: {
-                color: '#e11d48',
-                font: { size: 11.5, weight: '600', family: "'Outfit', sans-serif" },
-                stepSize: 10,
-                callback: function(val) {
-                  return val + '点';
-                }
-              },
-              title: {
-                display: true,
-                text: '獲得点数 (点)',
-                color: '#e11d48',
-                font: { size: 12, weight: '700' }
               }
             }
           },
           onClick: (event, elements) => {
-            if (elements.length > 0) {
+            if (elements && elements.length > 0) {
               const index = elements[0].index;
-              const targetKey = chartData[index].month_key;
+              const targetKey = reversed[index].month_key;
               const targetEl = document.getElementById('month-' + targetKey);
               if (targetEl) {
                 targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                showToast(reversed[index].label + ' のアルバムへ移動しました');
               }
             }
           }
@@ -1591,9 +2578,29 @@
       });
     }
 
+    function renderShopFilterSelect() {
+      const sel = document.getElementById('shopFilterSelect');
+      if (!sel) return;
+      const curVal = sel.value;
+      sel.innerHTML = `<option value="">すべての店舗（全${shopOptions.length}店舗）</option>`;
+      shopOptions.forEach(opt => {
+        const optEl = document.createElement('option');
+        optEl.value = opt;
+        optEl.innerText = opt;
+        sel.appendChild(optEl);
+      });
+      if (curVal && shopOptions.includes(curVal)) {
+        sel.value = curVal;
+      }
+    }
+
     function initShopSelectOptions() {
       const sel1 = document.getElementById('modalShopSelect1');
       const sel2 = document.getElementById('modalShopSelect2');
+      if (!sel1 || !sel2) return;
+      const cur1 = sel1.value;
+      const cur2 = sel2.value;
+
       sel1.innerHTML = '<option value="">（未選択 / なし）</option>';
       sel2.innerHTML = '<option value="">（未選択 / なし）</option>';
       shopOptions.forEach(opt => {
@@ -1606,6 +2613,143 @@
         o2.innerText = opt;
         sel2.appendChild(o2);
       });
+
+      if (cur1 && shopOptions.includes(cur1)) sel1.value = cur1;
+      if (cur2 && shopOptions.includes(cur2)) sel2.value = cur2;
+    }
+
+    // 店舗管理モーダル関連
+    function openShopManageModal() {
+      renderShopManageList();
+      document.getElementById('shopManageModal').classList.add('active');
+      const input = document.getElementById('newShopInput');
+      if (input) {
+        input.value = '';
+        setTimeout(() => input.focus(), 150);
+      }
+    }
+
+    function closeShopManageModal() {
+      document.getElementById('shopManageModal').classList.remove('active');
+    }
+
+    function closeShopManageModalOnBg(e) {
+      if (e.target.id === 'shopManageModal') closeShopManageModal();
+    }
+
+    function renderShopManageList() {
+      const listEl = document.getElementById('shopManageList');
+      const countSpan = document.getElementById('shopCountSpan');
+      if (!listEl) return;
+      if (countSpan) countSpan.textContent = shopOptions.length;
+
+      listEl.innerHTML = '';
+      if (shopOptions.length === 0) {
+        listEl.innerHTML = '<div style="padding: 24px; text-align: center; color: #94a3b8; font-size: 13px;">登録された店舗がありません</div>';
+        return;
+      }
+
+      // 各店舗の記録件数を集計
+      const shopCounts = {};
+      recordsData.forEach(r => {
+        (r.shops || []).forEach(s => {
+          shopCounts[s] = (shopCounts[s] || 0) + 1;
+        });
+      });
+
+      shopOptions.forEach(shopName => {
+        const row = document.createElement('div');
+        row.className = 'shop-item-row';
+
+        const count = shopCounts[shopName] || 0;
+        const countHtml = count > 0 
+          ? `<span class="shop-item-count">獲得記録 ${count}件</span>` 
+          : `<span class="shop-item-count empty">獲得記録 0件</span>`;
+
+        row.innerHTML = `
+          <div class="shop-item-name">
+            <span style="font-size: 16px;">🏬</span>
+            <span>${escapeHtml(shopName)}</span>
+          </div>
+          <div class="shop-item-actions">
+            ${countHtml}
+            <button type="button" class="shop-del-btn" onclick="removeShop('${escapeHtml(shopName).replace(/'/g, "\\'")}')" title="この店舗を削除">🗑️ 削除</button>
+          </div>
+        `;
+        listEl.appendChild(row);
+      });
+    }
+
+    function onAddShopSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('newShopInput');
+      if (!input) return;
+      const name = input.value.trim();
+      if (!name) {
+        alert('店舗名を入力してください');
+        input.focus();
+        return;
+      }
+      if (shopOptions.includes(name)) {
+        alert(`「${name}」はすでに登録されています`);
+        input.focus();
+        return;
+      }
+
+      shopOptions.push(name);
+      input.value = '';
+      saveCustomShopsList();
+      initShopSelectOptions();
+      renderShopFilterSelect();
+      renderShopManageList();
+      showToast(`🏪 店舗「${name}」を追加しました`);
+    }
+
+    function removeShop(shopName) {
+      if (!confirm(`「${shopName}」を店舗リストから削除しますか？\n（※過去の獲得記録カードに登録済みの店舗名は保持されます）`)) {
+        return;
+      }
+
+      shopOptions = shopOptions.filter(s => s !== shopName);
+      saveCustomShopsList();
+      initShopSelectOptions();
+      renderShopFilterSelect();
+      renderShopManageList();
+      showToast(`🗑️ 店舗「${shopName}」を削除しました`);
+    }
+
+    async function saveCustomShopsList() {
+      const indicator = document.getElementById('shopSaveIndicator');
+      if (indicator) {
+        indicator.textContent = '☁️ 保存中...';
+        indicator.style.color = '#eab308';
+      }
+
+      if (!storedAlbumData) storedAlbumData = {};
+      storedAlbumData.shops_list = shopOptions;
+      localStorage.setItem('prize_custom_album_data', JSON.stringify(storedAlbumData));
+
+      try {
+        const res = await fetch(`${WORKER_API_BASE}/api/album-data`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ shops_list: shopOptions })
+        });
+        if (res.ok) {
+          if (indicator) {
+            indicator.textContent = '✅ クラウド保存済み';
+            indicator.style.color = '#16a34a';
+          }
+        } else {
+          throw new Error('API Error ' + res.status);
+        }
+      } catch (err) {
+        console.warn('saveCustomShopsList error:', err);
+        if (indicator) {
+          indicator.textContent = '⚠️ ローカル保存のみ';
+          indicator.style.color = '#dc2626';
+        }
+      }
     }
 
     function openModal(id) {
@@ -1636,6 +2780,17 @@
       const shops = item.shops || [];
       sel1.value = shops[0] || '';
       sel2.value = shops[1] || '';
+
+      // メモ入力欄の設定
+      const memoInput = document.getElementById('modalMemoInput');
+      if (memoInput) {
+        memoInput.value = item.memo || '';
+      }
+      const indicator = document.getElementById('saveStatusIndicator');
+      if (indicator) {
+        indicator.textContent = '☁️ クラウド同期対応';
+        indicator.style.color = '#64748b';
+      }
 
       const ul = document.getElementById('modalItemsUl');
       ul.innerHTML = '';
@@ -1682,27 +2837,107 @@
       if (val2 && val2 !== val1) newShops.push(val2);
       
       currentItem.shops = newShops;
-      storedCustomShops[currentItem.id] = newShops;
-      localStorage.setItem('prize_custom_shops', JSON.stringify(storedCustomShops));
-      
-      updateCardShopBadge(currentItem.id, newShops);
-      showToast(newShops.length > 0 ? '店舗を保存しました' : '店舗をクリアしました');
+      saveRecordCustomData(currentItem.id, newShops, currentItem.memo || '');
     }
 
-    function updateCardShopBadge(id, shops) {
+    function onMemoChange() {
+      const currentItem = recordsData[currentRecordIndex];
+      const val = document.getElementById('modalMemoInput').value;
+      currentItem.memo = val;
+      
+      const indicator = document.getElementById('saveStatusIndicator');
+      if (indicator) {
+        indicator.textContent = '✏️ 入力中...';
+        indicator.style.color = '#0284c7';
+      }
+
+      if (memoDebounceTimeout) clearTimeout(memoDebounceTimeout);
+      memoDebounceTimeout = setTimeout(() => {
+        saveRecordCustomData(currentItem.id, currentItem.shops || [], val);
+      }, 500);
+    }
+
+    async function saveRecordCustomData(id, shops, memo) {
+      const indicator = document.getElementById('saveStatusIndicator');
+      if (indicator) {
+        indicator.textContent = '☁️ 保存中...';
+        indicator.style.color = '#eab308';
+      }
+
+      // ローカル保存
+      if (!storedAlbumData.records) storedAlbumData.records = {};
+      storedAlbumData.records[id] = { shops, memo };
+      localStorage.setItem('prize_custom_album_data', JSON.stringify(storedAlbumData));
+      
+      updateCardShopBadge(id, shops, memo);
+
+      // Cloudflare Worker API へ非同期送信
+      try {
+        const res = await fetch(`${WORKER_API_BASE}/api/album-data`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, shops, memo })
+        });
+        if (res.ok) {
+          if (indicator) {
+            indicator.textContent = '✅ クラウド保存済み';
+            indicator.style.color = '#16a34a';
+          }
+          showToast('☁️ クラウドに保存しました');
+        } else {
+          throw new Error('API Error ' + res.status);
+        }
+      } catch (err) {
+        console.error('Cloud save failed:', err);
+        if (indicator) {
+          indicator.textContent = '⚠️ ローカル保存のみ';
+          indicator.style.color = '#dc2626';
+        }
+        showToast('⚠️ クラウド保存に失敗しました（ローカルに保存済）');
+      }
+    }
+
+    function updateCardShopBadge(id, shops, memo = '') {
       const wrap = document.getElementById('card-shops-' + id);
       const card = document.querySelector(`.record-card[data-id="${id}"]`);
-      if (card) card.setAttribute('data-shops', shops.join(','));
+      if (card) {
+        card.setAttribute('data-shops', shops.join(','));
+        card.setAttribute('data-memo', memo);
+
+        // メモ表示ボックスの更新または生成（一覧カードでテキストをそのまま直接表示）
+        let memoBox = card.querySelector('.card-memo-box');
+        if (!memoBox) {
+          memoBox = document.createElement('div');
+          memoBox.className = 'card-memo-box';
+          const cardBody = card.querySelector('.card-body');
+          if (cardBody) {
+            cardBody.appendChild(memoBox);
+          }
+        }
+        if (memo && memo.trim()) {
+          memoBox.innerHTML = `<span class="memo-icon">📝</span><span class="memo-text">${escapeHtml(memo.trim())}</span>`;
+          memoBox.style.display = 'flex';
+        } else {
+          memoBox.style.display = 'none';
+        }
+      }
       if (wrap) {
-        wrap.innerHTML = shops.map(s => `<span class="badge badge-shop">🏪 ${s}</span>`).join(' ');
+        const shopHtml = shops.map(s => `<span class="badge badge-shop">🏪 ${s}</span>`).join(' ');
+        wrap.innerHTML = shopHtml;
       }
     }
 
     function refreshAllCardShopBadges() {
       recordsData.forEach(r => {
         const shops = r.shops || [];
-        updateCardShopBadge(r.id, shops);
+        const memo = r.memo || '';
+        updateCardShopBadge(r.id, shops, memo);
       });
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
     function filterItems(mode) {
@@ -1740,6 +2975,7 @@
         plushies: r.plushies || 0,
         others: r.others || 0,
         shops: r.shops || [],
+        memo: r.memo || '',
         title: r.title,
         items_list: r.items_list || [],
         image_src: r.image_src
@@ -1775,6 +3011,584 @@
         toast.classList.remove('show');
       }, 2200);
     }
+  
+    // --- 新規獲得記録（AI解析付き）管理ロジック ---
+    const WORKER_BASE_URL = 'https://prize-gravity-worker.prize-gravity-worker.workers.dev';
+    let currentUploadBase64 = '';
+
+    function openNewRecordModal() {
+      const modal = document.getElementById('newRecordModal');
+      if (!modal) return;
+      modal.classList.add('active');
+
+      // 今日の日付を初期セット
+      const today = new Date().toISOString().split('T')[0];
+      const dateInput = document.getElementById('newRecDate');
+      if (dateInput && !dateInput.value) dateInput.value = today;
+
+      // 店舗セレクトの初期化
+      initNewRecordShopSelects();
+    }
+
+    function closeNewRecordModal() {
+      const modal = document.getElementById('newRecordModal');
+      if (modal) modal.classList.remove('active');
+    }
+
+    function closeNewRecordModalOnBg(e) {
+      if (e.target.id === 'newRecordModal') closeNewRecordModal();
+    }
+
+    function initNewRecordShopSelects() {
+      const s1 = document.getElementById('newRecShop1');
+      const s2 = document.getElementById('newRecShop2');
+      if (!s1 || !s2) return;
+      s1.innerHTML = '<option value="">（未選択）</option>';
+      s2.innerHTML = '<option value="">（なし）</option>';
+      shopOptions.forEach(shop => {
+        const o1 = document.createElement('option');
+        o1.value = shop;
+        o1.innerText = shop;
+        s1.appendChild(o1);
+        const o2 = document.createElement('option');
+        o2.value = shop;
+        o2.innerText = shop;
+        s2.appendChild(o2);
+      });
+    }
+
+    async function onNewRecordPhotoSelected(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const previewWrap = document.getElementById('photoPreviewWrap');
+      const previewImg = document.getElementById('photoPreviewImg');
+      const aiBar = document.getElementById('aiAnalyzingBar');
+      const aiText = document.getElementById('aiStatusText');
+
+      // 1. 画像プレビュー表示
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const fullDataUrl = e.target.result;
+        previewImg.src = fullDataUrl;
+        previewWrap.style.display = 'block';
+
+        // 2. ブラウザ内で軽量化（AI推論用に最大800pxに縮小）
+        const compressedB64 = await resizeImageToDataUrl(fullDataUrl, 1280, 1280, 0.88);
+        currentUploadBase64 = compressedB64;
+
+        // 3. Workers AI に自動解析リクエスト
+        if (aiBar) aiBar.classList.add('active');
+        if (aiText) aiText.textContent = '🤖 AIが写真を解析中（商品名・個数を抽出中）...';
+
+        try {
+          const res = await fetch(`${WORKER_BASE_URL}/api/album-ai-analyze`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image_base64: compressedB64 })
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success && data.analysis) {
+              const an = data.analysis;
+              if (an.title && !document.getElementById('newRecTitle').value) {
+                document.getElementById('newRecTitle').value = an.title;
+              }
+              if (an.figures !== undefined) document.getElementById('newRecFigures').value = an.figures;
+              if (an.plushies !== undefined) document.getElementById('newRecPlushies').value = an.plushies;
+              if (an.others !== undefined) document.getElementById('newRecOthers').value = an.others;
+
+              if (Array.isArray(an.items) && an.items.length > 0) {
+                document.getElementById('newRecItems').value = an.items.join('\n');
+              }
+              if (aiText) aiText.textContent = '✨ AIによる自動推測が完了しました！内容を確認・調整してください。';
+            }
+          } else {
+            if (aiText) aiText.textContent = '💡 写真を設定しました。手動で内容を入力してください。';
+          }
+        } catch (err) {
+          console.warn('AI解析エラー:', err);
+          if (aiText) aiText.textContent = '💡 写真を設定しました。手動で内容を入力してください。';
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function resizeImageToDataUrl(dataUrl, maxW, maxH, quality) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          let w = img.width;
+          let h = img.height;
+          if (w > maxW || h > maxH) {
+            if (w > h) {
+              h = Math.round((h * maxW) / w);
+              w = maxW;
+            } else {
+              w = Math.round((w * maxH) / h);
+              h = maxH;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.src = dataUrl;
+      });
+    }
+
+    async function onSubmitNewRecord(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmitNewRecord');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = '☁️ クラウドへ登録中...';
+      }
+
+      const title = document.getElementById('newRecTitle').value.trim();
+      const date = document.getElementById('newRecDate').value;
+      const cost = parseInt(document.getElementById('newRecCost').value, 10) || 0;
+      const figures = parseInt(document.getElementById('newRecFigures').value, 10) || 0;
+      const plushies = parseInt(document.getElementById('newRecPlushies').value, 10) || 0;
+      const others = parseInt(document.getElementById('newRecOthers').value, 10) || 0;
+      const memo = document.getElementById('newRecMemo').value.trim();
+
+      const s1 = document.getElementById('newRecShop1').value;
+      const s2 = document.getElementById('newRecShop2').value;
+      const shops = [];
+      if (s1) shops.push(s1);
+      if (s2 && s2 !== s1) shops.push(s2);
+
+      const rawItems = document.getElementById('newRecItems').value.split('\n');
+      const items = rawItems.map(s => s.trim()).filter(Boolean);
+
+      try {
+        const payload = {
+          title,
+          date,
+          cost,
+          figures,
+          plushies,
+          others,
+          shops,
+          memo,
+          items,
+          image_base64: currentUploadBase64
+        };
+
+        const res = await fetch(`${WORKER_BASE_URL}/api/album-new-record`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.record) {
+            const newRec = data.record;
+            // image_src を Worker 画像URLへ差し替え
+            if (newRec.image_src) {
+              newRec.image_src = `${WORKER_BASE_URL}/api/album-image?name=${newRec.image_src}`;
+            }
+
+            // recordsData の先頭に挿入
+            recordsData.unshift(newRec);
+
+            // 画面のアルバムとKPIを即時再描画
+            renderAlbums();
+            showToast('🎉 クラウドに新規獲得記録を登録しました！');
+            closeNewRecordModal();
+
+            // フォームのリセット
+            document.getElementById('newRecordForm').reset();
+            currentUploadBase64 = '';
+            document.getElementById('photoPreviewWrap').style.display = 'none';
+            document.getElementById('aiAnalyzingBar').classList.remove('active');
+          } else {
+            alert('登録に失敗しました: ' + (data.error || '不明なエラー'));
+          }
+        } else {
+          alert('サーバー通信エラー: ' + res.status);
+        }
+      } catch (err) {
+        console.error('新規記録エラー:', err);
+        alert('エラーが発生しました: ' + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = '☁️ クラウドに登録する';
+        }
+      }
+    }
+
+    // クラウド上に登録された追加レコードを自動マージして表示
+    async function loadCloudNewRecords() {
+      try {
+        const res = await fetch(`${WORKER_BASE_URL}/api/album-new-records?t=${Date.now()}`);
+        if (res.ok) {
+          const cloudRecords = await res.json();
+          if (Array.isArray(cloudRecords) && cloudRecords.length > 0) {
+            // 重複排除しながら recordsData の先頭にマージ
+            const existingIds = new Set(recordsData.map(r => r.id));
+            cloudRecords.forEach(rec => {
+              if (!existingIds.has(rec.id)) {
+                if (rec.image_src && !rec.image_src.startsWith('http')) {
+                  rec.image_src = `${WORKER_BASE_URL}/api/album-image?name=${rec.image_src}`;
+                }
+                recordsData.unshift(rec);
+              }
+            });
+            // 日付降順でソートして再描画
+            recordsData.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+            renderAlbums();
+          }
+        }
+      } catch (err) {
+        console.warn('クラウド新規レコードの読み込みをスキップ:', err);
+      }
+    }
+
+
+    // --- ゴミ箱・削除履歴 ＆ Gemini Flash 連携ロジック ---
+    let trashRecordsList = [];
+    let deletedRecordIdsSet = new Set();
+
+    // ゴミ箱の初期読み込み
+    async function initTrashRecords() {
+      try {
+        const res = await fetch(`${WORKER_BASE_URL}/api/album-trash-records`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && Array.isArray(data.trash)) {
+            trashRecordsList = data.trash;
+          }
+          if (data && Array.isArray(data.deleted_ids)) {
+            deletedRecordIdsSet = new Set(data.deleted_ids);
+          }
+        }
+      } catch (e) {
+        console.warn('Trash init error:', e);
+      }
+
+      // ローカルストレージからも取得
+      try {
+        const localDeleted = JSON.parse(localStorage.getItem('album_deleted_ids') || '[]');
+        localDeleted.forEach(id => deletedRecordIdsSet.add(id));
+      } catch (_) {}
+
+      updateTrashBadge();
+      applyDeletedFilterToAlbum();
+      checkGeminiKeyStatus();
+    }
+
+    function updateTrashBadge() {
+      const badge = document.getElementById('trashCountBadge');
+      if (badge) badge.textContent = trashRecordsList.length;
+    }
+
+    function applyDeletedFilterToAlbum() {
+      // 削除済みIDのカードを非表示にする
+      const allCards = document.querySelectorAll('.record-card');
+      allCards.forEach(card => {
+        const id = parseInt(card.getAttribute('data-id'), 10);
+        if (deletedRecordIdsSet.has(id)) {
+          card.style.display = 'none';
+        } else {
+          card.style.display = '';
+        }
+      });
+      recalculateKPIs();
+    }
+
+    function recalculateKPIs() {
+      const activeRecords = recordsData.filter(r => !deletedRecordIdsSet.has(r.id));
+      const totalCost = activeRecords.reduce((sum, r) => sum + (r.cost || 0), 0);
+      const totalCount = activeRecords.reduce((sum, r) => sum + (r.count || (r.figures + (r.plushies||0) + (r.others||0))), 0);
+      const totalFigures = activeRecords.reduce((sum, r) => sum + (r.figures || 0), 0);
+      const avgCost = totalCount > 0 ? Math.round(totalCost / totalCount) : 0;
+
+      const costEl = document.querySelector('.hero-cost');
+      if (costEl) costEl.textContent = totalCost.toLocaleString() + '円';
+
+      const badges = document.querySelectorAll('.hero-badge');
+      if (badges.length >= 3) {
+        badges[0].textContent = `獲得数: ${totalCount}点`;
+        badges[1].textContent = `フィギュア: ${totalFigures}点`;
+        badges[2].textContent = `平均単価: ${avgCost.toLocaleString()}円/個`;
+      }
+    }
+
+    async function deleteCurrentRecord() {
+      if (currentRecordIndex < 0 || currentRecordIndex >= recordsData.length) return;
+      const rec = recordsData[currentRecordIndex];
+      if (!rec) return;
+
+      if (!confirm(`「${rec.title}」(#${rec.id}) を削除してゴミ箱へ移動しますか？\n\n※削除した記録は「削除履歴」からいつでも元に戻せます。`)) {
+        return;
+      }
+
+      const id = rec.id;
+      deletedRecordIdsSet.add(id);
+
+      // ゴミ箱リストに追加
+      const trashItem = {
+        id: id,
+        deleted_at: new Date().toISOString(),
+        record: rec
+      };
+      trashRecordsList.unshift(trashItem);
+
+      // ローカル保存
+      try {
+        localStorage.setItem('album_deleted_ids', JSON.stringify(Array.from(deletedRecordIdsSet)));
+      } catch (_) {}
+
+      updateTrashBadge();
+      applyDeletedFilterToAlbum();
+      closeModal();
+      showToast(`🗑️ 「${rec.title}」をゴミ箱に移動しました`);
+
+      // Worker API へ削除リクエスト
+      try {
+        await fetch(`${WORKER_BASE_URL}/api/album-delete-record`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: id, record: rec })
+        });
+      } catch (err) {
+        console.warn('Cloud delete warning:', err);
+      }
+    }
+
+    function openTrashModal() {
+      renderTrashList();
+      const m = document.getElementById('trashModal');
+      if (m) m.classList.add('active');
+    }
+
+    function closeTrashModal() {
+      const m = document.getElementById('trashModal');
+      if (m) m.classList.remove('active');
+    }
+
+    function closeTrashModalOnBg(e) {
+      if (e.target && e.target.id === 'trashModal') closeTrashModal();
+    }
+
+    function renderTrashList() {
+      const container = document.getElementById('trashListContainer');
+      if (!container) return;
+
+      if (trashRecordsList.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 36px 20px; color: #64748b; background: #f8fafc; border-radius: 12px; border: 1.5px dashed #cbd5e1;">
+            <div style="font-size: 28px; margin-bottom: 6px;">✨</div>
+            <div style="font-weight: 700; color: #0f172a;">ゴミ箱は空です</div>
+            <div style="font-size: 12px; margin-top: 4px;">削除された記録はありません。</div>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      trashRecordsList.forEach(item => {
+        const r = item.record || {};
+        const title = r.title || 'プライズ獲得';
+        const dateStr = r.display_date || r.date || '';
+        const costStr = (r.cost || 0).toLocaleString() + '円';
+        const countStr = (r.count || (r.figures + (r.plushies||0) + (r.others||0)) || 1) + '点';
+        
+        let imgSrc = 'images/' + (r.image_src || '');
+        if (r.image_src && r.image_src.startsWith('http')) imgSrc = r.image_src;
+        else if (r.image_src && r.image_src.startsWith('IMG_cloud_')) {
+          imgSrc = `${WORKER_BASE_URL}/api/album-image?name=${r.image_src}`;
+        }
+
+        const delTime = item.deleted_at ? new Date(item.deleted_at).toLocaleString('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+
+        html += `
+          <div class="trash-item-row" id="trash-row-${item.id}">
+            <div style="display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1;">
+              <img src="${imgSrc}" class="trash-thumb" onerror="this.src='images/IMG_4580.jpg'" alt="">
+              <div style="min-width: 0; flex: 1;">
+                <div style="font-size: 11px; color: #64748b; margin-bottom: 2px;">
+                  📅 ${dateStr} <span style="background: #e2e8f0; padding: 1px 5px; border-radius: 4px; font-weight: 700; margin-left: 4px;">#${item.id}</span>
+                </div>
+                <div style="font-size: 13.5px; font-weight: 800; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                  ${title}
+                </div>
+                <div style="font-size: 11.5px; color: #475569; margin-top: 3px;">
+                  獲得: <strong>${countStr}</strong> ｜ 金額: <strong>${costStr}</strong>
+                  ${delTime ? `<span style="color: #94a3b8; margin-left: 8px;">(削除: ${delTime})</span>` : ''}
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+              <button type="button" class="btn-restore-item" onclick="restoreRecord(${item.id})">
+                <span>↩️</span><span>元に戻す</span>
+              </button>
+              <button type="button" class="btn-perm-delete-item" onclick="permanentDeleteRecord(${item.id})">
+                <span>✕</span><span>完全消去</span>
+              </button>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    async function restoreRecord(id) {
+      deletedRecordIdsSet.delete(id);
+      trashRecordsList = trashRecordsList.filter(t => t.id !== id);
+
+      try {
+        localStorage.setItem('album_deleted_ids', JSON.stringify(Array.from(deletedRecordIdsSet)));
+      } catch (_) {}
+
+      updateTrashBadge();
+      applyDeletedFilterToAlbum();
+      renderTrashList();
+      showToast('🎉 アルバムに復元しました！');
+
+      try {
+        await fetch(`${WORKER_BASE_URL}/api/album-restore-record`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: id })
+        });
+      } catch (err) {
+        console.warn('Restore error:', err);
+      }
+    }
+
+    async function restoreAllTrash() {
+      if (trashRecordsList.length === 0) return;
+      if (!confirm('ゴミ箱内のすべての記録をアルバムに復元しますか？')) return;
+
+      const ids = trashRecordsList.map(t => t.id);
+      ids.forEach(id => deletedRecordIdsSet.delete(id));
+      trashRecordsList = [];
+
+      try {
+        localStorage.setItem('album_deleted_ids', JSON.stringify(Array.from(deletedRecordIdsSet)));
+      } catch (_) {}
+
+      updateTrashBadge();
+      applyDeletedFilterToAlbum();
+      renderTrashList();
+      closeTrashModal();
+      showToast('🎉 すべての記録をアルバムに復元しました！');
+
+      for (const id of ids) {
+        try {
+          await fetch(`${WORKER_BASE_URL}/api/album-restore-record`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: id })
+          });
+        } catch (_) {}
+      }
+    }
+
+    async function permanentDeleteRecord(id) {
+      if (!confirm('この記録を完全に消去しますか？\n※画像やデータは完全に削除され、元に戻せなくなります。')) return;
+
+      trashRecordsList = trashRecordsList.filter(t => t.id !== id);
+      updateTrashBadge();
+      renderTrashList();
+      showToast('❌ 完全に消去しました');
+
+      try {
+        await fetch(`${WORKER_BASE_URL}/api/album-permanent-delete`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: id })
+        });
+      } catch (_) {}
+    }
+
+    // --- Gemini API Key 設定・状態管理 ---
+    async function checkGeminiKeyStatus() {
+      try {
+        const res = await fetch(`${WORKER_BASE_URL}/api/gemini-key`);
+        if (res.ok) {
+          const data = await res.json();
+          const stEl = document.getElementById('geminiCurrentStatus');
+          const badgeEl = document.getElementById('aiModelBadge');
+          if (data.is_set) {
+            if (stEl) stEl.innerHTML = `<span style="color: #16a34a; font-weight: 700;">✅ 設定済み (${data.masked_key || '有効'})</span>`;
+            if (badgeEl) {
+              badgeEl.textContent = '✨ Gemini 2.0 Flash (超高精度)';
+              badgeEl.style.background = '#ecfdf5';
+              badgeEl.style.color = '#047857';
+              badgeEl.style.borderColor = '#a7f3d0';
+            }
+          } else {
+            if (stEl) stEl.innerHTML = '<span style="color: #64748b;">未設定（Workers AI Llama 3.2 で動作中）</span>';
+            if (badgeEl) {
+              badgeEl.textContent = '⚙️ Geminiキー設定で超高精度化';
+              badgeEl.style.background = '#eff6ff';
+              badgeEl.style.color = '#1d4ed8';
+              badgeEl.style.borderColor = '#bfdbfe';
+            }
+          }
+        }
+      } catch (_) {}
+    }
+
+    function openGeminiKeyModal() {
+      const m = document.getElementById('geminiKeyModal');
+      if (m) m.classList.add('active');
+      checkGeminiKeyStatus();
+    }
+
+    function closeGeminiKeyModal() {
+      const m = document.getElementById('geminiKeyModal');
+      if (m) m.classList.remove('active');
+    }
+
+    function closeGeminiKeyModalOnBg(e) {
+      if (e.target && e.target.id === 'geminiKeyModal') closeGeminiKeyModal();
+    }
+
+    async function saveGeminiApiKey() {
+      const input = document.getElementById('inputGeminiApiKey');
+      if (!input) return;
+      const key = input.value.trim();
+
+      try {
+        const res = await fetch(`${WORKER_BASE_URL}/api/gemini-key`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: key })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success) {
+            showToast(key ? '✨ Gemini APIキーを保存しました！超高精度AI解析が有効化されました。' : '💡 Gemini APIキーを解除しました。');
+            closeGeminiKeyModal();
+            checkGeminiKeyStatus();
+          } else {
+            alert('保存に失敗しました: ' + (data.error || '不明なエラー'));
+          }
+        }
+      } catch (err) {
+        alert('通信エラー: ' + err.message);
+      }
+    }
+
+    // DOM読み込み完了時にゴミ箱を初期化
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initTrashRecords);
+    } else {
+      initTrashRecords();
+    }
+
   </script>
 </body>
 </html>
