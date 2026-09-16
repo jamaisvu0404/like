@@ -1,16 +1,26 @@
 {
-  "last_sync_time": "2026-09-14 23:09",
-  "previous_sync_time": "2026-09-13 23:09",
-  "total_records": 1533,
-  "new_records_count": 0,
+  "last_sync_time": "2026-09-16 01:05",
+  "previous_sync_time": "2026-09-14 23:09",
+  "total_records": 1543,
+  "new_records_count": 10,
   "author_counts": {
-    "Merry☆An": 559,
-    "あかり": 77,
-    "831生活": 256,
-    "もぐらクレーン": 641
+    "831生活": 257,
+    "Merry☆An": 562,
+    "あかり": 80,
+    "もぐらクレーン": 644
   },
-  "author_new_counts": {},
+  "author_new_counts": {
+    "もぐらクレーン": 3,
+    "Merry☆An": 3,
+    "あかり": 3,
+    "831生活": 1
+  },
   "history": [
+    {
+      "timestamp": "2026-09-16 01:05",
+      "total": 1543,
+      "new_added": 10
+    },
     {
       "timestamp": "2026-09-13 23:09",
       "total": 1533,
