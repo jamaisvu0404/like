@@ -1,5 +1,203 @@
 [
   {
+    "id": 6132,
+    "tweet_id": "2103704592437633212",
+    "author_name": "もぐらクレーン",
+    "user_name": "もぐらクレーン",
+    "screen_name": "mogurakurenn",
+    "anime_title": "To LOVEる",
+    "prize_name": "とらぶるaqua春菜 167 なんかでかくなってない？",
+    "figure_size": "",
+    "box_weight": "",
+    "box_size": "",
+    "gravity_details": [],
+    "condition_details": [],
+    "tags": [],
+    "media": [
+      "https://pbs.twimg.com/media/HTHcJJYaAAARlOg.jpg",
+      "https://pbs.twimg.com/media/HTHcJxAbQAAew3h.jpg",
+      "https://pbs.twimg.com/media/HTHcKVpa0AA0N7f.jpg",
+      "https://pbs.twimg.com/media/HTHcK81aAAEAWE5.jpg"
+    ],
+    "created_at": "2026-09-26 04:33",
+    "tweet_url": "https://x.com/mogurakurenn/status/2103704592437633212",
+    "full_text": "とらぶるaqua春菜\n167　なんかでかくなってない？\n#cranity  #クレーンゲーム  #重心情報 https://t.co/oXWSQyMzZZ"
+  },
+  {
+    "id": 6131,
+    "tweet_id": "2103703122610885033",
+    "author_name": "もぐらクレーン",
+    "user_name": "もぐらクレーン",
+    "screen_name": "mogurakurenn",
+    "anime_title": "DEATH NOTE",
+    "prize_name": "デスノbicuミサ 384",
+    "figure_size": "",
+    "box_weight": "",
+    "box_size": "",
+    "gravity_details": [],
+    "condition_details": [],
+    "tags": [],
+    "media": [
+      "https://pbs.twimg.com/media/HTHazpEaoAAAYNs.jpg",
+      "https://pbs.twimg.com/media/HTHa0Nva8AAoff1.jpg",
+      "https://pbs.twimg.com/media/HTHa0yfasAAY67R.jpg",
+      "https://pbs.twimg.com/media/HTHa1dfbMAAnJeu.jpg"
+    ],
+    "created_at": "2026-09-26 04:28",
+    "tweet_url": "https://x.com/mogurakurenn/status/2103703122610885033",
+    "full_text": "デスノbicuミサ\n384\n#cranity  #クレーンゲーム  #重心情報 https://t.co/PYwlurVWCv"
+  },
+  {
+    "id": 6130,
+    "tweet_id": "2103702335340105887",
+    "author_name": "もぐらクレーン",
+    "user_name": "もぐらクレーン",
+    "screen_name": "mogurakurenn",
+    "anime_title": "ニューパンティ&ストッキングウィズガーターベルト",
+    "prize_name": "パンストぬーすとストッキング 216",
+    "figure_size": "",
+    "box_weight": "",
+    "box_size": "",
+    "gravity_details": [],
+    "condition_details": [],
+    "tags": [],
+    "media": [
+      "https://pbs.twimg.com/media/HTHaFiMbsAAjSqp.jpg",
+      "https://pbs.twimg.com/media/HTHaGOua8AAsnhM.jpg",
+      "https://pbs.twimg.com/media/HTHaG5rbYAIvgS7.jpg",
+      "https://pbs.twimg.com/media/HTHaHnTacAA3jDp.jpg"
+    ],
+    "created_at": "2026-09-26 04:24",
+    "tweet_url": "https://x.com/mogurakurenn/status/2103702335340105887",
+    "full_text": "パンストぬーすとストッキング\n216\n#cranity  #クレーンゲーム  #重心情報 https://t.co/FDEbWQQb3c"
+  },
+  {
+    "id": 6129,
+    "tweet_id": "2103701736464806384",
+    "author_name": "もぐらクレーン",
+    "user_name": "もぐらクレーン",
+    "screen_name": "mogurakurenn",
+    "anime_title": "デート・ア・ライブ",
+    "prize_name": "デーアラ夜刀サマードレス 340 前後5左右10マラカス",
+    "figure_size": "",
+    "box_weight": "",
+    "box_size": "",
+    "gravity_details": [],
+    "condition_details": [],
+    "tags": [
+      "右重心",
+      "左重心"
+    ],
+    "media": [
+      "https://pbs.twimg.com/media/HTHZi0wbkAAtz7x.jpg",
+      "https://pbs.twimg.com/media/HTHZjc5akAAdHGF.jpg",
+      "https://pbs.twimg.com/media/HTHZkISbcAEJ0Cb.jpg",
+      "https://pbs.twimg.com/media/HTHZkzbaIAAcr0N.jpg"
+    ],
+    "created_at": "2026-09-26 04:22",
+    "tweet_url": "https://x.com/mogurakurenn/status/2103701736464806384",
+    "full_text": "デーアラ夜刀サマードレス\n340　前後5左右10マラカス\n#cranity  #クレーンゲーム  #重心情報 https://t.co/pv8KvUjAjx"
+  },
+  {
+    "id": 6128,
+    "tweet_id": "2103700496041341419",
+    "author_name": "もぐらクレーン",
+    "user_name": "もぐらクレーン",
+    "screen_name": "mogurakurenn",
+    "anime_title": "魔女の旅々",
+    "prize_name": "魔女の旅旅ムチュイレイナ 361 全部真ん中、重心を利用できないので沼るときは永遠に沼る、BCしたら",
+    "figure_size": "",
+    "box_weight": "",
+    "box_size": "",
+    "gravity_details": [
+      "361　全部真ん中、重心を利用できないので沼るときは永遠に沼る、BCしたら"
+    ],
+    "condition_details": [],
+    "tags": [
+      "中央重心"
+    ],
+    "media": [
+      "https://pbs.twimg.com/media/HTHYZ9Wa0AAIpv-.jpg",
+      "https://pbs.twimg.com/media/HTHYa_2aUAEy3Ep.jpg",
+      "https://pbs.twimg.com/media/HTHYbyqa4AIgnFC.jpg",
+      "https://pbs.twimg.com/media/HTHYcepbwAAiGbj.jpg"
+    ],
+    "created_at": "2026-09-26 04:17",
+    "tweet_url": "https://x.com/mogurakurenn/status/2103700496041341419",
+    "full_text": "魔女の旅旅ムチュイレイナ\n361　全部真ん中、重心を利用できないので沼るときは永遠に沼る、BCしたら\n#cranity  #クレーンゲーム  #重心情報 https://t.co/Sq6eioO70Z"
+  },
+  {
+    "id": 6127,
+    "tweet_id": "2103565514773811203",
+    "author_name": "Merry☆An",
+    "user_name": "Merry☆An",
+    "screen_name": "6eS8Jm4YNJpPA2D",
+    "anime_title": "BLEACH ",
+    "prize_name": "BLEACH MAXIMATIC TOUSHIRO HITSUGAYA",
+    "figure_size": "22cm",
+    "box_weight": "398g やや重め☝🏻",
+    "box_size": "縦25×横14×奥行14cm",
+    "gravity_details": [
+      "裏5㍉〜2.5㍉重心(2.5㍉幅動)",
+      "上5㍉〜7.5㍉重心(2.5㍉幅動)",
+      "中〜右2.5㍉側重(2.5㍉幅動 )",
+      "🟨裏5㍉〜2.5㍉重心(2.5㍉幅動)",
+      "🟨上5㍉〜7.5㍉重心(2.5㍉幅動)",
+      "🟨中〜右2.5㍉側重(2.5㍉幅動 )"
+    ],
+    "condition_details": [
+      "箱はいれ方で個体差あり☝🏻",
+      "箱中はほぼ動かない☝🏻"
+    ],
+    "tags": [
+      "上重心",
+      "中央重心",
+      "個体差あり",
+      "右重心",
+      "固定・動かない",
+      "裏重心"
+    ],
+    "media": [
+      "https://pbs.twimg.com/media/HTFdrxfbEAAxVMj.jpg"
+    ],
+    "created_at": "2026-09-25 19:21",
+    "tweet_url": "https://x.com/6eS8Jm4YNJpPA2D/status/2103565514773811203",
+    "full_text": "＃重心情報\nBLEACH MAXIMATIC TOUSHIRO HITSUGAYA\n\n🔶箱はいれ方で個体差あり☝🏻\n\n【Figure size】22cm\n【Box weight】398g やや重め☝🏻\n【Box size】縦25×横14×奥行14cm\n\n🔶箱中はほぼ動かない☝🏻\n\n🟨裏5㍉〜2.5㍉重心(2.5㍉幅動)\n🟨上5㍉〜7.5㍉重心(2.5㍉幅動)\n🟨中〜右2.5㍉側重(2.5㍉幅動 ) https://t.co/u3aAn8AWOy"
+  },
+  {
+    "id": 6126,
+    "tweet_id": "2103541655358111943",
+    "author_name": "Merry☆An",
+    "user_name": "Merry☆An",
+    "screen_name": "6eS8Jm4YNJpPA2D",
+    "anime_title": "ホロライブ",
+    "prize_name": "ホロライブ #hololive IF -Relax time-風真いろは holoXの用心棒、侍の風真いろは",
+    "figure_size": "16cm",
+    "box_weight": "340g 箱重普通",
+    "box_size": "縦20×横15×奥行10cm",
+    "gravity_details": [
+      "裏1cm〜中重心(1cm幅動)",
+      "🟨裏1cm〜中重心(1cm幅動)"
+    ],
+    "condition_details": [
+      "箱はいれ方で個体差あり☝🏻",
+      "箱中はブリスターでほぼ動かない☝🏻"
+    ],
+    "tags": [
+      "ブリスター",
+      "中央重心",
+      "個体差あり",
+      "固定・動かない",
+      "裏重心"
+    ],
+    "media": [
+      "https://pbs.twimg.com/media/HTFH-8Va8AA87HV.jpg"
+    ],
+    "created_at": "2026-09-25 17:46",
+    "tweet_url": "https://x.com/6eS8Jm4YNJpPA2D/status/2103541655358111943",
+    "full_text": "＃重心情報\nホロライブ #hololive IF -Relax time-風真いろは\n\n「holoXの用心棒、侍の風真いろは」\n\n🔶箱はいれ方で個体差あり☝🏻\n\n【Figure size】16cm\n【Box weight】340g 箱重普通\n【Box size】縦20×横15×奥行10cm\n\n🔶箱中はブリスターでほぼ動かない☝🏻\n\n🟨裏1cm〜中重心(1cm幅動) https://t.co/c3r6qFy5EF"
+  },
+  {
     "id": 6125,
     "tweet_id": "2103521557608030659",
     "author_name": "Merry☆An",
